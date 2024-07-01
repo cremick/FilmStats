@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace api.Models
 {
+    [Table("Films")]
     public class Film
     {
         public int Id { get; set; }
@@ -14,6 +15,6 @@ namespace api.Models
         public string Director { get; set; } = string.Empty;
         public double AvgRating { get; set; }
 
-        public List<Rating> Ratings { get; set; } = new List<Rating>();
+        public List<UserFilm> UserFilms { get; set; } = new List<UserFilm>();
     }
 }

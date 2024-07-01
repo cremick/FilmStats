@@ -51,13 +51,13 @@ namespace api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "0fa8c26f-3c5c-40f1-bb16-4b64478207c7",
+                            Id = "df6d75e3-2cde-48de-951b-0b1399e2ca76",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "f56a5ebd-44b2-4335-9667-00cfb583b04a",
+                            Id = "29ba6ec0-5c9b-4f5b-83ff-45eadbb58ec2",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -242,15 +242,10 @@ namespace api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("FilmId")
-                        .HasColumnType("int");
-
                     b.Property<double>("Score")
                         .HasColumnType("float");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("FilmId");
 
                     b.ToTable("Ratings");
                 });
@@ -337,6 +332,21 @@ namespace api.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("api.Models.UserFilm", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("FilmId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "FilmId");
+
+                    b.HasIndex("FilmId");
+
+                    b.ToTable("UserFilms");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -388,16 +398,33 @@ namespace api.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("api.Models.Rating", b =>
+            modelBuilder.Entity("api.Models.UserFilm", b =>
                 {
-                    b.HasOne("api.Models.Film", null)
-                        .WithMany("Ratings")
-                        .HasForeignKey("FilmId");
+                    b.HasOne("api.Models.Film", "Film")
+                        .WithMany("UserFilms")
+                        .HasForeignKey("FilmId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("api.Models.User", "User")
+                        .WithMany("UserFilms")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Film");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("api.Models.Film", b =>
                 {
-                    b.Navigation("Ratings");
+                    b.Navigation("UserFilms");
+                });
+
+            modelBuilder.Entity("api.Models.User", b =>
+                {
+                    b.Navigation("UserFilms");
                 });
 #pragma warning restore 612, 618
         }
