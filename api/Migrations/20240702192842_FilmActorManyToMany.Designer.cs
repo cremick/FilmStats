@@ -12,8 +12,8 @@ using api.Data;
 namespace api.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20240701142335_UserFilmManyToMany")]
-    partial class UserFilmManyToMany
+    [Migration("20240702192842_FilmActorManyToMany")]
+    partial class FilmActorManyToMany
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -54,13 +54,13 @@ namespace api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "df6d75e3-2cde-48de-951b-0b1399e2ca76",
+                            Id = "58825aa1-82f5-470a-ac1a-f09a950ce05f",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "29ba6ec0-5c9b-4f5b-83ff-45eadbb58ec2",
+                            Id = "8a5a8875-9ccf-4314-9fd7-af4b468f1eca",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -220,6 +220,21 @@ namespace api.Migrations
                     b.ToTable("Films");
                 });
 
+            modelBuilder.Entity("api.Models.FilmActor", b =>
+                {
+                    b.Property<int>("FilmId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ActorId")
+                        .HasColumnType("int");
+
+                    b.HasKey("FilmId", "ActorId");
+
+                    b.HasIndex("ActorId");
+
+                    b.ToTable("FilmActors");
+                });
+
             modelBuilder.Entity("api.Models.Genre", b =>
                 {
                     b.Property<int>("Id")
@@ -245,10 +260,21 @@ namespace api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("FilmId")
+                        .HasColumnType("int");
+
                     b.Property<double>("Score")
                         .HasColumnType("float");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("FilmId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Ratings");
                 });
@@ -401,6 +427,44 @@ namespace api.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("api.Models.FilmActor", b =>
+                {
+                    b.HasOne("api.Models.Actor", "Actor")
+                        .WithMany("FilmActors")
+                        .HasForeignKey("ActorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("api.Models.Film", "Film")
+                        .WithMany("FilmActors")
+                        .HasForeignKey("FilmId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Actor");
+
+                    b.Navigation("Film");
+                });
+
+            modelBuilder.Entity("api.Models.Rating", b =>
+                {
+                    b.HasOne("api.Models.Film", "Film")
+                        .WithMany("Ratings")
+                        .HasForeignKey("FilmId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("api.Models.User", "User")
+                        .WithMany("Ratings")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Film");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("api.Models.UserFilm", b =>
                 {
                     b.HasOne("api.Models.Film", "Film")
@@ -420,13 +484,24 @@ namespace api.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("api.Models.Actor", b =>
+                {
+                    b.Navigation("FilmActors");
+                });
+
             modelBuilder.Entity("api.Models.Film", b =>
                 {
+                    b.Navigation("FilmActors");
+
+                    b.Navigation("Ratings");
+
                     b.Navigation("UserFilms");
                 });
 
             modelBuilder.Entity("api.Models.User", b =>
                 {
+                    b.Navigation("Ratings");
+
                     b.Navigation("UserFilms");
                 });
 #pragma warning restore 612, 618

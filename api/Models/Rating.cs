@@ -13,7 +13,7 @@ namespace api.Models
         public double Score { get; set; }
         public int FilmId { get; set; }
         public Film? Film { get; set; }
-        public int UserId { get; set; }
+        public string UserId { get; set; } = string.Empty;
         public User? User { get; set; }
     }
 }

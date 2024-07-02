@@ -23,22 +23,31 @@ namespace api.Data
         public DbSet<Rating> Ratings { get; set; }
         public DbSet<Theme> Themes { get; set; }
         public DbSet<UserFilm> UserFilms { get; set; }
+        public DbSet<FilmActor> FilmActors { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
             builder.Entity<UserFilm>(x => x.HasKey(p => new { p.UserId, p.FilmId}));
-
             builder.Entity<UserFilm>()
-            .HasOne(u => u.User)
-            .WithMany(u => u.UserFilms)
-            .HasForeignKey(p => p.UserId);
-
+                .HasOne(u => u.User)
+                .WithMany(u => u.UserFilms)
+                .HasForeignKey(p => p.UserId);
             builder.Entity<UserFilm>()
-            .HasOne(u => u.Film)
-            .WithMany(u => u.UserFilms)
-            .HasForeignKey(p => p.FilmId);
+                .HasOne(u => u.Film)
+                .WithMany(u => u.UserFilms)
+                .HasForeignKey(p => p.FilmId);
+
+            builder.Entity<FilmActor>(x => x.HasKey(fa => new { fa.FilmId, fa.ActorId}));
+            builder.Entity<FilmActor>()
+                .HasOne(f => f.Film)
+                .WithMany(f => f.FilmActors)
+                .HasForeignKey(f => f.FilmId);
+            builder.Entity<FilmActor>()
+                .HasOne(f => f.Actor)
+                .WithMany(f => f.FilmActors)
+                .HasForeignKey(f => f.ActorId);
 
             List<IdentityRole> roles = new List<IdentityRole>
             {

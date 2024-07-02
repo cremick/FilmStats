@@ -12,5 +12,6 @@ namespace api.Models
         public int Id { get; set; }
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
+        public List<FilmActor> FilmActors { get; set; } = new List<FilmActor>();
     }
 }
