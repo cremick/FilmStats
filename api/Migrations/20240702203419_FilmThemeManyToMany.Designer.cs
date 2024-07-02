@@ -12,8 +12,8 @@ using api.Data;
 namespace api.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20240702201646_FilmGenreManyToMany")]
-    partial class FilmGenreManyToMany
+    [Migration("20240702203419_FilmThemeManyToMany")]
+    partial class FilmThemeManyToMany
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -54,13 +54,13 @@ namespace api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "2d0745b3-dde4-4e42-b006-9af21c1d3742",
+                            Id = "4816105e-8452-4c52-bc1c-5d1ab0172c39",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "7f712dee-3429-426c-b900-b5aacaeb8d73",
+                            Id = "9c83b8d6-17d3-4ec4-9a33-12c6a4650821",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -248,6 +248,21 @@ namespace api.Migrations
                     b.HasIndex("GenreId");
 
                     b.ToTable("FilmGenres");
+                });
+
+            modelBuilder.Entity("api.Models.FilmTheme", b =>
+                {
+                    b.Property<int>("FilmId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ThemeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("FilmId", "ThemeId");
+
+                    b.HasIndex("ThemeId");
+
+                    b.ToTable("FilmThemes");
                 });
 
             modelBuilder.Entity("api.Models.Genre", b =>
@@ -480,6 +495,25 @@ namespace api.Migrations
                     b.Navigation("Genre");
                 });
 
+            modelBuilder.Entity("api.Models.FilmTheme", b =>
+                {
+                    b.HasOne("api.Models.Film", "Film")
+                        .WithMany("FilmThemes")
+                        .HasForeignKey("FilmId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("api.Models.Theme", "Theme")
+                        .WithMany("FilmThemes")
+                        .HasForeignKey("ThemeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Film");
+
+                    b.Navigation("Theme");
+                });
+
             modelBuilder.Entity("api.Models.Rating", b =>
                 {
                     b.HasOne("api.Models.Film", "Film")
@@ -529,6 +563,8 @@ namespace api.Migrations
 
                     b.Navigation("FilmGenres");
 
+                    b.Navigation("FilmThemes");
+
                     b.Navigation("Ratings");
 
                     b.Navigation("UserFilms");
@@ -537,6 +573,11 @@ namespace api.Migrations
             modelBuilder.Entity("api.Models.Genre", b =>
                 {
                     b.Navigation("FilmGenres");
+                });
+
+            modelBuilder.Entity("api.Models.Theme", b =>
+                {
+                    b.Navigation("FilmThemes");
                 });
 
             modelBuilder.Entity("api.Models.User", b =>

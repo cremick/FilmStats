@@ -25,6 +25,7 @@ namespace api.Data
         public DbSet<UserFilm> UserFilms { get; set; }
         public DbSet<FilmActor> FilmActors { get; set; }
         public DbSet<FilmGenre> FilmGenres { get; set; }
+        public DbSet<FilmTheme> FilmThemes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -59,6 +60,16 @@ namespace api.Data
                 .HasOne(fg => fg.Genre)
                 .WithMany(g => g.FilmGenres)
                 .HasForeignKey(fg => fg.GenreId);
+
+            builder.Entity<FilmTheme>(x => x.HasKey(ft => new { ft.FilmId, ft.ThemeId}));
+            builder.Entity<FilmTheme>()
+                .HasOne(ft => ft.Film)
+                .WithMany(f => f.FilmThemes)
+                .HasForeignKey(ft => ft.FilmId);
+            builder.Entity<FilmTheme>()
+                .HasOne(ft => ft.Theme)
+                .WithMany(t => t.FilmThemes)
+                .HasForeignKey(ft => ft.ThemeId);
 
             List<IdentityRole> roles = new List<IdentityRole>
             {

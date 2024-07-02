@@ -19,5 +19,6 @@ namespace api.Models
         public List<UserFilm> UserFilms { get; set; } = new List<UserFilm>();
         public List<FilmActor> FilmActors { get; set; } = new List<FilmActor>();
         public List<FilmGenre> FilmGenres { get; set; } = new List<FilmGenre>();
+        public List<FilmTheme> FilmThemes { get; set; } = new List<FilmTheme>();
     }
 }

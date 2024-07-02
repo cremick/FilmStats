@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace api.Migrations
 {
     /// <inheritdoc />
-    public partial class FilmGenreManyToMany : Migration
+    public partial class FilmThemeManyToMany : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -313,13 +313,37 @@ namespace api.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "FilmThemes",
+                columns: table => new
+                {
+                    FilmId = table.Column<int>(type: "int", nullable: false),
+                    ThemeId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FilmThemes", x => new { x.FilmId, x.ThemeId });
+                    table.ForeignKey(
+                        name: "FK_FilmThemes_Films_FilmId",
+                        column: x => x.FilmId,
+                        principalTable: "Films",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_FilmThemes_Themes_ThemeId",
+                        column: x => x.ThemeId,
+                        principalTable: "Themes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "2d0745b3-dde4-4e42-b006-9af21c1d3742", null, "Admin", "ADMIN" },
-                    { "7f712dee-3429-426c-b900-b5aacaeb8d73", null, "User", "USER" }
+                    { "4816105e-8452-4c52-bc1c-5d1ab0172c39", null, "Admin", "ADMIN" },
+                    { "9c83b8d6-17d3-4ec4-9a33-12c6a4650821", null, "User", "USER" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -372,6 +396,11 @@ namespace api.Migrations
                 column: "GenreId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_FilmThemes_ThemeId",
+                table: "FilmThemes",
+                column: "ThemeId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Ratings_FilmId",
                 table: "Ratings",
                 column: "FilmId");
@@ -412,10 +441,10 @@ namespace api.Migrations
                 name: "FilmGenres");
 
             migrationBuilder.DropTable(
-                name: "Ratings");
+                name: "FilmThemes");
 
             migrationBuilder.DropTable(
-                name: "Themes");
+                name: "Ratings");
 
             migrationBuilder.DropTable(
                 name: "UserFilms");
@@ -428,6 +457,9 @@ namespace api.Migrations
 
             migrationBuilder.DropTable(
                 name: "Genres");
+
+            migrationBuilder.DropTable(
+                name: "Themes");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
