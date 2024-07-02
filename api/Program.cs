@@ -79,6 +79,7 @@ builder.Services.AddAuthentication(options => {
 });
 
 builder.Services.AddScoped<IFilmRepository, FilmRepository>();
+builder.Services.AddScoped<IActorRepository, ActorRepository>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
 var app = builder.Build();
