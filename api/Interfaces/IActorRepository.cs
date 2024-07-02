@@ -10,5 +10,6 @@ namespace api.Interfaces
     public interface IActorRepository
     {
         Task<List<Actor>> GetAllAsync(ActorQueryObject query);
+        Task<List<Film>> GetFilmsByActor(int actorId);
     }
 }

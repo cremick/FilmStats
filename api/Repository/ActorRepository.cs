@@ -41,5 +41,10 @@ namespace api.Repository
 
             return await actors.ToListAsync();
         }
+
+        public Task<List<Film>> GetFilmsByActor(int actorId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
