@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace api.Migrations
 {
     /// <inheritdoc />
-    public partial class FilmActorManyToMany : Migration
+    public partial class FilmGenreManyToMany : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -289,13 +289,37 @@ namespace api.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "FilmGenres",
+                columns: table => new
+                {
+                    FilmId = table.Column<int>(type: "int", nullable: false),
+                    GenreId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FilmGenres", x => new { x.FilmId, x.GenreId });
+                    table.ForeignKey(
+                        name: "FK_FilmGenres_Films_FilmId",
+                        column: x => x.FilmId,
+                        principalTable: "Films",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_FilmGenres_Genres_GenreId",
+                        column: x => x.GenreId,
+                        principalTable: "Genres",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "58825aa1-82f5-470a-ac1a-f09a950ce05f", null, "Admin", "ADMIN" },
-                    { "8a5a8875-9ccf-4314-9fd7-af4b468f1eca", null, "User", "USER" }
+                    { "2d0745b3-dde4-4e42-b006-9af21c1d3742", null, "Admin", "ADMIN" },
+                    { "7f712dee-3429-426c-b900-b5aacaeb8d73", null, "User", "USER" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -343,6 +367,11 @@ namespace api.Migrations
                 column: "ActorId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_FilmGenres_GenreId",
+                table: "FilmGenres",
+                column: "GenreId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Ratings_FilmId",
                 table: "Ratings",
                 column: "FilmId");
@@ -380,7 +409,7 @@ namespace api.Migrations
                 name: "FilmActors");
 
             migrationBuilder.DropTable(
-                name: "Genres");
+                name: "FilmGenres");
 
             migrationBuilder.DropTable(
                 name: "Ratings");
@@ -396,6 +425,9 @@ namespace api.Migrations
 
             migrationBuilder.DropTable(
                 name: "Actors");
+
+            migrationBuilder.DropTable(
+                name: "Genres");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

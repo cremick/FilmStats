@@ -51,13 +51,13 @@ namespace api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "58825aa1-82f5-470a-ac1a-f09a950ce05f",
+                            Id = "2d0745b3-dde4-4e42-b006-9af21c1d3742",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "8a5a8875-9ccf-4314-9fd7-af4b468f1eca",
+                            Id = "7f712dee-3429-426c-b900-b5aacaeb8d73",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -230,6 +230,21 @@ namespace api.Migrations
                     b.HasIndex("ActorId");
 
                     b.ToTable("FilmActors");
+                });
+
+            modelBuilder.Entity("api.Models.FilmGenre", b =>
+                {
+                    b.Property<int>("FilmId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("GenreId")
+                        .HasColumnType("int");
+
+                    b.HasKey("FilmId", "GenreId");
+
+                    b.HasIndex("GenreId");
+
+                    b.ToTable("FilmGenres");
                 });
 
             modelBuilder.Entity("api.Models.Genre", b =>
@@ -443,6 +458,25 @@ namespace api.Migrations
                     b.Navigation("Film");
                 });
 
+            modelBuilder.Entity("api.Models.FilmGenre", b =>
+                {
+                    b.HasOne("api.Models.Film", "Film")
+                        .WithMany("FilmGenres")
+                        .HasForeignKey("FilmId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("api.Models.Genre", "Genre")
+                        .WithMany("FilmGenres")
+                        .HasForeignKey("GenreId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Film");
+
+                    b.Navigation("Genre");
+                });
+
             modelBuilder.Entity("api.Models.Rating", b =>
                 {
                     b.HasOne("api.Models.Film", "Film")
@@ -490,9 +524,16 @@ namespace api.Migrations
                 {
                     b.Navigation("FilmActors");
 
+                    b.Navigation("FilmGenres");
+
                     b.Navigation("Ratings");
 
                     b.Navigation("UserFilms");
+                });
+
+            modelBuilder.Entity("api.Models.Genre", b =>
+                {
+                    b.Navigation("FilmGenres");
                 });
 
             modelBuilder.Entity("api.Models.User", b =>

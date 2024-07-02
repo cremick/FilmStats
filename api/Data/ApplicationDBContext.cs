@@ -24,30 +24,41 @@ namespace api.Data
         public DbSet<Theme> Themes { get; set; }
         public DbSet<UserFilm> UserFilms { get; set; }
         public DbSet<FilmActor> FilmActors { get; set; }
+        public DbSet<FilmGenre> FilmGenres { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
-            builder.Entity<UserFilm>(x => x.HasKey(p => new { p.UserId, p.FilmId}));
+            builder.Entity<UserFilm>(x => x.HasKey(uf => new { uf.UserId, uf.FilmId}));
             builder.Entity<UserFilm>()
-                .HasOne(u => u.User)
+                .HasOne(uf => uf.User)
                 .WithMany(u => u.UserFilms)
-                .HasForeignKey(p => p.UserId);
+                .HasForeignKey(uf => uf.UserId);
             builder.Entity<UserFilm>()
-                .HasOne(u => u.Film)
-                .WithMany(u => u.UserFilms)
-                .HasForeignKey(p => p.FilmId);
+                .HasOne(uf => uf.Film)
+                .WithMany(f => f.UserFilms)
+                .HasForeignKey(uf => uf.FilmId);
 
             builder.Entity<FilmActor>(x => x.HasKey(fa => new { fa.FilmId, fa.ActorId}));
             builder.Entity<FilmActor>()
-                .HasOne(f => f.Film)
+                .HasOne(fa => fa.Film)
                 .WithMany(f => f.FilmActors)
-                .HasForeignKey(f => f.FilmId);
+                .HasForeignKey(fa => fa.FilmId);
             builder.Entity<FilmActor>()
-                .HasOne(f => f.Actor)
-                .WithMany(f => f.FilmActors)
-                .HasForeignKey(f => f.ActorId);
+                .HasOne(fa => fa.Actor)
+                .WithMany(a => a.FilmActors)
+                .HasForeignKey(fa => fa.ActorId);
+
+            builder.Entity<FilmGenre>(x => x.HasKey(fg => new { fg.FilmId, fg.GenreId}));
+            builder.Entity<FilmGenre>()
+                .HasOne(fg => fg.Film)
+                .WithMany(f => f.FilmGenres)
+                .HasForeignKey(fg => fg.FilmId);
+            builder.Entity<FilmGenre>()
+                .HasOne(fg => fg.Genre)
+                .WithMany(g => g.FilmGenres)
+                .HasForeignKey(fg => fg.GenreId);
 
             List<IdentityRole> roles = new List<IdentityRole>
             {

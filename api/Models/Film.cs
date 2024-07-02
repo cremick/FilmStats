@@ -18,5 +18,6 @@ namespace api.Models
         public List<Rating> Ratings { get; set; } = new List<Rating>();
         public List<UserFilm> UserFilms { get; set; } = new List<UserFilm>();
         public List<FilmActor> FilmActors { get; set; } = new List<FilmActor>();
+        public List<FilmGenre> FilmGenres { get; set; } = new List<FilmGenre>();
     }
 }
