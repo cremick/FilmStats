@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Data;
+using api.Dtos.Film;
 using api.Helpers;
 using api.Interfaces;
+using api.Mappers;
 using api.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -34,6 +36,12 @@ namespace api.Repository
             // TODO: Add pagnation logic
 
             return await films.ToListAsync();
+        }
+
+        public async Task<List<FilmDto>> GetUserFilms(User user)
+        {
+            return await _context.UserFilms.Where(u => u.UserId == user.Id)
+            .Select(film => film.Film.ToFilmDto()).ToListAsync();
         }
     }
 }

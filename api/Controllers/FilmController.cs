@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Data;
+using api.Extensions;
 using api.Helpers;
 using api.Interfaces;
 using api.Mappers;
+using api.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Client;
 
 namespace api.Controllers
 {
@@ -15,9 +19,11 @@ namespace api.Controllers
     [ApiController]
     public class FilmController : ControllerBase
     {
+        private readonly UserManager<User> _userManager;
         private readonly IFilmRepository _filmRepo;
-        public FilmController(IFilmRepository filmRepo)
+        public FilmController(IFilmRepository filmRepo, UserManager<User> userManager)
         {
+            _userManager = userManager;
             _filmRepo = filmRepo;
         }
 
@@ -33,6 +39,16 @@ namespace api.Controllers
             var filmDto = films.Select(f => f.ToFilmDto()).ToList();
 
             return Ok(filmDto);
+        }
+
+        [HttpGet("watched")]
+        [Authorize]
+        public async Task<IActionResult> GetUserFilms()
+        {
+            var username = User.GetUsername();
+            var user = await _userManager.FindByNameAsync(username);
+            var userFilms = await _filmRepo.GetUserFilms(user);
+            return Ok(userFilms);
         }
     }
 }
