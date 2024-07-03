@@ -15,7 +15,9 @@ namespace api.Mappers
             {
                 Id = personModel.Id,
                 FirstName = personModel.FirstName,
-                LastName = personModel.LastName
+                LastName = personModel.LastName,
+                Gender = personModel.Gender,
+                BirthDate = personModel.BirthDate
             };
         }
 
@@ -24,7 +26,9 @@ namespace api.Mappers
             return new Person
             {
                 FirstName = personDto.FirstName,
-                LastName = personDto.LastName
+                LastName = personDto.LastName,
+                Gender = personDto.Gender,
+                BirthDate = personDto.BirthDate
             };
         }
     }
