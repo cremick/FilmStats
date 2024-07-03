@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace api.Dtos.Actor
+namespace api.Dtos.Person
 {
-    public class ActorDto
+    public class PersonDto
     {
         public int Id { get; set; }
         public string FirstName { get; set; } = string.Empty;

@@ -8,25 +8,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace api.Migrations
 {
     /// <inheritdoc />
-    public partial class FilmThemeManyToMany : Migration
+    public partial class FilmDirectorsManyToMany : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "Actors",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Actors", x => x.Id);
-                });
-
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
@@ -93,6 +79,20 @@ namespace api.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Genres", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "People",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_People", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -215,30 +215,6 @@ namespace api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "FilmActors",
-                columns: table => new
-                {
-                    FilmId = table.Column<int>(type: "int", nullable: false),
-                    ActorId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_FilmActors", x => new { x.FilmId, x.ActorId });
-                    table.ForeignKey(
-                        name: "FK_FilmActors_Actors_ActorId",
-                        column: x => x.ActorId,
-                        principalTable: "Actors",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_FilmActors_Films_FilmId",
-                        column: x => x.FilmId,
-                        principalTable: "Films",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Ratings",
                 columns: table => new
                 {
@@ -314,6 +290,54 @@ namespace api.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "FilmActors",
+                columns: table => new
+                {
+                    FilmId = table.Column<int>(type: "int", nullable: false),
+                    ActorId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FilmActors", x => new { x.FilmId, x.ActorId });
+                    table.ForeignKey(
+                        name: "FK_FilmActors_Films_FilmId",
+                        column: x => x.FilmId,
+                        principalTable: "Films",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_FilmActors_People_ActorId",
+                        column: x => x.ActorId,
+                        principalTable: "People",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "FilmDirectors",
+                columns: table => new
+                {
+                    FilmId = table.Column<int>(type: "int", nullable: false),
+                    DirectorId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FilmDirectors", x => new { x.FilmId, x.DirectorId });
+                    table.ForeignKey(
+                        name: "FK_FilmDirectors_Films_FilmId",
+                        column: x => x.FilmId,
+                        principalTable: "Films",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_FilmDirectors_People_DirectorId",
+                        column: x => x.DirectorId,
+                        principalTable: "People",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "FilmThemes",
                 columns: table => new
                 {
@@ -342,8 +366,8 @@ namespace api.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "4816105e-8452-4c52-bc1c-5d1ab0172c39", null, "Admin", "ADMIN" },
-                    { "9c83b8d6-17d3-4ec4-9a33-12c6a4650821", null, "User", "USER" }
+                    { "4896ad52-612a-452f-8879-70f37faa5184", null, "Admin", "ADMIN" },
+                    { "99d4a198-01d5-4edc-b0bf-3380eafac433", null, "User", "USER" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -389,6 +413,11 @@ namespace api.Migrations
                 name: "IX_FilmActors_ActorId",
                 table: "FilmActors",
                 column: "ActorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FilmDirectors_DirectorId",
+                table: "FilmDirectors",
+                column: "DirectorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_FilmGenres_GenreId",
@@ -438,6 +467,9 @@ namespace api.Migrations
                 name: "FilmActors");
 
             migrationBuilder.DropTable(
+                name: "FilmDirectors");
+
+            migrationBuilder.DropTable(
                 name: "FilmGenres");
 
             migrationBuilder.DropTable(
@@ -453,7 +485,7 @@ namespace api.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Actors");
+                name: "People");
 
             migrationBuilder.DropTable(
                 name: "Genres");

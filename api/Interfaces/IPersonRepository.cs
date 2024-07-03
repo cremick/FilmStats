@@ -7,9 +7,8 @@ using api.Models;
 
 namespace api.Interfaces
 {
-    public interface IActorRepository
+    public interface IPersonRepository
     {
-        Task<List<Actor>> GetAllAsync(ActorQueryObject query);
-        Task<List<Film>> GetFilmsByActor(int actorId);
+        Task<List<Person>> GetAllAsync(PersonQueryObject query);
     }
 }

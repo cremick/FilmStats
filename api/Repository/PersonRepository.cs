@@ -10,41 +10,35 @@ using Microsoft.EntityFrameworkCore;
 
 namespace api.Repository
 {
-    public class ActorRepository : IActorRepository
+    public class PersonRepository : IPersonRepository
     {
         private readonly ApplicationDBContext _context;
-        public ActorRepository(ApplicationDBContext context)
+        public PersonRepository(ApplicationDBContext context)
         {
             _context = context;
         }
-
-        public async Task<List<Actor>> GetAllAsync(ActorQueryObject query)
+        public async Task<List<Person>> GetAllAsync(PersonQueryObject query)
         {
-            // Get all Actors from the table, and make a queryable object
-            var actors = _context.Actors.AsQueryable();
+            // Get all people from the table, and make a queryable object
+            var people = _context.People.AsQueryable();
 
             // Filter by FirstName if it is present in query object
             if (!string.IsNullOrWhiteSpace(query.FirstName))
             {
-                actors = actors.Where(f => f.FirstName.Contains(query.FirstName));
+                people = people.Where(f => f.FirstName.Contains(query.FirstName));
             }
 
             // Filter by FirstName if it is present in query object
             if (!string.IsNullOrWhiteSpace(query.LastName))
             {
-                actors = actors.Where(f => f.LastName.Contains(query.LastName));
+                people = people.Where(f => f.LastName.Contains(query.LastName));
             }
 
             // TODO: Add more filtering / sorting options
 
             // TODO: Add pagnation logic
 
-            return await actors.ToListAsync();
-        }
-
-        public Task<List<Film>> GetFilmsByActor(int actorId)
-        {
-            throw new NotImplementedException();
+            return await people.ToListAsync();
         }
     }
 }

@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace api.Models
 {
-    public class FilmActor
+    public class FilmDirector
     {
         public int FilmId { get; set; }
-        public int ActorId { get; set; }
+        public int DirectorId { get; set; }
         public Film? Film { get; set; }
-        public Person? Actor { get; set; }
+        public Person? Director { get; set; }
     }
 }

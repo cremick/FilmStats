@@ -51,13 +51,13 @@ namespace api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "4816105e-8452-4c52-bc1c-5d1ab0172c39",
+                            Id = "4896ad52-612a-452f-8879-70f37faa5184",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "9c83b8d6-17d3-4ec4-9a33-12c6a4650821",
+                            Id = "99d4a198-01d5-4edc-b0bf-3380eafac433",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -169,27 +169,6 @@ namespace api.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("api.Models.Actor", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Actors");
-                });
-
             modelBuilder.Entity("api.Models.Film", b =>
                 {
                     b.Property<int>("Id")
@@ -230,6 +209,21 @@ namespace api.Migrations
                     b.HasIndex("ActorId");
 
                     b.ToTable("FilmActors");
+                });
+
+            modelBuilder.Entity("api.Models.FilmDirector", b =>
+                {
+                    b.Property<int>("FilmId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DirectorId")
+                        .HasColumnType("int");
+
+                    b.HasKey("FilmId", "DirectorId");
+
+                    b.HasIndex("DirectorId");
+
+                    b.ToTable("FilmDirectors");
                 });
 
             modelBuilder.Entity("api.Models.FilmGenre", b =>
@@ -277,6 +271,27 @@ namespace api.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Genres");
+                });
+
+            modelBuilder.Entity("api.Models.Person", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("People");
                 });
 
             modelBuilder.Entity("api.Models.Rating", b =>
@@ -456,7 +471,7 @@ namespace api.Migrations
 
             modelBuilder.Entity("api.Models.FilmActor", b =>
                 {
-                    b.HasOne("api.Models.Actor", "Actor")
+                    b.HasOne("api.Models.Person", "Actor")
                         .WithMany("FilmActors")
                         .HasForeignKey("ActorId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -469,6 +484,25 @@ namespace api.Migrations
                         .IsRequired();
 
                     b.Navigation("Actor");
+
+                    b.Navigation("Film");
+                });
+
+            modelBuilder.Entity("api.Models.FilmDirector", b =>
+                {
+                    b.HasOne("api.Models.Person", "Director")
+                        .WithMany("FilmDirectors")
+                        .HasForeignKey("DirectorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("api.Models.Film", "Film")
+                        .WithMany("FilmDirectors")
+                        .HasForeignKey("FilmId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Director");
 
                     b.Navigation("Film");
                 });
@@ -549,14 +583,11 @@ namespace api.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("api.Models.Actor", b =>
-                {
-                    b.Navigation("FilmActors");
-                });
-
             modelBuilder.Entity("api.Models.Film", b =>
                 {
                     b.Navigation("FilmActors");
+
+                    b.Navigation("FilmDirectors");
 
                     b.Navigation("FilmGenres");
 
@@ -570,6 +601,13 @@ namespace api.Migrations
             modelBuilder.Entity("api.Models.Genre", b =>
                 {
                     b.Navigation("FilmGenres");
+                });
+
+            modelBuilder.Entity("api.Models.Person", b =>
+                {
+                    b.Navigation("FilmActors");
+
+                    b.Navigation("FilmDirectors");
                 });
 
             modelBuilder.Entity("api.Models.Theme", b =>
