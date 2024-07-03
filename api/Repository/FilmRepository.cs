@@ -46,17 +46,38 @@ namespace api.Repository
             // Get all films from the table, and make a queryable object
             var films = _context.Films.AsQueryable();
 
-            // Filter by Title if it is present in query object
+            // Filtering
             if (!string.IsNullOrWhiteSpace(query.Title))
             {
                 films = films.Where(f => f.Title.Contains(query.Title));
             }
 
-            // TODO: Add more filtering / sorting options
+            // Sorting
+            if (!string.IsNullOrWhiteSpace(query.SortBy))
+            {
+                if (query.SortBy.Equals("Title", StringComparison.OrdinalIgnoreCase))
+                {
+                    films = query.IsDescending ? films.OrderByDescending(f => f.Title) : films.OrderBy(f => f.Title);
+                }
+                else if (query.SortBy.Equals("ReleaseYear", StringComparison.OrdinalIgnoreCase))
+                {
+                    films = query.IsDescending ? films.OrderByDescending(f => f.ReleaseYear) : films.OrderBy(f => f.ReleaseYear);
+                }
+                else if (query.SortBy.Equals("AvgRating", StringComparison.OrdinalIgnoreCase))
+                {
+                    films = query.IsDescending ? films.OrderByDescending(f => f.AvgRating) : films.OrderBy(f => f.AvgRating);
+                }
+                else if (query.SortBy.Equals("RunTime", StringComparison.OrdinalIgnoreCase))
+                {
+                    films = query.IsDescending ? films.OrderByDescending(f => f.RunTime) : films.OrderBy(f => f.RunTime);
+                }
+            }
 
-            // TODO: Add pagnation logic
+            // TODO: Add more filtering options
 
-            return await films.ToListAsync();
+            var skipNumber = (query.PageNumber - 1) * query.PageSize;
+
+            return await films.Skip(skipNumber).Take(query.PageSize).ToListAsync();
         }
 
         public async Task<Film?> GetByIdAsync(int id)
