@@ -81,5 +81,22 @@ namespace api.Controllers
 
             return Ok(personModel.ToPersonDto());
         }
+
+        [HttpDelete]
+        [Route("{id:int}")]
+        public async Task<IActionResult> Delete([FromRoute] int id)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var personModel = await _personRepo.DeleteAsync(id);
+
+            if (personModel == null)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
     }
 }

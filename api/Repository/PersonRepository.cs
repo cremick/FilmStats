@@ -26,6 +26,20 @@ namespace api.Repository
             return personModel;
         }
 
+        public async Task<Person?> DeleteAsync(int id)
+        {
+            var personModel = await _context.People.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (personModel == null)
+            {
+                return null;
+            }
+
+            _context.People.Remove(personModel);
+            await _context.SaveChangesAsync();
+            return personModel;
+        }
+
         public async Task<List<Person>> GetAllAsync(PersonQueryObject query)
         {
             // Get all people from the table, and make a queryable object

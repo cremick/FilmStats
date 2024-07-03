@@ -16,5 +16,6 @@ namespace api.Interfaces
 
         Task<Person> CreateAsync(Person personModel);
         Task<Person?> UpdateAsync(int id, UpdatePersonDto personDto);
+        Task<Person?> DeleteAsync(int id);
     }
 }
