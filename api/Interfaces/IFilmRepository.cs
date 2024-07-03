@@ -11,6 +11,7 @@ namespace api.Interfaces
     public interface IFilmRepository
     {
         Task<List<Film>> GetAllAsync(FilmQueryObject query);
-        Task<List<FilmDto>> GetUserFilms(User user);
+        Task<Film?> GetByIdAsync(int id);
+        Task<List<FilmDto>> GetUserFilmsAsync(User user);
     }
 }

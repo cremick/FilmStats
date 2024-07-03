@@ -16,7 +16,8 @@ namespace api.Mappers
                 Id = filmModel.Id,
                 Title = filmModel.Title,
                 ReleaseYear = filmModel.ReleaseYear,
-                AvgRating = filmModel.AvgRating
+                AvgRating = filmModel.AvgRating,
+                RunTime = filmModel.RunTime
             };
         }
     }

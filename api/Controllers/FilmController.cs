@@ -41,13 +41,29 @@ namespace api.Controllers
             return Ok(filmDto);
         }
 
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetById([FromRoute] int id)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var film = await _filmRepo.GetByIdAsync(id);
+
+            if (film == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(film.ToFilmDto());
+        }
+
         [HttpGet("watched")]
         [Authorize]
         public async Task<IActionResult> GetUserFilms()
         {
             var username = User.GetUsername();
             var user = await _userManager.FindByNameAsync(username);
-            var userFilms = await _filmRepo.GetUserFilms(user);
+            var userFilms = await _filmRepo.GetUserFilmsAsync(user);
             return Ok(userFilms);
         }
     }

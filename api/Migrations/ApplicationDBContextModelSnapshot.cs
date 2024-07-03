@@ -51,13 +51,13 @@ namespace api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "4896ad52-612a-452f-8879-70f37faa5184",
+                            Id = "1cbe942f-12af-4742-a486-39860e2bd037",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "99d4a198-01d5-4edc-b0bf-3380eafac433",
+                            Id = "d93807a2-0b9a-4925-b940-ab19ee3b7178",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -180,12 +180,19 @@ namespace api.Migrations
                     b.Property<double>("AvgRating")
                         .HasColumnType("float");
 
-                    b.Property<string>("Director")
+                    b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ReleaseYear")
                         .HasColumnType("int");
+
+                    b.Property<int>("RunTime")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Tagline")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
                         .IsRequired()

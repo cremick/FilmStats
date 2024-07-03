@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace api.Migrations
 {
     /// <inheritdoc />
-    public partial class FilmDirectorsManyToMany : Migration
+    public partial class AddNewColumnsToFilms : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -60,8 +60,10 @@ namespace api.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ReleaseYear = table.Column<int>(type: "int", nullable: false),
-                    Director = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AvgRating = table.Column<double>(type: "float", nullable: false)
+                    AvgRating = table.Column<double>(type: "float", nullable: false),
+                    Tagline = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RunTime = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -366,8 +368,8 @@ namespace api.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "4896ad52-612a-452f-8879-70f37faa5184", null, "Admin", "ADMIN" },
-                    { "99d4a198-01d5-4edc-b0bf-3380eafac433", null, "User", "USER" }
+                    { "1cbe942f-12af-4742-a486-39860e2bd037", null, "Admin", "ADMIN" },
+                    { "d93807a2-0b9a-4925-b940-ab19ee3b7178", null, "User", "USER" }
                 });
 
             migrationBuilder.CreateIndex(

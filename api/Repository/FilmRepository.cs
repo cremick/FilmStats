@@ -38,7 +38,12 @@ namespace api.Repository
             return await films.ToListAsync();
         }
 
-        public async Task<List<FilmDto>> GetUserFilms(User user)
+        public async Task<Film?> GetByIdAsync(int id)
+        {
+            return await _context.Films.FirstOrDefaultAsync(i => i.Id == id);
+        }
+
+        public async Task<List<FilmDto>> GetUserFilmsAsync(User user)
         {
             return await _context.UserFilms.Where(u => u.UserId == user.Id)
             .Select(film => film.Film.ToFilmDto()).ToListAsync();
