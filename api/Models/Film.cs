@@ -12,8 +12,10 @@ namespace api.Models
         public int Id { get; set; }
         public string Title { get; set; } = string.Empty;
         public int ReleaseYear { get; set; }
-        public string Director { get; set; } = string.Empty;
         public double AvgRating { get; set; }
+        public string Tagline { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public int RunTime { get; set; }
 
         public List<Rating> Ratings { get; set; } = new List<Rating>();
         public List<UserFilm> UserFilms { get; set; } = new List<UserFilm>();
