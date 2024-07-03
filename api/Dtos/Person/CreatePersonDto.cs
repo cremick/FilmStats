@@ -14,6 +14,6 @@ namespace api.Dtos.Person
         public string LastName { get; set; } = string.Empty;
         [Required]
         public string Gender { get; set; } = string.Empty;
-        public DateTime BirthDate { get; set; }
+        public DateOnly BirthDate { get; set; }
     }
 }
