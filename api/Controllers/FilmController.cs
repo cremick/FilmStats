@@ -61,7 +61,7 @@ namespace api.Controllers
 
         [HttpGet("watched")]
         [Authorize]
-        public async Task<IActionResult> GetUserFilms()
+        public async Task<IActionResult> GetUserFilms([FromQuery] FilmQueryObject query)
         {
             var username = User.GetUsername();
             var user = await _userManager.FindByNameAsync(username);
@@ -71,7 +71,7 @@ namespace api.Controllers
                 return NotFound();
             }
 
-            var userFilms = await _filmRepo.GetUserFilmsAsync(user);
+            var userFilms = await _filmRepo.GetUserFilmsAsync(user, query);
             return Ok(userFilms);
         }
 
