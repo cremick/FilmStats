@@ -17,6 +17,14 @@ namespace api.Repository
         {
             _context = context;
         }
+
+        public async Task<Person> CreateAsync(Person personModel)
+        {
+            await _context.People.AddAsync(personModel);
+            await _context.SaveChangesAsync();
+            return personModel;
+        }
+
         public async Task<List<Person>> GetAllAsync(PersonQueryObject query)
         {
             // Get all people from the table, and make a queryable object
@@ -39,6 +47,11 @@ namespace api.Repository
             // TODO: Add pagnation logic
 
             return await people.ToListAsync();
+        }
+
+        public async Task<Person?> GetByIdAsync(int id)
+        {
+            return await _context.People.FirstOrDefaultAsync(i => i.Id == id);
         }
     }
 }

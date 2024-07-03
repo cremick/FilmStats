@@ -18,5 +18,14 @@ namespace api.Mappers
                 LastName = personModel.LastName
             };
         }
+
+        public static Person ToPersonFromCreateDto(this CreatePersonDto personDto)
+        {
+            return new Person
+            {
+                FirstName = personDto.FirstName,
+                LastName = personDto.LastName
+            };
+        }
     }
 }

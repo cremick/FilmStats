@@ -85,7 +85,7 @@ namespace api.Controllers
 
             await _filmRepo.CreateAsync(filmModel);
 
-            return CreatedAtAction(nameof(GetById), new { id = filmModel.Id}, filmModel.ToFilmDto());
+            return CreatedAtAction(nameof(GetById), new { id = filmModel.Id }, filmModel.ToFilmDto());
         }
 
         [HttpPut]

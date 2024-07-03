@@ -10,5 +10,8 @@ namespace api.Interfaces
     public interface IPersonRepository
     {
         Task<List<Person>> GetAllAsync(PersonQueryObject query);
+        Task<Person?> GetByIdAsync(int id);
+
+        Task<Person> CreateAsync(Person personModel);
     }
 }

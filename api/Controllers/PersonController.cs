@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using api.Dtos.Person;
 using api.Helpers;
 using api.Interfaces;
 using api.Mappers;
@@ -33,6 +34,35 @@ namespace api.Controllers
             var personDto = people.Select(a => a.ToPersonDto()).ToList();
 
             return Ok(personDto);
+        }
+
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetById([FromRoute] int id)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var person = await _personRepo.GetByIdAsync(id);
+
+            if (person == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(person.ToPersonDto());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] CreatePersonDto personDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var personModel = personDto.ToPersonFromCreateDto();
+
+            await _personRepo.CreateAsync(personModel);
+
+            return CreatedAtAction(nameof(GetById), new { id = personModel.Id }, personModel.ToPersonDto());
         }
     }
 }
