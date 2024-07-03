@@ -9,6 +9,8 @@ using api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
+// TODO: ADD AUTHORIZE TO ENDPOINTS
+
 namespace api.Controllers
 {
     [Route("api/genre")]
@@ -22,7 +24,6 @@ namespace api.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         public async Task<IActionResult> GetAll([FromQuery] GenreQueryObject query)
         {
             if (!ModelState.IsValid)

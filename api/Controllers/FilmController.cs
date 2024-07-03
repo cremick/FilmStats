@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Data;
+using api.Dtos.Film;
 using api.Extensions;
 using api.Helpers;
 using api.Interfaces;
@@ -12,6 +13,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client;
+
+// TODO: ADD AUTHORIZE TO ENDPOINTS
 
 namespace api.Controllers
 {
@@ -28,7 +31,6 @@ namespace api.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         public async Task<IActionResult> GetAll([FromQuery] FilmQueryObject query)
         {
             if (!ModelState.IsValid)
@@ -57,8 +59,20 @@ namespace api.Controllers
             return Ok(film.ToFilmDto());
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] CreateFilmDto filmDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var filmModel = filmDto.ToFilmFromCreateDto();
+
+            await _filmRepo.CreateAsync(filmModel);
+
+            return CreatedAtAction(nameof(GetById), new { id = filmModel.Id}, filmModel.ToFilmDto());
+        }
+
         [HttpGet("watched")]
-        [Authorize]
         public async Task<IActionResult> GetUserFilms()
         {
             var username = User.GetUsername();

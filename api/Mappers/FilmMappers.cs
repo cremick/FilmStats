@@ -17,7 +17,22 @@ namespace api.Mappers
                 Title = filmModel.Title,
                 ReleaseYear = filmModel.ReleaseYear,
                 AvgRating = filmModel.AvgRating,
-                RunTime = filmModel.RunTime
+                RunTime = filmModel.RunTime,
+                Tagline = filmModel.Tagline,
+                Description = filmModel.Description,
+            };
+        }
+
+        public static Film ToFilmFromCreateDto(this CreateFilmDto filmDto)
+        {
+            return new Film
+            {
+                Title = filmDto.Title,
+                ReleaseYear = filmDto.ReleaseYear,
+                AvgRating = filmDto.AvgRating,
+                RunTime = filmDto.RunTime,
+                Tagline = filmDto.Tagline,
+                Description = filmDto.Description
             };
         }
     }

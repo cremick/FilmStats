@@ -13,5 +13,7 @@ namespace api.Interfaces
         Task<List<Film>> GetAllAsync(FilmQueryObject query);
         Task<Film?> GetByIdAsync(int id);
         Task<List<FilmDto>> GetUserFilmsAsync(User user);
+
+        Task<Film> CreateAsync(Film filmModel);
     }
 }

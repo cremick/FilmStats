@@ -8,6 +8,8 @@ using api.Mappers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
+// TODO: ADD AUTHORIZE TO ENDPOINTS
+
 namespace api.Controllers
 {
     [Route("api/theme")]
@@ -21,7 +23,6 @@ namespace api.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         public async Task<IActionResult> GetAll([FromQuery] ThemeQueryObject query)
         {
             if (!ModelState.IsValid)

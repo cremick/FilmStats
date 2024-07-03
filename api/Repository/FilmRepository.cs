@@ -20,6 +20,13 @@ namespace api.Repository
             _context = context;
         }
 
+        public async Task<Film> CreateAsync(Film filmModel)
+        {
+            await _context.Films.AddAsync(filmModel);
+            await _context.SaveChangesAsync();
+            return filmModel;
+        }
+
         public async Task<List<Film>> GetAllAsync(FilmQueryObject query)
         {
             // Get all films from the table, and make a queryable object
