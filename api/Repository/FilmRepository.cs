@@ -55,5 +55,26 @@ namespace api.Repository
             return await _context.UserFilms.Where(u => u.UserId == user.Id)
             .Select(film => film.Film.ToFilmDto()).ToListAsync();
         }
+
+        public async Task<Film?> UpdateAsync(int id, UpdateFilmDto filmDto)
+        {
+            var existingFilm = await _context.Films.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (existingFilm == null)
+            {
+                return null;
+            }
+
+            existingFilm.Title = filmDto.Title;
+            existingFilm.ReleaseYear = filmDto.ReleaseYear;
+            existingFilm.AvgRating = filmDto.AvgRating;
+            existingFilm.Tagline = filmDto.Tagline;
+            existingFilm.Description = filmDto.Description;
+            existingFilm.RunTime = filmDto.RunTime;
+
+            await _context.SaveChangesAsync();
+
+            return existingFilm;
+        }
     }
 }

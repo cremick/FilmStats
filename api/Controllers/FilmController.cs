@@ -59,6 +59,15 @@ namespace api.Controllers
             return Ok(film.ToFilmDto());
         }
 
+        [HttpGet("watched")]
+        public async Task<IActionResult> GetUserFilms()
+        {
+            var username = User.GetUsername();
+            var user = await _userManager.FindByNameAsync(username);
+            var userFilms = await _filmRepo.GetUserFilmsAsync(user);
+            return Ok(userFilms);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateFilmDto filmDto)
         {
@@ -72,13 +81,21 @@ namespace api.Controllers
             return CreatedAtAction(nameof(GetById), new { id = filmModel.Id}, filmModel.ToFilmDto());
         }
 
-        [HttpGet("watched")]
-        public async Task<IActionResult> GetUserFilms()
+        [HttpPut]
+        [Route("{id:int}")]
+        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateFilmDto updateDto)
         {
-            var username = User.GetUsername();
-            var user = await _userManager.FindByNameAsync(username);
-            var userFilms = await _filmRepo.GetUserFilmsAsync(user);
-            return Ok(userFilms);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var filmModel = await _filmRepo.UpdateAsync(id, updateDto);
+
+            if (filmModel == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(filmModel.ToFilmDto());
         }
     }
 }
