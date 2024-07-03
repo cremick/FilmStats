@@ -27,6 +27,20 @@ namespace api.Repository
             return filmModel;
         }
 
+        public async Task<Film?> DeleteAsync(int id)
+        {
+            var filmModel = await _context.Films.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (filmModel == null)
+            {
+                return null;
+            }
+
+            _context.Films.Remove(filmModel);
+            await _context.SaveChangesAsync();
+            return filmModel;
+        }
+
         public async Task<List<Film>> GetAllAsync(FilmQueryObject query)
         {
             // Get all films from the table, and make a queryable object

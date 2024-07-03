@@ -18,7 +18,7 @@ using Microsoft.Identity.Client;
 
 namespace api.Controllers
 {
-    [Route("api/film")]
+    [Route("api/films")]
     [ApiController]
     public class FilmController : ControllerBase
     {
@@ -60,10 +60,17 @@ namespace api.Controllers
         }
 
         [HttpGet("watched")]
+        [Authorize]
         public async Task<IActionResult> GetUserFilms()
         {
             var username = User.GetUsername();
             var user = await _userManager.FindByNameAsync(username);
+            
+            if (user == null)
+            {
+                return NotFound();
+            }
+
             var userFilms = await _filmRepo.GetUserFilmsAsync(user);
             return Ok(userFilms);
         }
@@ -96,6 +103,23 @@ namespace api.Controllers
             }
 
             return Ok(filmModel.ToFilmDto());
+        }
+
+        [HttpDelete]
+        [Route("{id:int}")]
+        public async Task<IActionResult> Delete([FromRoute] int id)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var filmModel = await _filmRepo.DeleteAsync(id);
+
+            if (filmModel == null)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
         }
     }
 }
