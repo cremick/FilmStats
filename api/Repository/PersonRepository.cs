@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Data;
+using api.Dtos.Person;
 using api.Helpers;
 using api.Interfaces;
 using api.Models;
@@ -52,6 +53,25 @@ namespace api.Repository
         public async Task<Person?> GetByIdAsync(int id)
         {
             return await _context.People.FirstOrDefaultAsync(i => i.Id == id);
+        }
+
+        public async Task<Person?> UpdateAsync(int id, UpdatePersonDto personDto)
+        {
+            var existingPerson = await _context.People.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (existingPerson == null)
+            {
+                return null;
+            }
+
+            existingPerson.FirstName = personDto.FirstName;
+            existingPerson.LastName = personDto.LastName;
+            existingPerson.Gender = personDto.Gender;
+            existingPerson.BirthDate = personDto.BirthDate;
+
+            await _context.SaveChangesAsync();
+
+            return existingPerson;
         }
     }
 }

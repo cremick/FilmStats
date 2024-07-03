@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace api.Dtos.Person
 {
-    public class CreatePersonDto
+    public class UpdatePersonDto
     {
         [Required]
         public string FirstName { get; set; } = string.Empty;

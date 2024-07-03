@@ -64,5 +64,22 @@ namespace api.Controllers
 
             return CreatedAtAction(nameof(GetById), new { id = personModel.Id }, personModel.ToPersonDto());
         }
+
+        [HttpPut]
+        [Route("{id:int}")]
+        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdatePersonDto updateDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var personModel = await _personRepo.UpdateAsync(id, updateDto);
+
+            if (personModel == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(personModel.ToPersonDto());
+        }
     }
 }
