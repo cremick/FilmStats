@@ -81,5 +81,22 @@ namespace api.Controllers
 
             return Ok(themeModel.ToThemeDto());
         }
+
+        [HttpDelete]
+        [Route("{id:int}")]
+        public async Task<IActionResult> Delete([FromRoute] int id)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var themeModel = await _themeRepo.DeleteAsync(id);
+
+            if (themeModel == null)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
     }
 }

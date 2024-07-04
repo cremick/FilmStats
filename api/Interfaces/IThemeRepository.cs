@@ -14,5 +14,6 @@ namespace api.Interfaces
         Task<Theme?> GetByIdAsync(int id);
         Task<Theme> CreateAsync(Theme themeModel);
         Task<Theme?> UpdateAsync(int id, UpdateThemeDto themeDto);
+        Task<Theme?> DeleteAsync(int id);
     }
 }
