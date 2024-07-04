@@ -23,17 +23,29 @@ namespace api.Repository
             // Get all themes from the table, and make a queryable object
             var themes = _context.Themes.AsQueryable();
 
-            // Filter by Title if it is present in query object
+            // Filtering
             if (!string.IsNullOrWhiteSpace(query.Title))
             {
                 themes = themes.Where(f => f.Title.Contains(query.Title));
             }
 
-            // TODO: Add more filtering / sorting options
+            // Sorting
+            if (!string.IsNullOrWhiteSpace(query.SortBy))
+            {
+                if (query.SortBy.Equals("Title", StringComparison.OrdinalIgnoreCase))
+                {
+                    themes = query.IsDescending ? themes.OrderByDescending(t => t.Title) : themes.OrderBy(t => t.Title);
+                }
+            }
 
             // TODO: Add pagnation logic
 
             return await themes.ToListAsync();
+        }
+
+        public async Task<Theme?> GetByIdAsync(int id)
+        {
+            return await _context.Themes.FirstOrDefaultAsync(i => i.Id == id);
         }
     }
 }

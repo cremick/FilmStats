@@ -34,5 +34,21 @@ namespace api.Controllers
 
             return Ok(themeDto);
         }
+
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetById([FromRoute] int id)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var theme = await _themeRepo.GetByIdAsync(id);
+
+            if (theme == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(theme.ToThemeDto());
+        }
     }
 }

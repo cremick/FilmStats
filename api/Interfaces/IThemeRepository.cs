@@ -10,5 +10,6 @@ namespace api.Interfaces
     public interface IThemeRepository
     {
         Task<List<Theme>> GetAllAsync(ThemeQueryObject query);
+        Task<Theme?> GetByIdAsync(int id);
     }
 }
