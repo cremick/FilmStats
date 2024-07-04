@@ -45,17 +45,24 @@ namespace api.Repository
             // Get all genres from the table, and make a queryable object
             var genres = _context.Genres.AsQueryable();
 
-            // Filter by Title if it is present in query object
+            // Filtering
             if (!string.IsNullOrWhiteSpace(query.Title))
             {
                 genres = genres.Where(f => f.Title.Contains(query.Title));
             }
 
-            // TODO: Add more filtering / sorting options
+            // Sorting
+            if (!string.IsNullOrWhiteSpace(query.SortBy))
+            {
+                if (query.SortBy.Equals("Title", StringComparison.OrdinalIgnoreCase))
+                {
+                    genres = query.IsDescending ? genres.OrderByDescending(g => g.Title) : genres.OrderBy(g => g.Title);
+                }
+            }
 
-            // TODO: Add pagnation logic
+            var skipNumber = (query.PageNumber - 1) * query.PageSize;
 
-            return await genres.ToListAsync();
+            return await genres.Skip(skipNumber).Take(query.PageSize).ToListAsync();
         }
 
         public async Task<Genre?> GetByIdAsync(int id)
