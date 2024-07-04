@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using api.Dtos.Theme;
 using api.Helpers;
 using api.Interfaces;
 using api.Mappers;
@@ -49,6 +50,19 @@ namespace api.Controllers
             }
 
             return Ok(theme.ToThemeDto());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] CreateThemeDto themeDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var themeModel = themeDto.ToThemeFromCreateDto();
+
+            await _themeRepo.CreateAsync(themeModel);
+
+            return CreatedAtAction(nameof(GetById), new { id = themeModel.Id }, themeModel.ToThemeDto());
         }
     }
 }

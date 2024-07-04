@@ -17,5 +17,13 @@ namespace api.Mappers
                 Title = themeModel.Title
             };
         }
+
+        public static Theme ToThemeFromCreateDto(this CreateThemeDto themeDto)
+        {
+            return new Theme
+            {
+                Title = themeDto.Title
+            };
+        }
     }
 }

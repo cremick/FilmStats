@@ -18,6 +18,13 @@ namespace api.Repository
             _context = context;
         }
 
+        public async Task<Theme> CreateAsync(Theme themeModel)
+        {
+            await _context.Themes.AddAsync(themeModel);
+            await _context.SaveChangesAsync();
+            return themeModel;
+        }
+
         public async Task<List<Theme>> GetAllAsync(ThemeQueryObject query)
         {
             // Get all themes from the table, and make a queryable object
