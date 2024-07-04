@@ -11,6 +11,6 @@ namespace api.Interfaces
     {
         Task<List<Film>> GetUserFilmsAsync(User user, FilmQueryObject query);
         Task<UserFilm> CreateAsync(UserFilm userFilm);
-        Task<UserFilm> DeleteAsync(User user, string title);
+        Task<UserFilm?> DeleteAsync(User user, string title);
     }
 }

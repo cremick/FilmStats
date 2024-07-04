@@ -87,5 +87,32 @@ namespace api.Controllers
                 return Created();
             }
         }
+
+        [HttpDelete]
+        [Authorize]
+        public async Task<IActionResult> Delete(string title)
+        {
+            var username = User.GetUsername();
+            var user = await _userManager.FindByNameAsync(username);
+
+            if (user == null)
+                return BadRequest("User not found");
+            
+            var emptyQuery = new FilmQueryObject();
+            var userFilms = await _userFilmRepo.GetUserFilmsAsync(user, emptyQuery);
+
+            var filteredFilms = userFilms.Where(f => f.Title.ToLower() == title.ToLower()).ToList();
+
+            if (filteredFilms.Count() == 1)
+            {
+                await _userFilmRepo.DeleteAsync(user, title);
+            }
+            else
+            {
+                return BadRequest("You have not watched this film");
+            }
+
+            return Ok();
+        }
     }
 }

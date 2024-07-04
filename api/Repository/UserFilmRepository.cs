@@ -25,9 +25,18 @@ namespace api.Repository
             return userFilm;
         }
 
-        public Task<UserFilm> DeleteAsync(User user, string title)
+        public async Task<UserFilm?> DeleteAsync(User user, string title)
         {
-            throw new NotImplementedException();
+            var userFilmModel = await _context.UserFilms.FirstOrDefaultAsync(x => x.UserId == user.Id && x.Film.Title.ToLower() == title.ToLower());
+
+            if (userFilmModel == null)
+            {
+                return null;
+            }
+
+            _context.UserFilms.Remove(userFilmModel);
+            await _context.SaveChangesAsync();
+            return userFilmModel;
         }
 
         public async Task<List<Film>> GetUserFilmsAsync(User user, FilmQueryObject query)
