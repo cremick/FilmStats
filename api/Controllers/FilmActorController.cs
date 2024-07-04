@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using api.Helpers;
 using api.Interfaces;
 using api.Mappers;
+using api.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers
@@ -23,7 +24,7 @@ namespace api.Controllers
             _filmActorRepo = filmActorRepo;
         }
 
-        [HttpGet("{actorId:int}")]
+        [HttpGet("{actorId:int}/films")]
         public async Task<IActionResult> GetActorFilms([FromRoute] int actorId, [FromQuery] FilmQueryObject query)
         {
             if (!ModelState.IsValid)
@@ -40,6 +41,44 @@ namespace api.Controllers
             var actorFilmDtos = actorFilms.Select(f => f.ToFilmDto()).ToList();
 
             return Ok(actorFilmDtos);
+        }
+
+        [HttpPost("{actorId:int}/films")]
+        public async Task<IActionResult> Create([FromRoute] int actorId, string title)
+        {
+            var actor = await _personRepo.GetByIdAsync(actorId);
+            var film = await _filmRepo.GetByTitleAsync(title);
+
+            if (film == null) 
+                return BadRequest("Film not found");
+
+            if (actor == null)
+                return BadRequest("Actor not found");
+
+            var emptyQuery = new FilmQueryObject();
+            var actorFilms = await _filmActorRepo.GetActorFilmographyAsync(actor, emptyQuery);
+
+            if (actorFilms.Any(f => f.Title.ToLower() == title.ToLower())) 
+                return BadRequest("Actor is already apart of this cast");
+
+            var filmActorModel = new FilmActor
+            {
+                FilmId = film.Id,
+                ActorId = actor.Id,
+                Film = film,
+                Actor = actor
+            };
+
+            var createdFilmActor = await _filmActorRepo.CreateAsync(filmActorModel);
+
+            if (createdFilmActor == null)
+            {
+                return StatusCode(500, "Could not create");
+            }
+            else
+            {
+                return Created();
+            }
         }
     }
 }
