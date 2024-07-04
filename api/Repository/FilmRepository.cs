@@ -83,6 +83,11 @@ namespace api.Repository
             return await _context.Films.FirstOrDefaultAsync(i => i.Id == id);
         }
 
+        public async Task<Film?> GetByTitleAsync(string title)
+        {
+            return await _context.Films.FirstOrDefaultAsync(f => f.Title == title);
+        }
+
         public async Task<Film?> UpdateAsync(int id, UpdateFilmDto filmDto)
         {
             var existingFilm = await _context.Films.FirstOrDefaultAsync(x => x.Id == id);

@@ -12,7 +12,7 @@ namespace api.Interfaces
     {
         Task<List<Film>> GetAllAsync(FilmQueryObject query);
         Task<Film?> GetByIdAsync(int id);
-
+        Task<Film?> GetByTitleAsync(string title);
         Task<Film> CreateAsync(Film filmModel);
         Task<Film?> UpdateAsync(int id, UpdateFilmDto filmDto);
         Task<Film?> DeleteAsync(int id);

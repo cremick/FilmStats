@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using api.Extensions;
 using api.Helpers;
 using api.Interfaces;
+using api.Mappers;
 using api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -30,6 +31,9 @@ namespace api.Controllers
         [Authorize]
         public async Task<IActionResult> GetUserFilms([FromQuery] FilmQueryObject query)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var username = User.GetUsername();
             var user = await _userManager.FindByNameAsync(username);
             
@@ -39,7 +43,49 @@ namespace api.Controllers
             }
 
             var userFilms = await _userFilmRepo.GetUserFilmsAsync(user, query);
-            return Ok(userFilms);
+            var userFilmDtos = userFilms.Select(uf => uf.ToFilmDto()).ToList();
+
+            return Ok(userFilmDtos);
+        }
+        
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> Create(string title)
+        {
+            var username = User.GetUsername();
+            var user = await _userManager.FindByNameAsync(username);
+            var film = await _filmRepo.GetByTitleAsync(title);
+
+            if (film == null) 
+                return BadRequest("Film not found");
+
+            if (user == null)
+                return BadRequest("User not found");
+
+            var emptyQuery = new FilmQueryObject();
+            var userFilms = await _userFilmRepo.GetUserFilmsAsync(user, emptyQuery);
+
+            if (userFilms.Any(f => f.Title.ToLower() == title.ToLower())) 
+                return BadRequest("Cannot add same film to user's films");
+
+            var userFilmModel = new UserFilm
+            {
+                FilmId = film.Id,
+                UserId = user.Id,
+                Film = film,
+                User = user
+            };
+
+            var createdUserFilm = await _userFilmRepo.CreateAsync(userFilmModel);
+
+            if (createdUserFilm == null)
+            {
+                return StatusCode(500, "Could not create");
+            }
+            else
+            {
+                return Created();
+            }
         }
     }
 }

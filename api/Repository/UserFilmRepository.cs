@@ -17,9 +17,12 @@ namespace api.Repository
         {
             _context = context;
         }
-        public Task<UserFilm> CreateAsync(UserFilm userFilm)
+        
+        public async Task<UserFilm> CreateAsync(UserFilm userFilm)
         {
-            throw new NotImplementedException();
+            await _context.UserFilms.AddAsync(userFilm);
+            await _context.SaveChangesAsync();
+            return userFilm;
         }
 
         public Task<UserFilm> DeleteAsync(User user, string title)
