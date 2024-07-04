@@ -80,5 +80,30 @@ namespace api.Controllers
                 return Created();
             }
         }
+
+        [HttpDelete("{actorId:int}/films")]
+        public async Task<IActionResult> Delete([FromRoute] int actorId, string title)
+        {
+            var actor = await _personRepo.GetByIdAsync(actorId);
+
+            if (actor == null)
+                return BadRequest("Actor not found");
+            
+            var emptyQuery = new FilmQueryObject();
+            var actorFilms = await _filmActorRepo.GetActorFilmographyAsync(actor, emptyQuery);
+
+            var filteredFilms = actorFilms.Where(f => f.Title.ToLower() == title.ToLower()).ToList();
+
+            if (filteredFilms.Count() == 1)
+            {
+                await _filmActorRepo.DeleteAsync(actor, title);
+            }
+            else
+            {
+                return BadRequest("Actor is not in this film");
+            }
+
+            return Ok();
+        }
     }
 }
