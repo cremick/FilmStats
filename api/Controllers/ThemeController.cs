@@ -64,5 +64,22 @@ namespace api.Controllers
 
             return CreatedAtAction(nameof(GetById), new { id = themeModel.Id }, themeModel.ToThemeDto());
         }
+
+        [HttpPut]
+        [Route("{id:int}")]
+        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateThemeDto updateDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var themeModel = await _themeRepo.UpdateAsync(id, updateDto);
+
+            if (themeModel == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(themeModel.ToThemeDto());
+        }
     }
 }

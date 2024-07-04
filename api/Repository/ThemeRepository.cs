@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Data;
+using api.Dtos.Theme;
 using api.Helpers;
 using api.Interfaces;
 using api.Models;
@@ -53,6 +54,22 @@ namespace api.Repository
         public async Task<Theme?> GetByIdAsync(int id)
         {
             return await _context.Themes.FirstOrDefaultAsync(i => i.Id == id);
+        }
+
+        public async Task<Theme?> UpdateAsync(int id, UpdateThemeDto themeDto)
+        {
+            var existingTheme = await _context.Themes.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (existingTheme == null)
+            {
+                return null;
+            }
+
+            existingTheme.Title = themeDto.Title;
+
+            await _context.SaveChangesAsync();
+
+            return existingTheme;
         }
     }
 }
