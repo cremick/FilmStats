@@ -105,5 +105,24 @@ namespace api.Controllers
 
             return Ok();
         }
+
+        [HttpGet("{filmId:int}/cast")]
+        public async Task<IActionResult> GetFilmCast([FromRoute] int filmId, [FromQuery] PersonQueryObject query)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var film = await _filmRepo.GetByIdAsync(filmId);
+            
+            if (film == null)
+            {
+                return NotFound();
+            }
+
+            var filmActors = await _filmActorRepo.GetFilmCastAsync(film, query);
+            var filmActorDtos = filmActors.Select(a => a.ToPersonDto()).ToList();
+
+            return Ok(filmActorDtos);
+        }
     }
 }

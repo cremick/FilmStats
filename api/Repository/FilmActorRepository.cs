@@ -84,9 +84,53 @@ namespace api.Repository
             return await films.Skip(skipNumber).Take(query.PageSize).ToListAsync();
         }
 
-        public Task<List<Person>> GetFilmCastAsync(Film film, PersonQueryObject query)
+        public async Task<List<Person>> GetFilmCastAsync(Film film, PersonQueryObject query)
         {
-            throw new NotImplementedException();
+            var actors = _context.FilmActors.Where(f => f.FilmId == film.Id)
+            .Select(actor => new Person{
+                Id = actor.ActorId,
+                FirstName = actor.Actor.FirstName,
+                LastName = actor.Actor.LastName,
+                Gender = actor.Actor.Gender,
+                BirthDate = actor.Actor.BirthDate
+            }).AsQueryable();
+
+            // Filtering
+            if (!string.IsNullOrWhiteSpace(query.FirstName))
+            {
+                actors = actors.Where(p => p.FirstName.Contains(query.FirstName));
+            }
+
+            if (!string.IsNullOrWhiteSpace(query.LastName))
+            {
+                actors = actors.Where(p => p.LastName.Contains(query.LastName));
+            }
+
+            if (!string.IsNullOrWhiteSpace(query.Gender))
+            {
+                actors = actors.Where(p => p.Gender.Contains(query.Gender));
+            }
+
+            // Sorting
+            if (!string.IsNullOrWhiteSpace(query.SortBy))
+            {
+                if (query.SortBy.Equals("FirstName", StringComparison.OrdinalIgnoreCase))
+                {
+                    actors = query.IsDescending ? actors.OrderByDescending(p => p.FirstName) : actors.OrderBy(p => p.FirstName);
+                }
+                else if (query.SortBy.Equals("LastName", StringComparison.OrdinalIgnoreCase))
+                {
+                    actors = query.IsDescending ? actors.OrderByDescending(p => p.LastName) : actors.OrderBy(p => p.LastName);
+                }
+                else if (query.SortBy.Equals("BirthDate", StringComparison.OrdinalIgnoreCase))
+                {
+                    actors = query.IsDescending ? actors.OrderByDescending(p => p.BirthDate) : actors.OrderBy(p => p.BirthDate);
+                }
+            }
+
+            var skipNumber = (query.PageNumber - 1) * query.PageSize;
+
+            return await actors.Skip(skipNumber).Take(query.PageSize).ToListAsync();
         }
     }
 }
