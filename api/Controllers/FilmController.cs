@@ -22,11 +22,9 @@ namespace api.Controllers
     [ApiController]
     public class FilmController : ControllerBase
     {
-        private readonly UserManager<User> _userManager;
         private readonly IFilmRepository _filmRepo;
-        public FilmController(IFilmRepository filmRepo, UserManager<User> userManager)
+        public FilmController(IFilmRepository filmRepo)
         {
-            _userManager = userManager;
             _filmRepo = filmRepo;
         }
 
@@ -57,22 +55,6 @@ namespace api.Controllers
             }
 
             return Ok(film.ToFilmDto());
-        }
-
-        [HttpGet("watched")]
-        [Authorize]
-        public async Task<IActionResult> GetUserFilms([FromQuery] FilmQueryObject query)
-        {
-            var username = User.GetUsername();
-            var user = await _userManager.FindByNameAsync(username);
-            
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            var userFilms = await _filmRepo.GetUserFilmsAsync(user, query);
-            return Ok(userFilms);
         }
 
         [HttpPost]

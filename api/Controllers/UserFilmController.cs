@@ -18,10 +18,12 @@ namespace api.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly IFilmRepository _filmRepo;
-        public UserFilmController(UserManager<User> userManager, IFilmRepository filmRepo)
+        private readonly IUserFilmRepository _userFilmRepo;
+        public UserFilmController(UserManager<User> userManager, IFilmRepository filmRepo, IUserFilmRepository userFilmRepo)
         {
             _userManager = userManager;
             _filmRepo = filmRepo;
+            _userFilmRepo = userFilmRepo;
         }
 
         [HttpGet("watched")]
@@ -36,7 +38,7 @@ namespace api.Controllers
                 return NotFound();
             }
 
-            var userFilms = await _filmRepo.GetUserFilmsAsync(user, query);
+            var userFilms = await _userFilmRepo.GetUserFilmsAsync(user, query);
             return Ok(userFilms);
         }
     }

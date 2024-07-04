@@ -83,52 +83,6 @@ namespace api.Repository
             return await _context.Films.FirstOrDefaultAsync(i => i.Id == id);
         }
 
-        public async Task<List<Film>> GetUserFilmsAsync(User user, FilmQueryObject query)
-        {
-            var films = _context.UserFilms.Where(u => u.UserId == user.Id)
-            .Select(film => new Film
-            {
-                Id = film.FilmId,
-                Title = film.Film.Title,
-                ReleaseYear = film.Film.ReleaseYear,
-                AvgRating = film.Film.AvgRating,
-                Tagline = film.Film.Tagline,
-                Description = film.Film.Description,
-                RunTime = film.Film.RunTime,
-            }).AsQueryable();
-
-            // Filtering
-            if (!string.IsNullOrWhiteSpace(query.Title))
-            {
-                films = films.Where(f => f.Title.Contains(query.Title));
-            }
-
-            // Sorting
-            if (!string.IsNullOrWhiteSpace(query.SortBy))
-            {
-                if (query.SortBy.Equals("Title", StringComparison.OrdinalIgnoreCase))
-                {
-                    films = query.IsDescending ? films.OrderByDescending(f => f.Title) : films.OrderBy(f => f.Title);
-                }
-                else if (query.SortBy.Equals("ReleaseYear", StringComparison.OrdinalIgnoreCase))
-                {
-                    films = query.IsDescending ? films.OrderByDescending(f => f.ReleaseYear) : films.OrderBy(f => f.ReleaseYear);
-                }
-                else if (query.SortBy.Equals("AvgRating", StringComparison.OrdinalIgnoreCase))
-                {
-                    films = query.IsDescending ? films.OrderByDescending(f => f.AvgRating) : films.OrderBy(f => f.AvgRating);
-                }
-                else if (query.SortBy.Equals("RunTime", StringComparison.OrdinalIgnoreCase))
-                {
-                    films = query.IsDescending ? films.OrderByDescending(f => f.RunTime) : films.OrderBy(f => f.RunTime);
-                }
-            }
-
-            var skipNumber = (query.PageNumber - 1) * query.PageSize;
-
-            return await films.Skip(skipNumber).Take(query.PageSize).ToListAsync();
-        }
-
         public async Task<Film?> UpdateAsync(int id, UpdateFilmDto filmDto)
         {
             var existingFilm = await _context.Films.FirstOrDefaultAsync(x => x.Id == id);
