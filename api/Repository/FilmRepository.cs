@@ -73,8 +73,6 @@ namespace api.Repository
                 }
             }
 
-            // TODO: Add more filtering options
-
             var skipNumber = (query.PageNumber - 1) * query.PageSize;
 
             return await films.Skip(skipNumber).Take(query.PageSize).ToListAsync();

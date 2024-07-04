@@ -45,23 +45,42 @@ namespace api.Repository
             // Get all people from the table, and make a queryable object
             var people = _context.People.AsQueryable();
 
-            // Filter by FirstName if it is present in query object
+            // Filtering
             if (!string.IsNullOrWhiteSpace(query.FirstName))
             {
-                people = people.Where(f => f.FirstName.Contains(query.FirstName));
+                people = people.Where(p => p.FirstName.Contains(query.FirstName));
             }
 
-            // Filter by FirstName if it is present in query object
             if (!string.IsNullOrWhiteSpace(query.LastName))
             {
-                people = people.Where(f => f.LastName.Contains(query.LastName));
+                people = people.Where(p => p.LastName.Contains(query.LastName));
             }
 
-            // TODO: Add more filtering / sorting options
+            if (!string.IsNullOrWhiteSpace(query.Gender))
+            {
+                people = people.Where(p => p.Gender.Contains(query.Gender));
+            }
 
-            // TODO: Add pagnation logic
+            // Sorting
+            if (!string.IsNullOrWhiteSpace(query.SortBy))
+            {
+                if (query.SortBy.Equals("FirstName", StringComparison.OrdinalIgnoreCase))
+                {
+                    people = query.IsDescending ? people.OrderByDescending(p => p.FirstName) : people.OrderBy(p => p.FirstName);
+                }
+                else if (query.SortBy.Equals("LastName", StringComparison.OrdinalIgnoreCase))
+                {
+                    people = query.IsDescending ? people.OrderByDescending(p => p.LastName) : people.OrderBy(p => p.LastName);
+                }
+                else if (query.SortBy.Equals("BirthDate", StringComparison.OrdinalIgnoreCase))
+                {
+                    people = query.IsDescending ? people.OrderByDescending(p => p.BirthDate) : people.OrderBy(p => p.BirthDate);
+                }
+            }
 
-            return await people.ToListAsync();
+            var skipNumber = (query.PageNumber - 1) * query.PageSize;
+
+            return await people.Skip(skipNumber).Take(query.PageSize).ToListAsync();
         }
 
         public async Task<Person?> GetByIdAsync(int id)
