@@ -86,6 +86,7 @@ builder.Services.AddScoped<IThemeRepository, ThemeRepository>();
 builder.Services.AddScoped<IUserFilmRepository, UserFilmRepository>();
 builder.Services.AddScoped<IFilmActorRepository, FilmActorRepository>();
 builder.Services.AddScoped<IFilmGenreRepository, FilmGenreRepository>();
+builder.Services.AddScoped<IFilmThemeRepository, FilmThemeRepository>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
 var app = builder.Build();
