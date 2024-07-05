@@ -38,6 +38,17 @@ namespace api.Repository
             return filmGenreModel;
         }
 
+        public async Task<List<Genre>> GetFilmGenresAsync(Film film)
+        {
+            var genres = _context.FilmGenres.Where(f => f.FilmId == film.Id)
+            .Select(genre => new Genre{
+                Id = genre.GenreId,
+                Title = genre.Genre.Title
+            });
+
+            return await genres.ToListAsync();
+        }
+
         public async Task<List<Film>> GetGenreFilmsAsync(Genre genre)
         {
             var films = _context.FilmGenres.Where(g => g.GenreId == genre.Id)

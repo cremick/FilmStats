@@ -102,5 +102,24 @@ namespace api.Controllers
 
             return Ok();
         }
+
+        [HttpGet("film/{filmId:int}")]
+        public async Task<IActionResult> GetFilmGenres([FromRoute] int filmId)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var film = await _filmRepo.GetByIdAsync(filmId);
+            
+            if (film == null)
+            {
+                return NotFound();
+            }
+
+            var filmGenres = await _filmGenreRepo.GetFilmGenresAsync(film);
+            var filmGenreDtos = filmGenres.Select(g => g.ToGenreDto()).ToList();
+
+            return Ok(filmGenreDtos);
+        }
     }
 }
