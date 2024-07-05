@@ -78,5 +78,29 @@ namespace api.Controllers
                 return Created();
             }
         }
+
+        [HttpDelete("{genreId:int}/films")]
+        public async Task<IActionResult> Delete([FromRoute] int genreId, string title)
+        {
+            var genre = await _genreRepo.GetByIdAsync(genreId);
+
+            if (genre == null)
+                return BadRequest("Genre not found");
+            
+            var genreFilms = await _filmGenreRepo.GetGenreFilmsAsync(genre);
+
+            var filteredFilms = genreFilms.Where(f => f.Title.ToLower() == title.ToLower()).ToList();
+
+            if (filteredFilms.Count() == 1)
+            {
+                await _filmGenreRepo.DeleteAsync(genre.Title, title);
+            }
+            else
+            {
+                return BadRequest("Film does not belong to this genre");
+            }
+
+            return Ok();
+        }
     }
 }
