@@ -9,7 +9,7 @@ namespace api.Models
     {
         public int FilmId { get; set; }
         public int GenreId { get; set; }
-        public Film? Film { get; set; }
-        public Genre? Genre { get; set; }
+        public Film Film { get; set; } = new Film();
+        public Genre Genre { get; set; } = new Genre();
     }
 }

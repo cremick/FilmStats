@@ -24,7 +24,7 @@ namespace api.Controllers
             _filmActorRepo = filmActorRepo;
         }
 
-        [HttpGet("{actorId:int}/films")]
+        [HttpGet("actor/{actorId:int}/films")]
         public async Task<IActionResult> GetActorFilms([FromRoute] int actorId, [FromQuery] FilmQueryObject query)
         {
             if (!ModelState.IsValid)
@@ -43,7 +43,7 @@ namespace api.Controllers
             return Ok(actorFilmDtos);
         }
 
-        [HttpPost("{actorId:int}/films")]
+        [HttpPost("actor/{actorId:int}/films")]
         public async Task<IActionResult> Create([FromRoute] int actorId, string title)
         {
             var actor = await _personRepo.GetByIdAsync(actorId);
@@ -81,7 +81,7 @@ namespace api.Controllers
             }
         }
 
-        [HttpDelete("{actorId:int}/films")]
+        [HttpDelete("actor/{actorId:int}/films")]
         public async Task<IActionResult> Delete([FromRoute] int actorId, string title)
         {
             var actor = await _personRepo.GetByIdAsync(actorId);
@@ -106,7 +106,7 @@ namespace api.Controllers
             return Ok();
         }
 
-        [HttpGet("{filmId:int}/cast")]
+        [HttpGet("film/{filmId:int}/cast")]
         public async Task<IActionResult> GetFilmCast([FromRoute] int filmId, [FromQuery] PersonQueryObject query)
         {
             if (!ModelState.IsValid)
