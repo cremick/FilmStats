@@ -15,6 +15,7 @@ namespace api.Mappers
             {
                 Id = filmModel.Id,
                 Title = filmModel.Title,
+                Slug = filmModel.Slug,
                 ReleaseYear = filmModel.ReleaseYear,
                 AvgRating = filmModel.AvgRating,
                 RunTime = filmModel.RunTime,
@@ -28,6 +29,7 @@ namespace api.Mappers
             return new Film
             {
                 Title = filmDto.Title,
+                Slug = filmDto.Slug,
                 ReleaseYear = filmDto.ReleaseYear,
                 AvgRating = filmDto.AvgRating,
                 RunTime = filmDto.RunTime,

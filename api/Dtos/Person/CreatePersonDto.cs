@@ -13,6 +13,8 @@ namespace api.Dtos.Person
         [Required]
         public string LastName { get; set; } = string.Empty;
         [Required]
+        public string Slug { get; set; } = string.Empty;
+        [Required]
         public string Gender { get; set; } = string.Empty;
         public DateTime BirthDate { get; set; }
     }

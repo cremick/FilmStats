@@ -12,6 +12,8 @@ namespace api.Dtos.Film
         [MaxLength(200, ErrorMessage = "Title cannot be over 200 characters")]
         public string Title { get; set; } = string.Empty;
         [Required]
+        public string Slug { get; set; } = string.Empty;
+        [Required]
         [Range(1874, 2032)]
         public int ReleaseYear { get; set; }
         [Required]

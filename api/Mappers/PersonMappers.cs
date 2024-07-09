@@ -16,6 +16,7 @@ namespace api.Mappers
                 Id = personModel.Id,
                 FirstName = personModel.FirstName,
                 LastName = personModel.LastName,
+                Slug = personModel.Slug,
                 Gender = personModel.Gender,
                 BirthDate = personModel.BirthDate
             };
@@ -27,6 +28,7 @@ namespace api.Mappers
             {
                 FirstName = personDto.FirstName,
                 LastName = personDto.LastName,
+                Slug = personDto.Slug,
                 Gender = personDto.Gender,
                 BirthDate = personDto.BirthDate
             };
