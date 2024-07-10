@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using api.Data;
 using api.Dtos.Person;
-using api.Helpers;
 using api.Interfaces;
 using api.Models;
 using Microsoft.EntityFrameworkCore;
@@ -13,22 +12,35 @@ namespace api.Repository
 {
     public class PersonRepository : IPersonRepository
     {
-        private readonly ApplicationDBContext _context;
+        ApplicationDBContext _context;
         public PersonRepository(ApplicationDBContext context)
         {
             _context = context;
         }
+        public async Task<FilmActor> AddActorToFilmAsync(FilmActor filmActor)
+        {
+            await _context.FilmActors.AddAsync(filmActor);
+            await _context.SaveChangesAsync();
+            return filmActor;
+        }
 
-        public async Task<Person> CreateAsync(Person personModel)
+        public async Task<FilmDirector> AddDirectorToFilmAsync(FilmDirector filmDirector)
+        {
+            await _context.FilmDirectors.AddAsync(filmDirector);
+            await _context.SaveChangesAsync();
+            return filmDirector;
+        }
+
+        public async Task<Person> CreatePersonAsync(Person personModel)
         {
             await _context.People.AddAsync(personModel);
             await _context.SaveChangesAsync();
             return personModel;
         }
 
-        public async Task<Person?> DeleteAsync(int id)
+        public async Task<Person?> DeletePersonAsync(int personId)
         {
-            var personModel = await _context.People.FirstOrDefaultAsync(x => x.Id == id);
+            var personModel = await _context.People.FirstOrDefaultAsync(person => person.Id == personId);
 
             if (personModel == null)
             {
@@ -40,71 +52,82 @@ namespace api.Repository
             return personModel;
         }
 
-        public async Task<List<Person>> GetAllAsync(PersonQueryObject query)
+        public async Task<List<Person>> GetAllActorsAsync()
         {
-            // Get all people from the table, and make a queryable object
-            var people = _context.People.AsQueryable();
-
-            // Filtering
-            if (!string.IsNullOrWhiteSpace(query.FirstName))
-            {
-                people = people.Where(p => p.FirstName.Contains(query.FirstName));
-            }
-
-            if (!string.IsNullOrWhiteSpace(query.LastName))
-            {
-                people = people.Where(p => p.LastName.Contains(query.LastName));
-            }
-
-            if (!string.IsNullOrWhiteSpace(query.Gender))
-            {
-                people = people.Where(p => p.Gender.Contains(query.Gender));
-            }
-
-            // Sorting
-            if (!string.IsNullOrWhiteSpace(query.SortBy))
-            {
-                if (query.SortBy.Equals("FirstName", StringComparison.OrdinalIgnoreCase))
-                {
-                    people = query.IsDescending ? people.OrderByDescending(p => p.FirstName) : people.OrderBy(p => p.FirstName);
-                }
-                else if (query.SortBy.Equals("LastName", StringComparison.OrdinalIgnoreCase))
-                {
-                    people = query.IsDescending ? people.OrderByDescending(p => p.LastName) : people.OrderBy(p => p.LastName);
-                }
-                else if (query.SortBy.Equals("BirthDate", StringComparison.OrdinalIgnoreCase))
-                {
-                    people = query.IsDescending ? people.OrderByDescending(p => p.BirthDate) : people.OrderBy(p => p.BirthDate);
-                }
-            }
-
-            var skipNumber = (query.PageNumber - 1) * query.PageSize;
-
-            return await people.Skip(skipNumber).Take(query.PageSize).ToListAsync();
+            return await _context.FilmActors
+                .Select(fa => fa.Actor)
+                .ToListAsync();
         }
 
-        public async Task<Person?> GetByIdAsync(int id)
+        public async Task<List<Person>> GetAllDirectorsAsync()
         {
-            return await _context.People.FirstOrDefaultAsync(i => i.Id == id);
+            return await _context.FilmDirectors
+                .Select(fd => fd.Director)
+                .ToListAsync();
         }
 
-        public async Task<Person?> UpdateAsync(int id, UpdatePersonDto personDto)
+        public async Task<List<Person>> GetAllPeopleAsync()
         {
-            var existingPerson = await _context.People.FirstOrDefaultAsync(x => x.Id == id);
+            return await _context.People.ToListAsync();
+        }
 
-            if (existingPerson == null)
+        public async Task<List<Film>> GetFilmsByActorAsync(int actorId)
+        {
+            return await _context.FilmActors
+                .Where(fa => fa.ActorId == actorId)
+                .Select(fa => fa.Film)
+                .ToListAsync();
+        }
+
+        public async Task<List<Film>> GetFilmsByDirectorAsync(int directorId)
+        {
+             return await _context.FilmDirectors
+                .Where(fd => fd.DirectorId == directorId)
+                .Select(fd => fd.Film)
+                .ToListAsync();
+        }
+
+        public async Task<Person?> GetPersonByIdAsync(int personId)
+        {
+            return await _context.People.FirstOrDefaultAsync(p => p.Id == personId);
+        }
+
+        public async Task<Person?> GetPersonBySlugAsync(string personSlug)
+        {
+            return await _context.People.FirstOrDefaultAsync(p => p.Slug == personSlug);
+        }
+
+        public async Task<FilmActor?> RemoveActorFromFilmAsync(int actorId, int filmId)
+        {
+            var filmActorModel = await _context.FilmActors.FirstOrDefaultAsync(fa => fa.ActorId == actorId && fa.Film.Id == filmId);
+
+            if (filmActorModel == null)
             {
                 return null;
             }
 
-            existingPerson.FirstName = personDto.FirstName;
-            existingPerson.LastName = personDto.LastName;
-            existingPerson.Gender = personDto.Gender;
-            existingPerson.BirthDate = personDto.BirthDate;
-
+            _context.FilmActors.Remove(filmActorModel);
             await _context.SaveChangesAsync();
+            return filmActorModel;
+        }
 
-            return existingPerson;
+        public async Task<FilmDirector?> RemoveDirectorFromFilmAsync(int directorId, int filmId)
+        {
+            var filmDirectorModel = await _context.FilmDirectors.FirstOrDefaultAsync(fd => fd.DirectorId == directorId && fd.Film.Id == filmId);
+
+            if (filmDirectorModel == null)
+            {
+                return null;
+            }
+
+            _context.FilmDirectors.Remove(filmDirectorModel);
+            await _context.SaveChangesAsync();
+            return filmDirectorModel;
+        }
+
+        public Task<Film?> UpdatePersonAsync(int personId, UpdatePersonDto updatePersonDto)
+        {
+            throw new NotImplementedException();
         }
     }
 }

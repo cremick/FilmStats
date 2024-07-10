@@ -12,13 +12,11 @@ namespace api.Interfaces
         // GET Endpoints
         Task<List<Film>> GetAllFilmsAsync();
         Task<Film?> GetFilmByIdAsync(int filmId);
-        Task<Film?> GetFilmBySlugAsync(string slug);
+        Task<Film?> GetFilmBySlugAsync(string filmSlug);
         Task<List<Person>> GetDirectorsByFilmIdAsync(int filmId);
         Task<List<Person>> GetActorsByFilmIdAsync(int filmId);
         Task<List<Theme>> GetThemesByFilmIdAsync(int filmId);
         Task<List<Genre>> GetGenresByFilmIdAsync(int filmId);
-        Task<List<Film>> GetFilmsByDirectorAsync(int directorId);
-        Task<List<Film>> GetFilmsByActorAsync(int actorId);
         Task<List<Film>> GetFilmsByGenreAsync(int genreId);
         Task<List<Film>> GetFilmsByThemeAsync(int themeId);
 

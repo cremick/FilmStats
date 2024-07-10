@@ -15,9 +15,9 @@ namespace api.Controllers
     public class FilmActorController : ControllerBase
     {
         private readonly IFilmRepositoryOld _filmRepo;
-        private readonly IPersonRepository _personRepo;
+        private readonly IPersonRepositoryOld _personRepo;
         private readonly IFilmActorRepository _filmActorRepo;
-        public FilmActorController(IFilmRepositoryOld filmRepo, IPersonRepository personRepo, IFilmActorRepository filmActorRepo)
+        public FilmActorController(IFilmRepositoryOld filmRepo, IPersonRepositoryOld personRepo, IFilmActorRepository filmActorRepo)
         {
             _filmRepo = filmRepo;
             _personRepo = personRepo;

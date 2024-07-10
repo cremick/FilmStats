@@ -64,25 +64,9 @@ namespace api.Repository
             return await _context.Films.FirstOrDefaultAsync(f => f.Id == filmId);
         }
 
-        public async Task<Film?> GetFilmBySlugAsync(string slug)
+        public async Task<Film?> GetFilmBySlugAsync(string filmSlug)
         {
-            return await _context.Films.FirstOrDefaultAsync(f => f.Slug == slug);
-        }
-
-        public async Task<List<Film>> GetFilmsByActorAsync(int actorId)
-        {
-            return await _context.FilmActors
-                .Where(fa => fa.ActorId == actorId)
-                .Select(fa => fa.Film)
-                .ToListAsync();
-        }
-
-        public async Task<List<Film>> GetFilmsByDirectorAsync(int directorId)
-        {
-            return await _context.FilmDirectors
-                .Where(fd => fd.DirectorId == directorId)
-                .Select(fd => fd.Film)
-                .ToListAsync();
+            return await _context.Films.FirstOrDefaultAsync(f => f.Slug == filmSlug);
         }
 
         public async Task<List<Film>> GetFilmsByGenreAsync(int genreId)

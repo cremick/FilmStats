@@ -20,8 +20,8 @@ namespace api.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly IUserRepository _userRepo;
-        private readonly IFilmRepositoryOld _filmRepo;
-        public UserController(UserManager<User> userManager, IUserRepository userRepo, IFilmRepositoryOld filmRepo)
+        private readonly IFilmRepository _filmRepo;
+        public UserController(UserManager<User> userManager, IUserRepository userRepo, IFilmRepository filmRepo)
         {
             _userManager = userManager;
             _userRepo = userRepo;
@@ -204,7 +204,7 @@ namespace api.Controllers
         {
             // Check if film and user exist
             var user = await GetUserAsync();
-            var film = await _filmRepo.GetByIdAsync(filmId);
+            var film = await _filmRepo.GetFilmByIdAsync(filmId);
             
             if (user == null)
                 return BadRequest("User not found");
@@ -239,10 +239,14 @@ namespace api.Controllers
         [Authorize]
         public async Task<IActionResult> RemoveFilmFromUserWatchList(int filmId)
         {
-            // Double check if user exists
+            // Check if film and user exists
             var user = await GetUserAsync();
+            var film = await _filmRepo.GetFilmByIdAsync(filmId);
+            
             if (user == null)
                 return BadRequest("User not found");
+            if (film == null)
+                return BadRequest("Film not found");
 
             // Check if user has already watched this film
             var userFilms = await _userRepo.GetFilmsByUserAsync(user);
