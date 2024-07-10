@@ -83,7 +83,6 @@ builder.Services.AddScoped<IFilmRepository, FilmRepository>();
 builder.Services.AddScoped<IPersonRepository, PersonRepository>();
 builder.Services.AddScoped<IGenreRepository, GenreRepository>();
 builder.Services.AddScoped<IThemeRepository, ThemeRepository>();
-builder.Services.AddScoped<IUserFilmRepository, UserFilmRepository>();
 builder.Services.AddScoped<IFilmActorRepository, FilmActorRepository>();
 builder.Services.AddScoped<IFilmGenreRepository, FilmGenreRepository>();
 builder.Services.AddScoped<IFilmThemeRepository, FilmThemeRepository>();

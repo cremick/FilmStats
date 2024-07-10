@@ -6,6 +6,7 @@ using api.Extensions;
 using api.Interfaces;
 using api.Mappers;
 using api.Models;
+using api.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -19,10 +20,12 @@ namespace api.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly IUserRepository _userRepo;
-        public UserController(UserManager<User> userManager, IUserRepository userRepo)
+        private readonly IFilmRepository _filmRepo;
+        public UserController(UserManager<User> userManager, IUserRepository userRepo, IFilmRepository filmRepo)
         {
             _userManager = userManager;
             _userRepo = userRepo;
+            _filmRepo = filmRepo;
         }
         private async Task<User?> GetUserAsync()
         {
@@ -100,6 +103,37 @@ namespace api.Controllers
             return Ok(themeDtos);
         }
 
+        [HttpGet("ratings")]
+        [Authorize]
+        public async Task<IActionResult> GetRatingsByUser()
+        {
+            var user = await GetUserAsync();
+            if (user == null)
+                return NotFound();
+
+            var ratings = await _userRepo.GetRatingsByUserAsync(user);
+            var ratingDtos = ratings.Select(rating => rating.ToRatingDto()).ToList();
+
+            return Ok(ratingDtos);
+        }
+
+        [HttpGet("ratings/film/{filmId}")]
+        public async Task<IActionResult> GetRatingByUserAndFilm(int filmId)
+        {
+            var user = await GetUserAsync();
+            if (user == null)
+                return NotFound();
+
+            // TODO: Check if film exists (import film repo)?
+
+            var rating = await _userRepo.GetRatingByUserAndFilmAsync(user, filmId);
+            if (rating == null)
+                return NotFound();
+            
+            var ratingDto = rating.ToRatingDto();
+            return Ok(ratingDto);
+        }
+
         [HttpGet("films/actor/{actorId}")]
         [Authorize]
         public async Task<IActionResult> GetFilmsByUserAndActor(int actorId)
@@ -162,6 +196,68 @@ namespace api.Controllers
             var filmDtos = films.Select(film => film.ToFilmDto()).ToList();
 
             return Ok(filmDtos);
+        }
+
+        [HttpPost("films/{filmId}/watch")]
+        [Authorize]
+        public async Task<IActionResult> AddFilmToWatchList(int filmId)
+        {
+            // Check if film and user exist
+            var user = await GetUserAsync();
+            var film = await _filmRepo.GetByIdAsync(filmId);
+            
+            if (user == null)
+                return BadRequest("User not found");
+            if (film == null)
+                return BadRequest("Film not found");
+
+            // Check if user has already watched this film
+            var userFilms = await _userRepo.GetFilmsByUserAsync(user);
+            if (userFilms.Any(film => film.Id == filmId))
+                return BadRequest("Cannot add same film to user's films");
+
+            var userFilmModel = new UserFilm
+            {
+                FilmId = film.Id,
+                UserId = user.Id,
+                Film = film,
+                User = user
+            };
+
+            var createdUserFilm = await _userRepo.AddFilmToUserWatchListAsync(userFilmModel);
+            if (createdUserFilm == null)
+            {
+                return StatusCode(500, "Could not create");
+            }
+            else
+            {
+                return Created();
+            }
+        }
+
+        [HttpDelete("films/{filmId:int}/watch")]
+        [Authorize]
+        public async Task<IActionResult> RemoveFilmFromUserWatchList(int filmId)
+        {
+            // Double check if user exists
+            var user = await GetUserAsync();
+            if (user == null)
+                return BadRequest("User not found");
+
+            // Check if user has already watched this film
+            var userFilms = await _userRepo.GetFilmsByUserAsync(user);
+            var filteredFilms = userFilms.Where(f => f.Id == filmId).ToList();
+
+            if (filteredFilms.Count() == 1)
+            {
+                await _userRepo.RemoveFilmFromUserWatchListAsync(user, filmId);
+            }
+            else
+            {
+                return BadRequest("You have not watched this film");
+            }
+
+            return Ok();
         }
     }
 }

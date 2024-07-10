@@ -14,7 +14,8 @@ namespace api.Mappers
             return new RatingDto
             {
                 Id = ratingModel.Id,
-                Score = ratingModel.Score
+                Score = ratingModel.Score,
+                FilmId = ratingModel.FilmId,
             };
         }
     }
