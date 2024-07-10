@@ -3,18 +3,32 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Dtos.Film;
-using api.Helpers;
 using api.Models;
 
 namespace api.Interfaces
 {
     public interface IFilmRepository
     {
-        Task<List<Film>> GetAllAsync(FilmQueryObject query);
-        Task<Film?> GetByIdAsync(int id);
-        Task<Film?> GetByTitleAsync(string title);
-        Task<Film> CreateAsync(Film filmModel);
-        Task<Film?> UpdateAsync(int id, UpdateFilmDto filmDto);
-        Task<Film?> DeleteAsync(int id);
+        // GET Endpoints
+        Task<List<Film>> GetAllFilmsAsync();
+        Task<Film?> GetFilmByIdAsync(int filmId);
+        Task<Film?> GetFilmBySlugAsync(string slug);
+        Task<List<Person>> GetDirectorsByFilmIdAsync(int filmId);
+        Task<List<Person>> GetActorsByFilmIdAsync(int filmId);
+        Task<List<Theme>> GetThemesByFilmIdAsync(int filmId);
+        Task<List<Genre>> GetGenresByFilmIdAsync(int filmId);
+        Task<List<Film>> GetFilmsByDirectorAsync(int directorId);
+        Task<List<Film>> GetFilmsByActorAsync(int actorId);
+        Task<List<Film>> GetFilmsByGenreAsync(int genreId);
+        Task<List<Film>> GetFilmsByThemeAsync(int themeId);
+
+        // POST Endpoints
+        Task<Film> CreateFilmAsync(Film filmModel);
+
+        // PUT Endpoints
+        Task<Film?> UpdateFilmAsync(int filmId, UpdateFilmDto updateFilmDto);
+
+        // DELETE Endpoints
+        Task<Film?> DeleteFilmAsync(int filmId);
     }
 }

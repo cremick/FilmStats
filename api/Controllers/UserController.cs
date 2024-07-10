@@ -20,8 +20,8 @@ namespace api.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly IUserRepository _userRepo;
-        private readonly IFilmRepository _filmRepo;
-        public UserController(UserManager<User> userManager, IUserRepository userRepo, IFilmRepository filmRepo)
+        private readonly IFilmRepositoryOld _filmRepo;
+        public UserController(UserManager<User> userManager, IUserRepository userRepo, IFilmRepositoryOld filmRepo)
         {
             _userManager = userManager;
             _userRepo = userRepo;
@@ -117,7 +117,7 @@ namespace api.Controllers
             return Ok(ratingDtos);
         }
 
-        [HttpGet("ratings/film/{filmId}")]
+        [HttpGet("ratings/film/{filmId:int}")]
         public async Task<IActionResult> GetRatingByUserAndFilm(int filmId)
         {
             var user = await GetUserAsync();
@@ -134,7 +134,7 @@ namespace api.Controllers
             return Ok(ratingDto);
         }
 
-        [HttpGet("films/actor/{actorId}")]
+        [HttpGet("films/actor/{actorId:int}")]
         [Authorize]
         public async Task<IActionResult> GetFilmsByUserAndActor(int actorId)
         {
@@ -150,7 +150,7 @@ namespace api.Controllers
             return Ok(filmDtos);
         }
 
-        [HttpGet("films/director/{directorId}")]
+        [HttpGet("films/director/{directorId:int}")]
         [Authorize]
         public async Task<IActionResult> GetFilmsByUserAndDirector(int directorId)
         {
@@ -166,7 +166,7 @@ namespace api.Controllers
             return Ok(filmDtos);
         }
 
-        [HttpGet("films/genre/{genreId}")]
+        [HttpGet("films/genre/{genreId:int}")]
         [Authorize]
         public async Task<IActionResult> GetFilmsByUserAndGenre(int genreId)
         {
@@ -182,7 +182,7 @@ namespace api.Controllers
             return Ok(filmDtos);
         }
 
-        [HttpGet("films/theme/{themeId}")]
+        [HttpGet("films/theme/{themeId:int}")]
         [Authorize]
         public async Task<IActionResult> GetFilmsByUserAndTheme(int themeId)
         {
@@ -198,7 +198,7 @@ namespace api.Controllers
             return Ok(filmDtos);
         }
 
-        [HttpPost("films/{filmId}/watch")]
+        [HttpPost("films/{filmId:int}/watch")]
         [Authorize]
         public async Task<IActionResult> AddFilmToWatchList(int filmId)
         {

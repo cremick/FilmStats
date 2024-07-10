@@ -4,9 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using api.Data;
 using api.Dtos.Film;
-using api.Helpers;
 using api.Interfaces;
-using api.Mappers;
 using api.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,22 +12,21 @@ namespace api.Repository
 {
     public class FilmRepository : IFilmRepository
     {
-        private readonly ApplicationDBContext _context;
+        ApplicationDBContext _context;
         public FilmRepository(ApplicationDBContext context)
         {
             _context = context;
         }
-
-        public async Task<Film> CreateAsync(Film filmModel)
+        public async Task<Film> CreateFilmAsync(Film filmModel)
         {
             await _context.Films.AddAsync(filmModel);
             await _context.SaveChangesAsync();
             return filmModel;
         }
 
-        public async Task<Film?> DeleteAsync(int id)
+        public async Task<Film?> DeleteFilmAsync(int filmId)
         {
-            var filmModel = await _context.Films.FirstOrDefaultAsync(x => x.Id == id);
+            var filmModel = await _context.Films.FirstOrDefaultAsync(film => film.Id == filmId);
 
             if (filmModel == null)
             {
@@ -41,72 +38,88 @@ namespace api.Repository
             return filmModel;
         }
 
-        public async Task<List<Film>> GetAllAsync(FilmQueryObject query)
+        public async Task<List<Person>> GetActorsByFilmIdAsync(int filmId)
         {
-            // Get all films from the table, and make a queryable object
-            var films = _context.Films.AsQueryable();
-
-            // Filtering
-            if (!string.IsNullOrWhiteSpace(query.Title))
-            {
-                films = films.Where(f => f.Title.Contains(query.Title));
-            }
-
-            // Sorting
-            if (!string.IsNullOrWhiteSpace(query.SortBy))
-            {
-                if (query.SortBy.Equals("Title", StringComparison.OrdinalIgnoreCase))
-                {
-                    films = query.IsDescending ? films.OrderByDescending(f => f.Title) : films.OrderBy(f => f.Title);
-                }
-                else if (query.SortBy.Equals("ReleaseYear", StringComparison.OrdinalIgnoreCase))
-                {
-                    films = query.IsDescending ? films.OrderByDescending(f => f.ReleaseYear) : films.OrderBy(f => f.ReleaseYear);
-                }
-                else if (query.SortBy.Equals("AvgRating", StringComparison.OrdinalIgnoreCase))
-                {
-                    films = query.IsDescending ? films.OrderByDescending(f => f.AvgRating) : films.OrderBy(f => f.AvgRating);
-                }
-                else if (query.SortBy.Equals("RunTime", StringComparison.OrdinalIgnoreCase))
-                {
-                    films = query.IsDescending ? films.OrderByDescending(f => f.RunTime) : films.OrderBy(f => f.RunTime);
-                }
-            }
-
-            var skipNumber = (query.PageNumber - 1) * query.PageSize;
-
-            return await films.Skip(skipNumber).Take(query.PageSize).ToListAsync();
+            return await _context.FilmActors
+                .Where(fa => fa.FilmId == filmId)
+                .Select(fa => fa.Actor)
+                .ToListAsync();
         }
 
-        public async Task<Film?> GetByIdAsync(int id)
+        public async Task<List<Film>> GetAllFilmsAsync()
         {
-            return await _context.Films.FirstOrDefaultAsync(i => i.Id == id);
+            return await _context.Films.ToListAsync();
         }
 
-        public async Task<Film?> GetByTitleAsync(string title)
+        public async Task<List<Person>> GetDirectorsByFilmIdAsync(int filmId)
         {
-            return await _context.Films.FirstOrDefaultAsync(f => f.Title == title);
+            return await _context.FilmDirectors
+                .Where(fd => fd.FilmId == filmId)
+                .Select(fd => fd.Director)
+                .ToListAsync();
         }
 
-        public async Task<Film?> UpdateAsync(int id, UpdateFilmDto filmDto)
+        public async Task<Film?> GetFilmByIdAsync(int filmId)
         {
-            var existingFilm = await _context.Films.FirstOrDefaultAsync(x => x.Id == id);
+            return await _context.Films.FirstOrDefaultAsync(f => f.Id == filmId);
+        }
 
-            if (existingFilm == null)
-            {
-                return null;
-            }
+        public async Task<Film?> GetFilmBySlugAsync(string slug)
+        {
+            return await _context.Films.FirstOrDefaultAsync(f => f.Slug == slug);
+        }
 
-            existingFilm.Title = filmDto.Title;
-            existingFilm.ReleaseYear = filmDto.ReleaseYear;
-            existingFilm.AvgRating = filmDto.AvgRating;
-            existingFilm.Tagline = filmDto.Tagline;
-            existingFilm.Description = filmDto.Description;
-            existingFilm.RunTime = filmDto.RunTime;
+        public async Task<List<Film>> GetFilmsByActorAsync(int actorId)
+        {
+            return await _context.FilmActors
+                .Where(fa => fa.ActorId == actorId)
+                .Select(fa => fa.Film)
+                .ToListAsync();
+        }
 
-            await _context.SaveChangesAsync();
+        public async Task<List<Film>> GetFilmsByDirectorAsync(int directorId)
+        {
+            return await _context.FilmDirectors
+                .Where(fd => fd.DirectorId == directorId)
+                .Select(fd => fd.Film)
+                .ToListAsync();
+        }
 
-            return existingFilm;
+        public async Task<List<Film>> GetFilmsByGenreAsync(int genreId)
+        {
+            return await _context.FilmGenres
+                .Where(fg => fg.GenreId == genreId)
+                .Select(fg => fg.Film)
+                .ToListAsync();
+        }
+
+        public async Task<List<Film>> GetFilmsByThemeAsync(int themeId)
+        {
+            return await _context.FilmThemes
+                .Where(ft => ft.ThemeId == themeId)
+                .Select(ft => ft.Film)
+                .ToListAsync();
+        }
+
+        public async Task<List<Genre>> GetGenresByFilmIdAsync(int filmId)
+        {
+            return await _context.FilmGenres
+                .Where(fg => fg.FilmId == filmId)
+                .Select(fg => fg.Genre)
+                .ToListAsync();
+        }
+
+        public async Task<List<Theme>> GetThemesByFilmIdAsync(int filmId)
+        {
+            return await _context.FilmThemes
+                .Where(ft => ft.FilmId == filmId)
+                .Select(ft => ft.Theme)
+                .ToListAsync();
+        }
+
+        public Task<Film?> UpdateFilmAsync(int filmId, UpdateFilmDto updateFilmDto)
+        {
+            throw new NotImplementedException();
         }
     }
 }

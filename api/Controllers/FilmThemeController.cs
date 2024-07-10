@@ -13,10 +13,10 @@ namespace api.Controllers
     [ApiController]
     public class FilmThemeController : ControllerBase
     {
-        private readonly IFilmRepository _filmRepo;
+        private readonly IFilmRepositoryOld _filmRepo;
         private readonly IThemeRepository _themeRepo;
         private readonly IFilmThemeRepository _filmThemeRepo;
-        public FilmThemeController(IFilmRepository filmRepo, IThemeRepository themeRepo, IFilmThemeRepository filmThemeRepo)
+        public FilmThemeController(IFilmRepositoryOld filmRepo, IThemeRepository themeRepo, IFilmThemeRepository filmThemeRepo)
         {
             _filmRepo = filmRepo;
             _themeRepo = themeRepo;
