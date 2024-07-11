@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Dtos.Person;
+using api.Extensions;
 using api.Interfaces;
 using api.Mappers;
 using api.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers
@@ -15,10 +17,12 @@ namespace api.Controllers
     [ApiController]
     public class PersonController : ControllerBase
     {
-        IPersonRepository _personRepo;
-        IFilmRepository _filmRepo;
-        public PersonController(IPersonRepository personRepo, IFilmRepository filmRepo)
+        private readonly UserManager<User> _userManager;
+        private readonly IPersonRepository _personRepo;
+        private readonly IFilmRepository _filmRepo;
+        public PersonController(IPersonRepository personRepo, IFilmRepository filmRepo, UserManager<User> userManager)
         {
+            _userManager = userManager;
             _personRepo = personRepo;
             _filmRepo = filmRepo;
         }
@@ -106,6 +110,48 @@ namespace api.Controllers
                 return BadRequest("Director not found");
 
             var films = await _personRepo.GetFilmsByDirectorAsync(directorId);
+            var filmDtos = films.Select(film => film.ToFilmDto()).ToList();
+
+            return Ok(filmDtos);
+        }
+
+        [HttpGet("actors/{actorId:int}/user/films")]
+        [Authorize]
+        public async Task<IActionResult> GetFilmsByUserAndActor(int actorId)
+        {
+            // Check if user and actor exist
+            var username = User.GetUsername();
+            var user = await _userManager.FindByNameAsync(username);
+            var actor = await _personRepo.GetPersonByIdAsync(actorId);
+
+            if (user == null)
+                return BadRequest("User not found");
+
+            if (actor == null)
+                return BadRequest("Actor not found");
+
+            var films = await _personRepo.GetFilmsByUserAndActorAsync(user, actorId);
+            var filmDtos = films.Select(film => film.ToFilmDto()).ToList();
+
+            return Ok(filmDtos);
+        }
+
+        [HttpGet("directors/{directorId:int}/user/films")]
+        [Authorize]
+        public async Task<IActionResult> GetFilmsByUserAndDirector(int directorId)
+        {
+            // Check if user and director exist
+            var username = User.GetUsername();
+            var user = await _userManager.FindByNameAsync(username);
+            var director = await _personRepo.GetPersonByIdAsync(directorId);
+
+            if (user == null)
+                return BadRequest("User not found");
+
+            if (director == null)
+                return BadRequest("Director not found");
+
+            var films = await _personRepo.GetFilmsByUserAndDirectorAsync(user, directorId);
             var filmDtos = films.Select(film => film.ToFilmDto()).ToList();
 
             return Ok(filmDtos);

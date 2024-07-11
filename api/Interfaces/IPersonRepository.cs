@@ -17,6 +17,8 @@ namespace api.Interfaces
         Task<List<Person>> GetAllDirectorsAsync();
         Task<List<Film>> GetFilmsByActorAsync(int actorId);
         Task<List<Film>> GetFilmsByDirectorAsync(int directorId);
+        Task<List<Film>> GetFilmsByUserAndActorAsync(User user, int actorId);
+        Task<List<Film>> GetFilmsByUserAndDirectorAsync(User user, int directorId);
 
         // POST Endpoints
         Task<Person> CreatePersonAsync(Person personModel);

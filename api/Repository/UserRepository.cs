@@ -48,24 +48,6 @@ namespace api.Repository
                 .ToListAsync();
         }
 
-        public async Task<List<Film>> GetFilmsByUserAndActorAsync(User user, int actorId)
-        {
-            return await _context.UserFilms
-                .Where(uf => uf.UserId == user.Id)
-                .Where(uf => uf.Film.FilmActors.Any(fa => fa.ActorId == actorId))
-                .Select(uf => uf.Film)
-                .ToListAsync();
-        }
-
-        public async Task<List<Film>> GetFilmsByUserAndDirectorAsync(User user, int directorId)
-        {
-            return await _context.UserFilms
-                .Where(uf => uf.UserId == user.Id)
-                .Where(uf => uf.Film.FilmDirectors.Any(fd => fd.DirectorId == directorId))
-                .Select(uf => uf.Film)
-                .ToListAsync();
-        }
-
         public async Task<List<Film>> GetFilmsByUserAndGenreAsync(User user, int genreId)
         {
             return await _context.UserFilms

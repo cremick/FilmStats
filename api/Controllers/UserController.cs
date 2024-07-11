@@ -134,38 +134,6 @@ namespace api.Controllers
             return Ok(ratingDto);
         }
 
-        [HttpGet("films/actor/{actorId:int}")]
-        [Authorize]
-        public async Task<IActionResult> GetFilmsByUserAndActor(int actorId)
-        {
-            var user = await GetUserAsync();
-            if (user == null)
-                return NotFound();
-
-            // TODO: Check if actor exists (import actor repo)?
-
-            var films = await _userRepo.GetFilmsByUserAndActorAsync(user, actorId);
-            var filmDtos = films.Select(film => film.ToFilmDto()).ToList();
-
-            return Ok(filmDtos);
-        }
-
-        [HttpGet("films/director/{directorId:int}")]
-        [Authorize]
-        public async Task<IActionResult> GetFilmsByUserAndDirector(int directorId)
-        {
-            var user = await GetUserAsync();
-            if (user == null)
-                return NotFound();
-
-            // TODO: Check if director exists (import director repo)?
-
-            var films = await _userRepo.GetFilmsByUserAndDirectorAsync(user, directorId);
-            var filmDtos = films.Select(film => film.ToFilmDto()).ToList();
-
-            return Ok(filmDtos);
-        }
-
         [HttpGet("films/theme/{themeId:int}")]
         [Authorize]
         public async Task<IActionResult> GetFilmsByUserAndTheme(int themeId)
