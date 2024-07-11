@@ -63,6 +63,15 @@ namespace api.Repository
             return await _context.Genres.FirstOrDefaultAsync(g => g.Id == genreId);
         }
 
+        public async Task<List<Film>> GetFilmsByUserAndGenreAsync(User user, int genreId)
+        {
+            return await _context.UserFilms
+                .Where(uf => uf.UserId == user.Id)
+                .Where(uf => uf.Film.FilmGenres.Any(fg => fg.GenreId == genreId))
+                .Select(uf => uf.Film)
+                .ToListAsync();
+        }
+
         public async Task<FilmGenre?> RemoveGenreFromFilmAsync(int genreId, int filmId)
         {
             var filmGenreModel = await _context.FilmGenres.FirstOrDefaultAsync(fg => fg.GenreId == genreId && fg.Film.Id == filmId);

@@ -15,7 +15,6 @@ namespace api.Interfaces
         Task<List<Person>> GetDirectorsByUserAsync(User user);
         Task<List<Genre>> GetGenresByUserAsync(User user);
         Task<List<Theme>> GetThemesByUserAsync(User user);
-        Task<List<Film>> GetFilmsByUserAndGenreAsync(User user, int genreId);
         Task<List<Film>> GetFilmsByUserAndThemeAsync(User user, int themeId);
         Task<List<Film>> GetFilmsByUserAndActorAsync(User user, int actorId);
         Task<List<Film>> GetFilmsByUserAndDirectorAsync(User user, int directorId);

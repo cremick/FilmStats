@@ -13,6 +13,7 @@ namespace api.Interfaces
         Task<List<Genre>> GetAllGenresAsync();
         Task<Genre?> GetGenreByIdAsync(int genreId);
         Task<List<Film>> GetFilmsByGenreAsync(int genreId);
+        Task<List<Film>> GetFilmsByUserAndGenreAsync(User user, int genreId);
 
         // POST Endpoints
         Task<Genre> CreateGenreAsync(Genre genreModel);

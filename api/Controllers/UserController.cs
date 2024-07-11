@@ -166,22 +166,6 @@ namespace api.Controllers
             return Ok(filmDtos);
         }
 
-        [HttpGet("films/genre/{genreId:int}")]
-        [Authorize]
-        public async Task<IActionResult> GetFilmsByUserAndGenre(int genreId)
-        {
-            var user = await GetUserAsync();
-            if (user == null)
-                return NotFound();
-
-            // TODO: Check if genre exists (import genre repo)?
-
-            var films = await _userRepo.GetFilmsByUserAndGenreAsync(user, genreId);
-            var filmDtos = films.Select(film => film.ToFilmDto()).ToList();
-
-            return Ok(filmDtos);
-        }
-
         [HttpGet("films/theme/{themeId:int}")]
         [Authorize]
         public async Task<IActionResult> GetFilmsByUserAndTheme(int themeId)

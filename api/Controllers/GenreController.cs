@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Dtos.Genre;
+using api.Extensions;
 using api.Interfaces;
 using api.Mappers;
 using api.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers
@@ -15,10 +17,12 @@ namespace api.Controllers
     [ApiController]
     public class GenreController : ControllerBase
     {
+        private readonly UserManager<User> _userManager;
         private readonly IGenreRepository _genreRepo;
         private readonly IFilmRepository _filmRepo;
-        public GenreController(IGenreRepository genreRepo, IFilmRepository filmRepo)
+        public GenreController(IGenreRepository genreRepo, IFilmRepository filmRepo, UserManager<User> userManager)
         {
+            _userManager = userManager;
             _genreRepo = genreRepo;
             _filmRepo = filmRepo;
         }
@@ -57,6 +61,27 @@ namespace api.Controllers
                 return BadRequest("Genre not found");
 
             var films = await _genreRepo.GetFilmsByGenreAsync(genreId);
+            var filmDtos = films.Select(film => film.ToFilmDto()).ToList();
+
+            return Ok(filmDtos);
+        }
+
+        [HttpGet("{genreId:int}/user/films")]
+        [Authorize]
+        public async Task<IActionResult> GetFilmsByUserAndGenre(int genreId)
+        {
+            // Check if user and genre exists
+            var username = User.GetUsername();
+            var user = await _userManager.FindByNameAsync(username);
+            var genre = await _genreRepo.GetGenreByIdAsync(genreId);
+            
+            if (user == null)
+                return BadRequest("User not found");
+
+            if (genre == null)
+                return BadRequest("Genre not found");
+
+            var films = await _genreRepo.GetFilmsByUserAndGenreAsync(user, genreId);
             var filmDtos = films.Select(film => film.ToFilmDto()).ToList();
 
             return Ok(filmDtos);
