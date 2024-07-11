@@ -85,10 +85,5 @@ namespace api.Repository
             await _context.SaveChangesAsync();
             return filmGenreModel;
         }
-
-        public Task<Genre?> UpdatePersonAsync(int personId, UpdateGenreDto updateGenreDto)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

@@ -22,8 +22,5 @@ namespace api.Interfaces
         // DELETE Endpoints
         Task<Theme?> DeleteThemeAsync(int themeId);
         Task<FilmTheme?> RemoveThemeFromFilmAsync(int themeId, int filmId);
-
-        // PUT Endpoints
-        Task<Theme?> UpdatePersonAsync(int personId, UpdateThemeDto updateThemeDto);
     }
 }

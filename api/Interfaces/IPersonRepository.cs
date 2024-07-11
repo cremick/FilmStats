@@ -17,9 +17,6 @@ namespace api.Interfaces
         // POST Endpoints
         Task<Person> CreatePersonAsync(Person personModel);
 
-        // PUT Endpoints
-        Task<Person?> UpdatePersonAsync(int personId, UpdatePersonDto updatePersonDto);
-
         // DELETE Endpoints
         Task<Person?> DeletePersonAsync(int personId);
     }

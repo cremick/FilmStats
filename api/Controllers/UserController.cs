@@ -118,17 +118,20 @@ namespace api.Controllers
         }
 
         [HttpGet("ratings/film/{filmId:int}")]
+        [Authorize]
         public async Task<IActionResult> GetRatingByUserAndFilm(int filmId)
         {
             var user = await GetUserAsync();
-            if (user == null)
-                return NotFound();
+            var film = await _filmRepo.GetFilmByIdAsync(filmId);
 
-            // TODO: Check if film exists (import film repo)?
+            if (user == null)
+                return BadRequest("User not found");
+            if (film == null)
+                return BadRequest("Film not found");
 
             var rating = await _userRepo.GetRatingByUserAndFilmAsync(user, filmId);
             if (rating == null)
-                return NotFound();
+                return NotFound("You haven't rated this film");
             
             var ratingDto = rating.ToRatingDto();
             return Ok(ratingDto);

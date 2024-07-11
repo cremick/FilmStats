@@ -22,8 +22,5 @@ namespace api.Interfaces
         // DELETE Endpoints
         Task<Genre?> DeleteGenreAsync(int genreId);
         Task<FilmGenre?> RemoveGenreFromFilmAsync(int genreId, int filmId);
-
-        // PUT Endpoints
-        Task<Genre?> UpdatePersonAsync(int personId, UpdateGenreDto updateGenreDto);
     }
 }

@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers
 {
-    [Route("directors")]
+    [Route("api/directors")]
     [ApiController]
     public class DirectorController : ControllerBase
     {

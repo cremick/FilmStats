@@ -53,10 +53,5 @@ namespace api.Repository
         {
             return await _context.People.FirstOrDefaultAsync(p => p.Slug == personSlug);
         }
-
-        public Task<Person?> UpdatePersonAsync(int personId, UpdatePersonDto updatePersonDto)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

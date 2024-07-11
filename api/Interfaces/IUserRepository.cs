@@ -22,11 +22,7 @@ namespace api.Interfaces
         Task<UserFilm> AddFilmToUserWatchListAsync(UserFilm userFilm);
         Task<Rating> AddRatingToFilmAsync(User user, int filmId, int ratingId);
 
-        // PUT Endpoints
-        Task<Rating?> UserUpdateRatingForFilmAsync(User user, int filmId, int ratingId);
-
         // DELETE Endpoints
         Task<UserFilm?> RemoveFilmFromUserWatchListAsync(User user, int filmId);
-        Task<Rating?> RemoveRatingFromFilmAsync(User user, int filmId, int ratingId);
     }
 }

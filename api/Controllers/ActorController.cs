@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers
 {
-    [Route("actors")]
+    [Route("api/actors")]
     [ApiController]
     public class ActorController : ControllerBase
     {

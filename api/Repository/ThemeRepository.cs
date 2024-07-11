@@ -85,10 +85,5 @@ namespace api.Repository
             await _context.SaveChangesAsync();
             return filmThemeModel;
         }
-
-        public Task<Theme?> UpdatePersonAsync(int personId, UpdateThemeDto updateThemeDto)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

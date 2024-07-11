@@ -100,10 +100,5 @@ namespace api.Repository
                 .Select(ft => ft.Theme)
                 .ToListAsync();
         }
-
-        public Task<Film?> UpdateFilmAsync(int filmId, UpdateFilmDto updateFilmDto)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

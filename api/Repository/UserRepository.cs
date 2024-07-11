@@ -101,15 +101,5 @@ namespace api.Repository
             await _context.SaveChangesAsync();
             return userFilmModel;
         }
-
-        public Task<Rating?> RemoveRatingFromFilmAsync(User user, int filmId, int ratingId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Rating?> UserUpdateRatingForFilmAsync(User user, int filmId, int ratingId)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
