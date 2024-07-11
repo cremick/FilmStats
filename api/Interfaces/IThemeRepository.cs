@@ -13,6 +13,7 @@ namespace api.Interfaces
         Task<List<Theme>> GetAllThemesAsync();
         Task<Theme?> GetThemeByIdAsync(int themeId);
         Task<List<Film>> GetFilmsByThemeAsync(int themeId);
+        Task<List<Film>> GetFilmsByUserAndThemeAsync(User user, int themeId);
 
         // POST Endpoints
         Task<Theme> CreateThemeAsync(Theme themeModel);

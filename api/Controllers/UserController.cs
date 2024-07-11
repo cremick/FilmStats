@@ -134,22 +134,6 @@ namespace api.Controllers
             return Ok(ratingDto);
         }
 
-        [HttpGet("films/theme/{themeId:int}")]
-        [Authorize]
-        public async Task<IActionResult> GetFilmsByUserAndTheme(int themeId)
-        {
-            var user = await GetUserAsync();
-            if (user == null)
-                return NotFound();
-
-            // TODO: Check if theme exists (import theme repo)?
-
-            var films = await _userRepo.GetFilmsByUserAndThemeAsync(user, themeId);
-            var filmDtos = films.Select(film => film.ToFilmDto()).ToList();
-
-            return Ok(filmDtos);
-        }
-
         [HttpPost("films/{filmId:int}/watch")]
         [Authorize]
         public async Task<IActionResult> AddFilmToWatchList(int filmId)

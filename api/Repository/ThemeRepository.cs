@@ -58,6 +58,15 @@ namespace api.Repository
                 .ToListAsync();
         }
 
+        public async Task<List<Film>> GetFilmsByUserAndThemeAsync(User user, int themeId)
+        {
+            return await _context.UserFilms
+                .Where(uf => uf.UserId == user.Id)
+                .Where(uf => uf.Film.FilmThemes.Any(ft => ft.ThemeId == themeId))
+                .Select(uf => uf.Film)
+                .ToListAsync();
+        }
+
         public async Task<Theme?> GetThemeByIdAsync(int themeId)
         {
             return await _context.Themes.FirstOrDefaultAsync(t => t.Id == themeId);

@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Dtos.Theme;
+using api.Extensions;
 using api.Interfaces;
 using api.Mappers;
 using api.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers
@@ -15,10 +17,12 @@ namespace api.Controllers
     [ApiController]
     public class ThemeController : ControllerBase
     {
+        private readonly UserManager<User> _userManager;
         private readonly IThemeRepository _themeRepo;
         private readonly IFilmRepository _filmRepo;
-        public ThemeController(IThemeRepository themeRepo, IFilmRepository filmRepo)
+        public ThemeController(IThemeRepository themeRepo, IFilmRepository filmRepo, UserManager<User> userManager)
         {
+            _userManager = userManager;
             _themeRepo = themeRepo;
             _filmRepo = filmRepo;
         }
@@ -57,6 +61,27 @@ namespace api.Controllers
                 return BadRequest("Theme not found");
 
             var films = await _themeRepo.GetFilmsByThemeAsync(themeId);
+            var filmDtos = films.Select(film => film.ToFilmDto()).ToList();
+
+            return Ok(filmDtos);
+        }
+
+        [HttpGet("{themeId:int}/user/films")]
+        [Authorize]
+        public async Task<IActionResult> GetFilmsByUserAndTheme(int themeId)
+        {
+            // Check if user and theme exist
+            var username = User.GetUsername();
+            var user = await _userManager.FindByNameAsync(username);
+            var theme = await _themeRepo.GetThemeByIdAsync(themeId);
+
+            if (user == null)
+                return BadRequest("User not found");
+
+            if (theme == null)
+                return BadRequest("Theme not found");
+
+            var films = await _themeRepo.GetFilmsByUserAndThemeAsync(user, themeId);
             var filmDtos = films.Select(film => film.ToFilmDto()).ToList();
 
             return Ok(filmDtos);
