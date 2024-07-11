@@ -3,46 +3,41 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Dtos.Theme;
-using api.Helpers;
 using api.Interfaces;
 using api.Mappers;
+using api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-// TODO: ADD AUTHORIZE TO ENDPOINTS
-
 namespace api.Controllers
 {
-    [Route("api/theme")]
+    [Route("api/themes")]
     [ApiController]
     public class ThemeController : ControllerBase
     {
         private readonly IThemeRepository _themeRepo;
-        public ThemeController(IThemeRepository themeRepo)
+        private readonly IFilmRepository _filmRepo;
+        public ThemeController(IThemeRepository themeRepo, IFilmRepository filmRepo)
         {
             _themeRepo = themeRepo;
+            _filmRepo = filmRepo;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] ThemeQueryObject query)
+        [Authorize]
+        public async Task<IActionResult> GetAllThemes()
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            
-            var themes = await _themeRepo.GetAllAsync(query);
+            var themes = await _themeRepo.GetAllThemesAsync();
+            var themeDtos = themes.Select(t => t.ToThemeDto()).ToList();
 
-            var themeDto = themes.Select(f => f.ToThemeDto()).ToList();
-
-            return Ok(themeDto);
+            return Ok(themeDtos);
         }
 
-        [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetById([FromRoute] int id)
+        [HttpGet("{themeId:int}")]
+        [Authorize]
+        public async Task<IActionResult> GetThemeById(int themeId)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var theme = await _themeRepo.GetByIdAsync(id);
+            var theme = await _themeRepo.GetThemeByIdAsync(themeId);
 
             if (theme == null)
             {
@@ -52,51 +47,112 @@ namespace api.Controllers
             return Ok(theme.ToThemeDto());
         }
 
+        [HttpGet("{themeId:int}/films")]
+        [Authorize]
+        public async Task<IActionResult> GetFilmsByTheme(int themeId)
+        {
+            // Check if theme exists
+            var theme = await _themeRepo.GetThemeByIdAsync(themeId);
+            if (theme == null)
+                return BadRequest("Theme not found");
+
+            var films = await _themeRepo.GetFilmsByThemeAsync(themeId);
+            var filmDtos = films.Select(film => film.ToFilmDto()).ToList();
+
+            return Ok(filmDtos);
+        }
+
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateThemeDto themeDto)
+        [Authorize]
+        public async Task<IActionResult> CreateTheme([FromBody] CreateThemeDto createThemeDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var themeModel = themeDto.ToThemeFromCreateDto();
+            var themeModel = createThemeDto.ToThemeFromCreateDto();
+            await _themeRepo.CreateThemeAsync(themeModel);
 
-            await _themeRepo.CreateAsync(themeModel);
-
-            return CreatedAtAction(nameof(GetById), new { id = themeModel.Id }, themeModel.ToThemeDto());
+            return CreatedAtAction(nameof(GetThemeById), new { themeId = themeModel.Id }, themeModel.ToThemeDto());
         }
 
-        [HttpPut]
-        [Route("{id:int}")]
-        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateThemeDto updateDto)
+        [HttpDelete("{themeId:int}")]
+        [Authorize]
+        public async Task<IActionResult> DeleteTheme(int themeId)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var themeModel = await _themeRepo.UpdateAsync(id, updateDto);
+            var themeModel = await _themeRepo.DeleteThemeAsync(themeId);
 
             if (themeModel == null)
             {
-                return NotFound();
-            }
-
-            return Ok(themeModel.ToThemeDto());
-        }
-
-        [HttpDelete]
-        [Route("{id:int}")]
-        public async Task<IActionResult> Delete([FromRoute] int id)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var themeModel = await _themeRepo.DeleteAsync(id);
-
-            if (themeModel == null)
-            {
-                return NotFound();
+                return BadRequest("Theme not found");
             }
 
             return NoContent();
+        }
+
+        [HttpPost("{themeId:int}/film/{filmId:int}")]
+        [Authorize]
+        public async Task<IActionResult> AddThemeToFilm(int themeId, int filmId)
+        {
+            // Check if film and theme exist
+            var theme = await _themeRepo.GetThemeByIdAsync(themeId);
+            var film = await _filmRepo.GetFilmByIdAsync(filmId);
+            
+            if (theme == null)
+                return BadRequest("Theme not found");
+            if (film == null)
+                return BadRequest("Film not found");
+
+            // Check film is already apart of this theme
+            var themeFilms = await _themeRepo.GetFilmsByThemeAsync(themeId);
+            if (themeFilms.Any(film => film.Id == filmId))
+                return BadRequest("Cannot add same theme to film");
+
+            var filmThemeModel = new FilmTheme
+            {
+                FilmId = film.Id,
+                ThemeId = theme.Id,
+                Film = film,
+                Theme = theme
+            };
+
+            var createdFilmTheme = await _themeRepo.AddThemeToFilm(filmThemeModel);
+            if (createdFilmTheme == null)
+            {
+                return StatusCode(500, "Could not create");
+            }
+            else
+            {
+                return Created();
+            }
+        }
+
+        [HttpDelete("{themeId:int}/film/{filmId:int}")]
+        [Authorize]
+        public async Task<IActionResult> RemoveThemeFromFilm(int themeId, int filmId)
+        {
+             // Check if film and theme exist
+            var theme = await _themeRepo.GetThemeByIdAsync(themeId);
+            var film = await _filmRepo.GetFilmByIdAsync(filmId);
+            
+            if (theme == null)
+                return BadRequest("Theme not found");
+            if (film == null)
+                return BadRequest("Film not found");
+
+            // Check if film is aleady a part of the theme
+            var filmThemes = await _themeRepo.GetFilmsByThemeAsync(themeId);
+            var filteredFilms = filmThemes.Where(f => f.Id == filmId).ToList();
+
+            if (filteredFilms.Count == 1)
+            {
+                await _themeRepo.RemoveThemeFromFilmAsync(themeId, filmId);
+            }
+            else
+            {
+                return BadRequest("Film is not a part of this theme");
+            }
+
+            return Ok();
         }
     }
 }

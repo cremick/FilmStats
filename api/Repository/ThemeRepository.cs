@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using api.Data;
 using api.Dtos.Theme;
-using api.Helpers;
 using api.Interfaces;
 using api.Models;
 using Microsoft.EntityFrameworkCore;
@@ -18,17 +17,23 @@ namespace api.Repository
         {
             _context = context;
         }
+        public async Task<FilmTheme> AddThemeToFilm(FilmTheme filmTheme)
+        {
+            await _context.FilmThemes.AddAsync(filmTheme);
+            await _context.SaveChangesAsync();
+            return filmTheme;
+        }
 
-        public async Task<Theme> CreateAsync(Theme themeModel)
+        public async Task<Theme> CreateThemeAsync(Theme themeModel)
         {
             await _context.Themes.AddAsync(themeModel);
             await _context.SaveChangesAsync();
             return themeModel;
         }
 
-        public async Task<Theme?> DeleteAsync(int id)
+        public async Task<Theme?> DeleteThemeAsync(int themeId)
         {
-            var themeModel = await _context.Themes.FirstOrDefaultAsync(x => x.Id == id);
+            var themeModel = await _context.Themes.FirstOrDefaultAsync(theme => theme.Id == themeId);
 
             if (themeModel == null)
             {
@@ -40,50 +45,41 @@ namespace api.Repository
             return themeModel;
         }
 
-        public async Task<List<Theme>> GetAllAsync(ThemeQueryObject query)
+        public async Task<List<Theme>> GetAllThemesAsync()
         {
-            // Get all themes from the table, and make a queryable object
-            var themes = _context.Themes.AsQueryable();
-
-            // Filtering
-            if (!string.IsNullOrWhiteSpace(query.Title))
-            {
-                themes = themes.Where(f => f.Title.Contains(query.Title));
-            }
-
-            // Sorting
-            if (!string.IsNullOrWhiteSpace(query.SortBy))
-            {
-                if (query.SortBy.Equals("Title", StringComparison.OrdinalIgnoreCase))
-                {
-                    themes = query.IsDescending ? themes.OrderByDescending(t => t.Title) : themes.OrderBy(t => t.Title);
-                }
-            }
-
-            var skipNumber = (query.PageNumber - 1) * query.PageSize;
-
-            return await themes.Skip(skipNumber).Take(query.PageSize).ToListAsync();
+            return await _context.Themes.ToListAsync();
         }
 
-        public async Task<Theme?> GetByIdAsync(int id)
+        public async Task<List<Film>> GetFilmsByThemeAsync(int themeId)
         {
-            return await _context.Themes.FirstOrDefaultAsync(i => i.Id == id);
+            return await _context.FilmThemes
+                .Where(ft => ft.ThemeId == themeId)
+                .Select(ft => ft.Film)
+                .ToListAsync();
         }
 
-        public async Task<Theme?> UpdateAsync(int id, UpdateThemeDto themeDto)
+        public async Task<Theme?> GetThemeByIdAsync(int themeId)
         {
-            var existingTheme = await _context.Themes.FirstOrDefaultAsync(x => x.Id == id);
+            return await _context.Themes.FirstOrDefaultAsync(t => t.Id == themeId);
+        }
 
-            if (existingTheme == null)
+        public async Task<FilmTheme?> RemoveThemeFromFilmAsync(int themeId, int filmId)
+        {
+            var filmThemeModel = await _context.FilmThemes.FirstOrDefaultAsync(ft => ft.ThemeId == themeId && ft.Film.Id == filmId);
+
+            if (filmThemeModel == null)
             {
                 return null;
             }
 
-            existingTheme.Title = themeDto.Title;
-
+            _context.FilmThemes.Remove(filmThemeModel);
             await _context.SaveChangesAsync();
+            return filmThemeModel;
+        }
 
-            return existingTheme;
+        public Task<Theme?> UpdatePersonAsync(int personId, UpdateThemeDto updateThemeDto)
+        {
+            throw new NotImplementedException();
         }
     }
 }

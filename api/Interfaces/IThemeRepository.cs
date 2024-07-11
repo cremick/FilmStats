@@ -3,17 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Dtos.Theme;
-using api.Helpers;
 using api.Models;
 
 namespace api.Interfaces
 {
     public interface IThemeRepository
     {
-        Task<List<Theme>> GetAllAsync(ThemeQueryObject query);
-        Task<Theme?> GetByIdAsync(int id);
-        Task<Theme> CreateAsync(Theme themeModel);
-        Task<Theme?> UpdateAsync(int id, UpdateThemeDto themeDto);
-        Task<Theme?> DeleteAsync(int id);
+        // GET Endpoints
+        Task<List<Theme>> GetAllThemesAsync();
+        Task<Theme?> GetThemeByIdAsync(int themeId);
+        Task<List<Film>> GetFilmsByThemeAsync(int themeId);
+
+        // POST Endpoints
+        Task<Theme> CreateThemeAsync(Theme themeModel);
+        Task<FilmTheme> AddThemeToFilm(FilmTheme filmTheme);
+
+        // DELETE Endpoints
+        Task<Theme?> DeleteThemeAsync(int themeId);
+        Task<FilmTheme?> RemoveThemeFromFilmAsync(int themeId, int filmId);
+
+        // PUT Endpoints
+        Task<Theme?> UpdatePersonAsync(int personId, UpdateThemeDto updateThemeDto);
     }
 }

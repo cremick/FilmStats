@@ -12,7 +12,7 @@ namespace api.Repository
 {
     public class GenreRepository : IGenreRepository
     {
-        ApplicationDBContext _context;
+        private readonly ApplicationDBContext _context;
         public GenreRepository(ApplicationDBContext context)
         {
             _context = context;

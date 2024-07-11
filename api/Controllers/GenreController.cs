@@ -15,8 +15,8 @@ namespace api.Controllers
     [ApiController]
     public class GenreController : ControllerBase
     {
-        IGenreRepository _genreRepo;
-        IFilmRepository _filmRepo;
+        private readonly IGenreRepository _genreRepo;
+        private readonly IFilmRepository _filmRepo;
         public GenreController(IGenreRepository genreRepo, IFilmRepository filmRepo)
         {
             _genreRepo = genreRepo;
