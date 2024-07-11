@@ -13,24 +13,14 @@ namespace api.Interfaces
         Task<List<Person>> GetAllPeopleAsync();
         Task<Person?> GetPersonByIdAsync(int personId);
         Task<Person?> GetPersonBySlugAsync(string personSlug);
-        Task<List<Person>> GetAllActorsAsync();
-        Task<List<Person>> GetAllDirectorsAsync();
-        Task<List<Film>> GetFilmsByActorAsync(int actorId);
-        Task<List<Film>> GetFilmsByDirectorAsync(int directorId);
-        Task<List<Film>> GetFilmsByUserAndActorAsync(User user, int actorId);
-        Task<List<Film>> GetFilmsByUserAndDirectorAsync(User user, int directorId);
 
         // POST Endpoints
         Task<Person> CreatePersonAsync(Person personModel);
-        Task<FilmActor> AddActorToFilmAsync(FilmActor filmActor);
-        Task<FilmDirector> AddDirectorToFilmAsync(FilmDirector filmDirector);
 
         // PUT Endpoints
         Task<Person?> UpdatePersonAsync(int personId, UpdatePersonDto updatePersonDto);
 
         // DELETE Endpoints
         Task<Person?> DeletePersonAsync(int personId);
-        Task<FilmActor?> RemoveActorFromFilmAsync(int actorId, int filmId);
-        Task<FilmDirector?> RemoveDirectorFromFilmAsync(int directorId, int filmId);
     }
 }
