@@ -18,50 +18,44 @@ namespace api.Repository
             _context = context;
         }
 
-        public async Task<Rating> CreateAsync(Rating ratingModel)
+        public async Task<Rating> CreateRatingAsync(Rating ratingModel)
         {
             await _context.Ratings.AddAsync(ratingModel);
             await _context.SaveChangesAsync();
             return ratingModel;
         }
 
-        public Task<Rating?> DeleteAsync(int id)
+        public async Task<Rating?> DeleteRatingAsync(int ratingId)
         {
-            throw new NotImplementedException();
-        }
+            var ratingModel = await _context.Ratings.FirstOrDefaultAsync(rating => rating.Id == ratingId);
 
-        public async Task<List<Rating>> GetAllAsync(RatingQueryObject query)
-        {
-            var ratings = _context.Ratings.Include(u => u.User).AsQueryable();
-
-            // Filtering
-            if (query.Score != null)
+            if (ratingModel == null)
             {
-                ratings = ratings.Where(r => r.Score == query.Score);
+                return null;
             }
 
-            // Sorting
-            if (!string.IsNullOrWhiteSpace(query.SortBy))
-            {
-                if (query.SortBy.Equals("Score", StringComparison.OrdinalIgnoreCase))
-                {
-                    ratings = query.IsDescending ? ratings.OrderByDescending(f => f.Score) : ratings.OrderBy(f => f.Score);
-                }
-            }
-
-            var skipNumber = (query.PageNumber - 1) * query.PageSize;
-
-            return await ratings.Skip(skipNumber).Take(query.PageSize).ToListAsync();
+            _context.Ratings.Remove(ratingModel);
+            await _context.SaveChangesAsync();
+            return ratingModel;
         }
 
-        public Task<Rating?> GetByIdAsync(int id)
+        public async Task<List<Rating>> GetRatingsByUserAsync(User user)
         {
-            throw new NotImplementedException();
+            return await _context.Ratings
+                .Where(r => r.UserId == user.Id)
+                .ToListAsync();
         }
 
-        public Task<Rating?> UpdateAsync(int id, Rating ratingModel)
+        public async Task<Rating?> GetRatingByIdAsync(int ratingId)
         {
-            throw new NotImplementedException();
+            return await _context.Ratings.FirstOrDefaultAsync(r => r.Id == ratingId);
+        }
+
+        public async Task<Rating?> GetRatingByUserAndFilmAsync(User user, int filmId)
+        {
+            return await _context.Ratings
+                .Where(r => r.UserId == user.Id && r.FilmId == filmId)
+                .FirstOrDefaultAsync();
         }
     }
 }

@@ -103,40 +103,6 @@ namespace api.Controllers
             return Ok(themeDtos);
         }
 
-        [HttpGet("ratings")]
-        [Authorize]
-        public async Task<IActionResult> GetRatingsByUser()
-        {
-            var user = await GetUserAsync();
-            if (user == null)
-                return NotFound();
-
-            var ratings = await _userRepo.GetRatingsByUserAsync(user);
-            var ratingDtos = ratings.Select(rating => rating.ToRatingDto()).ToList();
-
-            return Ok(ratingDtos);
-        }
-
-        [HttpGet("ratings/film/{filmId:int}")]
-        [Authorize]
-        public async Task<IActionResult> GetRatingByUserAndFilm(int filmId)
-        {
-            var user = await GetUserAsync();
-            var film = await _filmRepo.GetFilmByIdAsync(filmId);
-
-            if (user == null)
-                return BadRequest("User not found");
-            if (film == null)
-                return BadRequest("Film not found");
-
-            var rating = await _userRepo.GetRatingByUserAndFilmAsync(user, filmId);
-            if (rating == null)
-                return NotFound("You haven't rated this film");
-            
-            var ratingDto = rating.ToRatingDto();
-            return Ok(ratingDto);
-        }
-
         [HttpPost("films/{filmId:int}/watch")]
         [Authorize]
         public async Task<IActionResult> AddFilmToWatchList(int filmId)

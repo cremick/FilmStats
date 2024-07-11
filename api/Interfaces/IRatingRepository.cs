@@ -9,10 +9,15 @@ namespace api.Interfaces
 {
     public interface IRatingRepository
     {
-        Task<List<Rating>> GetAllAsync(RatingQueryObject query);
-        Task<Rating?> GetByIdAsync(int id);
-        Task<Rating> CreateAsync(Rating ratingModel);
-        Task<Rating?> UpdateAsync(int id, Rating ratingModel);
-        Task<Rating?> DeleteAsync(int id);
+        // GET Endpoints
+        Task<List<Rating>> GetRatingsByUserAsync(User user);
+        Task<Rating?> GetRatingByIdAsync(int ratingId);
+        Task<Rating?> GetRatingByUserAndFilmAsync(User user, int filmId);
+
+        // POST Endpoints
+        Task<Rating> CreateRatingAsync(Rating ratingModel);
+        
+        // DELETE Endpoints
+        Task<Rating?> DeleteRatingAsync(int ratingId);
     }
 }

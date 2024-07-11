@@ -25,11 +25,6 @@ namespace api.Repository
             return userFilm;
         }
 
-        public Task<Rating> AddRatingToFilmAsync(User user, int filmId, int ratingId)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<List<Person>> GetActorsByUserAsync(User user)
         {
             return await _context.UserFilms
@@ -62,20 +57,6 @@ namespace api.Repository
                 .Where(uf => uf.UserId == user.Id)
                 .SelectMany(uf => uf.Film.FilmGenres.Select(fg => fg.Genre))
                 .Distinct()
-                .ToListAsync();
-        }
-
-        public async Task<Rating?> GetRatingByUserAndFilmAsync(User user, int filmId)
-        {
-            return await _context.Ratings
-                .Where(r => r.UserId == user.Id && r.FilmId == filmId)
-                .FirstOrDefaultAsync();
-        }
-
-        public async Task<List<Rating>> GetRatingsByUserAsync(User user)
-        {
-            return await _context.Ratings
-                .Where(r => r.UserId == user.Id)
                 .ToListAsync();
         }
 
