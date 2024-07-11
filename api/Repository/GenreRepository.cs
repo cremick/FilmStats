@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using api.Data;
 using api.Dtos.Genre;
-using api.Helpers;
 using api.Interfaces;
 using api.Models;
 using Microsoft.EntityFrameworkCore;
@@ -13,22 +12,28 @@ namespace api.Repository
 {
     public class GenreRepository : IGenreRepository
     {
-        private readonly ApplicationDBContext _context;
+        ApplicationDBContext _context;
         public GenreRepository(ApplicationDBContext context)
         {
             _context = context;
         }
+        public async Task<FilmGenre> AddGenreToFilm(FilmGenre filmGenre)
+        {
+            await _context.FilmGenres.AddAsync(filmGenre);
+            await _context.SaveChangesAsync();
+            return filmGenre;
+        }
 
-        public async Task<Genre> CreateAsync(Genre genreModel)
+        public async Task<Genre> CreateGenreAsync(Genre genreModel)
         {
             await _context.Genres.AddAsync(genreModel);
             await _context.SaveChangesAsync();
             return genreModel;
         }
 
-        public async Task<Genre?> DeleteAsync(int id)
+        public async Task<Genre?> DeleteGenreAsync(int genreId)
         {
-            var genreModel = await _context.Genres.FirstOrDefaultAsync(x => x.Id == id);
+            var genreModel = await _context.Genres.FirstOrDefaultAsync(genre => genre.Id == genreId);
 
             if (genreModel == null)
             {
@@ -40,50 +45,41 @@ namespace api.Repository
             return genreModel;
         }
 
-        public async Task<List<Genre>> GetAllAsync(GenreQueryObject query)
+        public async Task<List<Genre>> GetAllGenresAsync()
         {
-            // Get all genres from the table, and make a queryable object
-            var genres = _context.Genres.AsQueryable();
-
-            // Filtering
-            if (!string.IsNullOrWhiteSpace(query.Title))
-            {
-                genres = genres.Where(f => f.Title.Contains(query.Title));
-            }
-
-            // Sorting
-            if (!string.IsNullOrWhiteSpace(query.SortBy))
-            {
-                if (query.SortBy.Equals("Title", StringComparison.OrdinalIgnoreCase))
-                {
-                    genres = query.IsDescending ? genres.OrderByDescending(g => g.Title) : genres.OrderBy(g => g.Title);
-                }
-            }
-
-            var skipNumber = (query.PageNumber - 1) * query.PageSize;
-
-            return await genres.Skip(skipNumber).Take(query.PageSize).ToListAsync();
+            return await _context.Genres.ToListAsync();
         }
 
-        public async Task<Genre?> GetByIdAsync(int id)
+        public async Task<List<Film>> GetFilmsByGenreAsync(int genreId)
         {
-            return await _context.Genres.FirstOrDefaultAsync(i => i.Id == id);
+            return await _context.FilmGenres
+                .Where(fg => fg.GenreId == genreId)
+                .Select(fg => fg.Film)
+                .ToListAsync();
         }
 
-        public async Task<Genre?> UpdateAsync(int id, UpdateGenreDto genreDto)
+        public async Task<Genre?> GetGenreByIdAsync(int genreId)
         {
-            var existingGenre = await _context.Genres.FirstOrDefaultAsync(x => x.Id == id);
+            return await _context.Genres.FirstOrDefaultAsync(g => g.Id == genreId);
+        }
 
-            if (existingGenre == null)
+        public async Task<FilmGenre?> RemoveGenreFromFilmAsync(int genreId, int filmId)
+        {
+            var filmGenreModel = await _context.FilmGenres.FirstOrDefaultAsync(fg => fg.GenreId == genreId && fg.Film.Id == filmId);
+
+            if (filmGenreModel == null)
             {
                 return null;
             }
 
-            existingGenre.Title = genreDto.Title;
-           
+            _context.FilmGenres.Remove(filmGenreModel);
             await _context.SaveChangesAsync();
+            return filmGenreModel;
+        }
 
-            return existingGenre;
+        public Task<Genre?> UpdatePersonAsync(int personId, UpdateGenreDto updateGenreDto)
+        {
+            throw new NotImplementedException();
         }
     }
 }

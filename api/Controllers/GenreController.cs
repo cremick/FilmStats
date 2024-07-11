@@ -3,47 +3,41 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Dtos.Genre;
-using api.Helpers;
 using api.Interfaces;
 using api.Mappers;
 using api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-// TODO: ADD AUTHORIZE TO ENDPOINTS
-
 namespace api.Controllers
 {
-    [Route("api/genre")]
+    [Route("api/genres")]
     [ApiController]
     public class GenreController : ControllerBase
     {
-        private readonly IGenreRepository _genreRepo;
-        public GenreController(IGenreRepository genreRepo)
+        IGenreRepository _genreRepo;
+        IFilmRepository _filmRepo;
+        public GenreController(IGenreRepository genreRepo, IFilmRepository filmRepo)
         {
             _genreRepo = genreRepo;
+            _filmRepo = filmRepo;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] GenreQueryObject query)
+        [Authorize]
+        public async Task<IActionResult> GetAllGenres()
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            
-            var genres = await _genreRepo.GetAllAsync(query);
+            var genres = await _genreRepo.GetAllGenresAsync();
+            var genreDtos = genres.Select(g => g.ToGenreDto()).ToList();
 
-            var genreDto = genres.Select(f => f.ToGenreDto()).ToList();
-
-            return Ok(genreDto);
+            return Ok(genreDtos);
         }
 
-        [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetById([FromRoute] int id)
+        [HttpGet("{genreId:int}")]
+        [Authorize]
+        public async Task<IActionResult> GetGenreById(int genreId)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var genre = await _genreRepo.GetByIdAsync(id);
+            var genre = await _genreRepo.GetGenreByIdAsync(genreId);
 
             if (genre == null)
             {
@@ -53,51 +47,112 @@ namespace api.Controllers
             return Ok(genre.ToGenreDto());
         }
 
+        [HttpGet("{genreId:int}/films")]
+        [Authorize]
+        public async Task<IActionResult> GetFilmsByGenre(int genreId)
+        {
+            // Check if genre exists
+            var genre = await _genreRepo.GetGenreByIdAsync(genreId);
+            if (genre == null)
+                return BadRequest("Genre not found");
+
+            var films = await _genreRepo.GetFilmsByGenreAsync(genreId);
+            var filmDtos = films.Select(film => film.ToFilmDto()).ToList();
+
+            return Ok(filmDtos);
+        }
+
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateGenreDto genreDto)
+        [Authorize]
+        public async Task<IActionResult> CreateGenre([FromBody] CreateGenreDto createGenreDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var genreModel = genreDto.ToGenreFromCreateDto();
+            var genreModel = createGenreDto.ToGenreFromCreateDto();
+            await _genreRepo.CreateGenreAsync(genreModel);
 
-            await _genreRepo.CreateAsync(genreModel);
-
-            return CreatedAtAction(nameof(GetById), new { id = genreModel.Id }, genreModel.ToGenreDto());
+            return CreatedAtAction(nameof(GetGenreById), new { genreId = genreModel.Id }, genreModel.ToGenreDto());
         }
 
-        [HttpPut]
-        [Route("{id:int}")]
-        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateGenreDto updateDto)
+        [HttpDelete("{genreId:int}")]
+        [Authorize]
+        public async Task<IActionResult> DeleteGenre(int genreId)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var genreModel = await _genreRepo.UpdateAsync(id, updateDto);
+            var genreModel = await _genreRepo.DeleteGenreAsync(genreId);
 
             if (genreModel == null)
             {
-                return NotFound();
-            }
-
-            return Ok(genreModel.ToGenreDto());
-        }
-
-        [HttpDelete]
-        [Route("{id:int}")]
-        public async Task<IActionResult> Delete([FromRoute] int id)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var genreModel = await _genreRepo.DeleteAsync(id);
-
-            if (genreModel == null)
-            {
-                return NotFound();
+                return BadRequest("Genre not found");
             }
 
             return NoContent();
+        }
+
+        [HttpPost("{genreId:int}/film/{filmId:int}")]
+        [Authorize]
+        public async Task<IActionResult> AddGenreToFilm(int genreId, int filmId)
+        {
+            // Check if film and genre exist
+            var genre = await _genreRepo.GetGenreByIdAsync(genreId);
+            var film = await _filmRepo.GetFilmByIdAsync(filmId);
+            
+            if (genre == null)
+                return BadRequest("Genre not found");
+            if (film == null)
+                return BadRequest("Film not found");
+
+            // Check film is already apart of this genre
+            var genreFilms = await _genreRepo.GetFilmsByGenreAsync(genreId);
+            if (genreFilms.Any(film => film.Id == filmId))
+                return BadRequest("Cannot add same genre to film");
+
+            var filmGenreModel = new FilmGenre
+            {
+                FilmId = film.Id,
+                GenreId = genre.Id,
+                Film = film,
+                Genre = genre
+            };
+
+            var createdFilmGenre = await _genreRepo.AddGenreToFilm(filmGenreModel);
+            if (createdFilmGenre == null)
+            {
+                return StatusCode(500, "Could not create");
+            }
+            else
+            {
+                return Created();
+            }
+        }
+
+        [HttpDelete("{genreId:int}/film/{filmId:int}")]
+        [Authorize]
+        public async Task<IActionResult> RemoveGenreFromFilm(int genreId, int filmId)
+        {
+             // Check if film and genre exist
+            var genre = await _genreRepo.GetGenreByIdAsync(genreId);
+            var film = await _filmRepo.GetFilmByIdAsync(filmId);
+            
+            if (genre == null)
+                return BadRequest("Genre not found");
+            if (film == null)
+                return BadRequest("Film not found");
+
+            // Check if film is aleady a part of the genre
+            var filmGenres = await _genreRepo.GetFilmsByGenreAsync(genreId);
+            var filteredFilms = filmGenres.Where(f => f.Id == filmId).ToList();
+
+            if (filteredFilms.Count == 1)
+            {
+                await _genreRepo.RemoveGenreFromFilmAsync(genreId, filmId);
+            }
+            else
+            {
+                return BadRequest("Film is not a part of this genre");
+            }
+
+            return Ok();
         }
     }
 }

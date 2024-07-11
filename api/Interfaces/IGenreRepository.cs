@@ -3,18 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Dtos.Genre;
-using api.Helpers;
 using api.Models;
 
 namespace api.Interfaces
 {
     public interface IGenreRepository
     {
-        Task<List<Genre>> GetAllAsync(GenreQueryObject query);
-        Task<Genre?> GetByIdAsync(int id);
+        // GET Endpoints
+        Task<List<Genre>> GetAllGenresAsync();
+        Task<Genre?> GetGenreByIdAsync(int genreId);
+        Task<List<Film>> GetFilmsByGenreAsync(int genreId);
 
-        Task<Genre> CreateAsync(Genre genreModel);
-        Task<Genre?> UpdateAsync(int id, UpdateGenreDto genreDto);
-        Task<Genre?> DeleteAsync(int id);
+        // POST Endpoints
+        Task<Genre> CreateGenreAsync(Genre genreModel);
+        Task<FilmGenre> AddGenreToFilm(FilmGenre filmGenre);
+
+        // DELETE Endpoints
+        Task<Genre?> DeleteGenreAsync(int genreId);
+        Task<FilmGenre?> RemoveGenreFromFilmAsync(int genreId, int filmId);
+
+        // PUT Endpoints
+        Task<Genre?> UpdatePersonAsync(int personId, UpdateGenreDto updateGenreDto);
     }
 }

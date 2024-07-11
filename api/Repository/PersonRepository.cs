@@ -125,7 +125,7 @@ namespace api.Repository
             return filmDirectorModel;
         }
 
-        public Task<Film?> UpdatePersonAsync(int personId, UpdatePersonDto updatePersonDto)
+        public Task<Person?> UpdatePersonAsync(int personId, UpdatePersonDto updatePersonDto)
         {
             throw new NotImplementedException();
         }

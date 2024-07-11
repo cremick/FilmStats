@@ -24,7 +24,7 @@ namespace api.Interfaces
         Task<FilmDirector> AddDirectorToFilmAsync(FilmDirector filmDirector);
 
         // PUT Endpoints
-        Task<Film?> UpdatePersonAsync(int personId, UpdatePersonDto updatePersonDto);
+        Task<Person?> UpdatePersonAsync(int personId, UpdatePersonDto updatePersonDto);
 
         // DELETE Endpoints
         Task<Person?> DeletePersonAsync(int personId);
