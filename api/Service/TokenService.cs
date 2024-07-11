@@ -20,10 +20,14 @@ namespace api.Service
         public TokenService(IConfiguration config)
         {
             _config = config;
-            _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JWT:SigningKey"]));
+            var signingKey = _config["JWT:SigningKey"] ?? throw new ArgumentNullException("JWT:SigningKey is not configured.");
+            _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signingKey));
         }
         public string CreateToken(User user)
         {
+            if (string.IsNullOrEmpty(user.Email)) throw new ArgumentException("User email is not set.", nameof(user.Email));
+            if (string.IsNullOrEmpty(user.UserName)) throw new ArgumentException("User name is not set.", nameof(user.UserName));
+            
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),

@@ -58,6 +58,12 @@ builder.Services.AddIdentity<User, IdentityRole>(options => {
 })
 .AddEntityFrameworkStores<ApplicationDBContext>();
 
+var signingKey = builder.Configuration["JWT:SigningKey"];
+if (string.IsNullOrEmpty(signingKey))
+{
+    throw new Exception("JWT SigningKey is not configured.");
+}
+
 builder.Services.AddAuthentication(options => {
     options.DefaultAuthenticateScheme = 
     options.DefaultChallengeScheme = 
@@ -74,13 +80,15 @@ builder.Services.AddAuthentication(options => {
         ValidAudience = builder.Configuration["JWT:Audience"],
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(
-            System.Text.Encoding.UTF8.GetBytes(builder.Configuration["JWT:SigningKey"])
+            System.Text.Encoding.UTF8.GetBytes(signingKey)
         )
     };
 });
 
 builder.Services.AddScoped<IFilmRepository, FilmRepository>();
 builder.Services.AddScoped<IPersonRepository, PersonRepository>();
+builder.Services.AddScoped<IActorRepository, ActorRepository>();
+builder.Services.AddScoped<IDirectorRepository, DirectorRepository>();
 builder.Services.AddScoped<IGenreRepository, GenreRepository>();
 builder.Services.AddScoped<IThemeRepository, ThemeRepository>();
 builder.Services.AddScoped<IRatingRepository, RatingRepository>();
