@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.WebUtilities;
 
 namespace api.Controllers
 {
-    [Route("api/user")]
+    [Route("api/me")]
     [ApiController]
     public class UserController : ControllerBase
     {

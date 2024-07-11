@@ -53,7 +53,7 @@ namespace api.Controllers
             return Ok(filmDtos);
         }
 
-        [HttpGet("{directorId:int}/user/films")]
+        [HttpGet("{directorId:int}/me/films")]
         [Authorize]
         public async Task<IActionResult> GetFilmsByUserAndDirector(int directorId)
         {

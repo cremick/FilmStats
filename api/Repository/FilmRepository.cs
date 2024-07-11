@@ -12,7 +12,7 @@ namespace api.Repository
 {
     public class FilmRepository : IFilmRepository
     {
-        ApplicationDBContext _context;
+        private readonly ApplicationDBContext _context;
         public FilmRepository(ApplicationDBContext context)
         {
             _context = context;

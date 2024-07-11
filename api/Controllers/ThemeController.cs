@@ -66,7 +66,7 @@ namespace api.Controllers
             return Ok(filmDtos);
         }
 
-        [HttpGet("{themeId:int}/user/films")]
+        [HttpGet("{themeId:int}/me/films")]
         [Authorize]
         public async Task<IActionResult> GetFilmsByUserAndTheme(int themeId)
         {

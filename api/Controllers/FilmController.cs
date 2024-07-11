@@ -14,7 +14,7 @@ namespace api.Controllers
     [ApiController]
     public class FilmController : ControllerBase
     {
-        IFilmRepository _filmRepo;
+        private readonly IFilmRepository _filmRepo;
         public FilmController(IFilmRepository filmRepo)
         {
             _filmRepo = filmRepo;

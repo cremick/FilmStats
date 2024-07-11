@@ -66,7 +66,7 @@ namespace api.Controllers
             return Ok(filmDtos);
         }
 
-        [HttpGet("{genreId:int}/user/films")]
+        [HttpGet("{genreId:int}/me/films")]
         [Authorize]
         public async Task<IActionResult> GetFilmsByUserAndGenre(int genreId)
         {
