@@ -45,7 +45,7 @@ namespace api.Controllers
 
             if (genre == null)
             {
-                return NotFound();
+                return NotFound("Genre not found");
             }
 
             return Ok(genre.ToGenreDto());
@@ -76,10 +76,10 @@ namespace api.Controllers
             var genre = await _genreRepo.GetGenreByIdAsync(genreId);
             
             if (user == null)
-                return BadRequest("User not found");
+                return NotFound("User not found");
 
             if (genre == null)
-                return BadRequest("Genre not found");
+                return NotFound("Genre not found");
 
             var films = await _genreRepo.GetFilmsByUserAndGenreAsync(user, genreId);
             var filmDtos = films.Select(film => film.ToFilmDto()).ToList();
@@ -108,7 +108,7 @@ namespace api.Controllers
 
             if (genreModel == null)
             {
-                return BadRequest("Genre not found");
+                return NotFound("Genre not found");
             }
 
             return NoContent();
@@ -123,14 +123,14 @@ namespace api.Controllers
             var film = await _filmRepo.GetFilmByIdAsync(filmId);
             
             if (genre == null)
-                return BadRequest("Genre not found");
+                return NotFound("Genre not found");
             if (film == null)
-                return BadRequest("Film not found");
+                return NotFound("Film not found");
 
             // Check film is already apart of this genre
             var genreFilms = await _genreRepo.GetFilmsByGenreAsync(genreId);
             if (genreFilms.Any(film => film.Id == filmId))
-                return BadRequest("Cannot add same genre to film");
+                return Conflict("Cannot add same genre to film");
 
             var filmGenreModel = new FilmGenre
             {
@@ -160,9 +160,9 @@ namespace api.Controllers
             var film = await _filmRepo.GetFilmByIdAsync(filmId);
             
             if (genre == null)
-                return BadRequest("Genre not found");
+                return NotFound("Genre not found");
             if (film == null)
-                return BadRequest("Film not found");
+                return NotFound("Film not found");
 
             // Check if film is aleady a part of the genre
             var filmGenres = await _genreRepo.GetFilmsByGenreAsync(genreId);
@@ -171,13 +171,12 @@ namespace api.Controllers
             if (filteredFilms.Count == 1)
             {
                 await _genreRepo.RemoveGenreFromFilmAsync(genreId, filmId);
+                return NoContent();
             }
             else
             {
-                return BadRequest("Film is not a part of this genre");
+                return NotFound("Film is not a part of this genre");
             }
-
-            return Ok();
         }
     }
 }

@@ -45,7 +45,7 @@ namespace api.Controllers
             // Check if person exists
             var director = await _personRepo.GetPersonByIdAsync(directorId);
             if (director == null)
-                return BadRequest("Director not found");
+                return NotFound("Director not found");
 
             var films = await _directorRepo.GetFilmsByDirectorAsync(directorId);
             var filmDtos = films.Select(film => film.ToFilmDto()).ToList();
@@ -63,10 +63,10 @@ namespace api.Controllers
             var director = await _personRepo.GetPersonByIdAsync(directorId);
 
             if (user == null)
-                return BadRequest("User not found");
+                return NotFound("User not found");
 
             if (director == null)
-                return BadRequest("Director not found");
+                return NotFound("Director not found");
 
             var films = await _directorRepo.GetFilmsByUserAndDirectorAsync(user, directorId);
             var filmDtos = films.Select(film => film.ToFilmDto()).ToList();
@@ -83,14 +83,14 @@ namespace api.Controllers
             var film = await _filmRepo.GetFilmByIdAsync(filmId);
             
             if (person == null)
-                return BadRequest("Person not found");
+                return NotFound("Person not found");
             if (film == null)
-                return BadRequest("Film not found");
+                return NotFound("Film not found");
 
             // Check if actor is already apart of this cast
             var directorFilms = await _directorRepo.GetFilmsByDirectorAsync(directorId);
             if (directorFilms.Any(film => film.Id == filmId))
-                return BadRequest("Cannot add same director to film");
+                return Conflict("Cannot add same director to film");
 
             var filmDirectorModel = new FilmDirector
             {
@@ -120,9 +120,9 @@ namespace api.Controllers
             var film = await _filmRepo.GetFilmByIdAsync(filmId);
             
             if (person == null)
-                return BadRequest("Person not found");
+                return NotFound("Person not found");
             if (film == null)
-                return BadRequest("Film not found");
+                return NotFound("Film not found");
 
             // Check if director made this film
             var directorFilms = await _directorRepo.GetFilmsByDirectorAsync(directorId);
@@ -131,13 +131,12 @@ namespace api.Controllers
             if (filteredFilms.Count() == 1)
             {
                 await _directorRepo.RemoveDirectorFromFilmAsync(directorId, filmId);
+                return NoContent();
             }
             else
             {
-                return BadRequest("Director did not make this film");
+                return NotFound("Director did not make this film");
             }
-
-            return Ok();
         }
     }
 }

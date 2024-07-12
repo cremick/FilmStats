@@ -40,7 +40,7 @@ namespace api.Controllers
         {
             var user = await GetUserAsync();
             if (user == null)
-                return BadRequest("User not found");
+                return NotFound("User not found");
 
             var ratings = await _ratingRepo.GetRatingsByUserAsync(user);
             var ratingDtos = ratings.Select(rating => rating.ToRatingDto()).ToList();
@@ -56,9 +56,9 @@ namespace api.Controllers
             var film = await _filmRepo.GetFilmByIdAsync(filmId);
 
             if (user == null)
-                return BadRequest("User not found");
+                return NotFound("User not found");
             if (film == null)
-                return BadRequest("Film not found");
+                return NotFound("Film not found");
 
             var rating = await _ratingRepo.GetRatingByUserAndFilmAsync(user, filmId);
             if (rating == null)
@@ -148,7 +148,7 @@ namespace api.Controllers
 
             await _ratingRepo.DeleteRatingAsync(ratingId);
 
-            return Ok();
+            return NoContent();
         }
     }
 }

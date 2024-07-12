@@ -45,7 +45,7 @@ namespace api.Controllers
 
             if (theme == null)
             {
-                return NotFound();
+                return NotFound("Theme not found");
             }
 
             return Ok(theme.ToThemeDto());
@@ -58,7 +58,7 @@ namespace api.Controllers
             // Check if theme exists
             var theme = await _themeRepo.GetThemeByIdAsync(themeId);
             if (theme == null)
-                return BadRequest("Theme not found");
+                return NotFound("Theme not found");
 
             var films = await _themeRepo.GetFilmsByThemeAsync(themeId);
             var filmDtos = films.Select(film => film.ToFilmDto()).ToList();
@@ -76,10 +76,10 @@ namespace api.Controllers
             var theme = await _themeRepo.GetThemeByIdAsync(themeId);
 
             if (user == null)
-                return BadRequest("User not found");
+                return NotFound("User not found");
 
             if (theme == null)
-                return BadRequest("Theme not found");
+                return NotFound("Theme not found");
 
             var films = await _themeRepo.GetFilmsByUserAndThemeAsync(user, themeId);
             var filmDtos = films.Select(film => film.ToFilmDto()).ToList();
@@ -108,7 +108,7 @@ namespace api.Controllers
 
             if (themeModel == null)
             {
-                return BadRequest("Theme not found");
+                return NotFound("Theme not found");
             }
 
             return NoContent();
@@ -123,14 +123,14 @@ namespace api.Controllers
             var film = await _filmRepo.GetFilmByIdAsync(filmId);
             
             if (theme == null)
-                return BadRequest("Theme not found");
+                return NotFound("Theme not found");
             if (film == null)
-                return BadRequest("Film not found");
+                return NotFound("Film not found");
 
             // Check film is already apart of this theme
             var themeFilms = await _themeRepo.GetFilmsByThemeAsync(themeId);
             if (themeFilms.Any(film => film.Id == filmId))
-                return BadRequest("Cannot add same theme to film");
+                return Conflict("Cannot add same theme to film");
 
             var filmThemeModel = new FilmTheme
             {
@@ -160,9 +160,9 @@ namespace api.Controllers
             var film = await _filmRepo.GetFilmByIdAsync(filmId);
             
             if (theme == null)
-                return BadRequest("Theme not found");
+                return NotFound("Theme not found");
             if (film == null)
-                return BadRequest("Film not found");
+                return NotFound("Film not found");
 
             // Check if film is aleady a part of the theme
             var filmThemes = await _themeRepo.GetFilmsByThemeAsync(themeId);
@@ -171,13 +171,12 @@ namespace api.Controllers
             if (filteredFilms.Count == 1)
             {
                 await _themeRepo.RemoveThemeFromFilmAsync(themeId, filmId);
+                return NoContent();
             }
             else
             {
-                return BadRequest("Film is not a part of this theme");
+                return NotFound("Film is not a part of this theme");
             }
-
-            return Ok();
         }
     }
 }

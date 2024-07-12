@@ -38,7 +38,7 @@ namespace api.Controllers
 
             if (film == null)
             {
-                return NotFound();
+                return NotFound("Film not found");
             }
 
             return Ok(film.ToFilmDto());
@@ -46,13 +46,13 @@ namespace api.Controllers
 
         [HttpGet("{filmSlug}")]
         [Authorize]
-        public async Task<IActionResult> GetFilmById(string filmSlug)
+        public async Task<IActionResult> GetFilmBySlug(string filmSlug)
         {
             var film = await _filmRepo.GetFilmBySlugAsync(filmSlug);
 
             if (film == null)
             {
-                return NotFound();
+                return NotFound("Film not found");
             }
 
             return Ok(film.ToFilmDto());
@@ -64,7 +64,7 @@ namespace api.Controllers
         {
             var film = await _filmRepo.GetFilmByIdAsync(filmId);
             if (film == null)
-                return BadRequest("Film not found");
+                return NotFound("Film not found");
 
             var actors = await _filmRepo.GetActorsByFilmIdAsync(filmId);
             var actorDtos = actors.Select(actor => actor.ToPersonDto()).ToList();
@@ -78,7 +78,7 @@ namespace api.Controllers
         {
             var film = await _filmRepo.GetFilmByIdAsync(filmId);
             if (film == null)
-                return BadRequest("Film not found");
+                return NotFound("Film not found");
 
             var directors = await _filmRepo.GetDirectorsByFilmIdAsync(filmId);
             var directorDtos = directors.Select(director => director.ToPersonDto()).ToList();
@@ -92,7 +92,7 @@ namespace api.Controllers
         {
             var film = await _filmRepo.GetFilmByIdAsync(filmId);
             if (film == null)
-                return BadRequest("Film not found");
+                return NotFound("Film not found");
 
             var genres = await _filmRepo.GetGenresByFilmIdAsync(filmId);
             var genreDtos = genres.Select(genre => genre.ToGenreDto()).ToList();
@@ -106,7 +106,7 @@ namespace api.Controllers
         {
             var film = await _filmRepo.GetFilmByIdAsync(filmId);
             if (film == null)
-                return BadRequest("Film not found");
+                return NotFound("Film not found");
 
             var themes = await _filmRepo.GetThemesByFilmIdAsync(filmId);
             var themeDtos = themes.Select(theme => theme.ToThemeDto()).ToList();
@@ -135,7 +135,7 @@ namespace api.Controllers
 
             if (filmModel == null)
             {
-                return BadRequest("Film not found");
+                return NotFound("Film not found");
             }
 
             return NoContent();

@@ -41,7 +41,7 @@ namespace api.Controllers
 
             if (person == null)
             {
-                return NotFound();
+                return NotFound("Person not found");
             }
 
             return Ok(person.ToPersonDto());
@@ -55,7 +55,7 @@ namespace api.Controllers
 
             if (person == null)
             {
-                return NotFound();
+                return NotFound("Person not found");
             }
 
             return Ok(person.ToPersonDto());
@@ -82,7 +82,7 @@ namespace api.Controllers
 
             if (personModel == null)
             {
-                return BadRequest("Person not found");
+                return NotFound("Person not found");
             }
 
             return NoContent();

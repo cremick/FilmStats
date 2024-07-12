@@ -39,7 +39,7 @@ namespace api.Controllers
         {
             var user = await GetUserAsync();
             if (user == null)
-                return NotFound();
+                return NotFound("User not found");
 
             var films = await _userRepo.GetFilmsByUserAsync(user);
             var filmDtos = films.Select(film => film.ToFilmDto()).ToList();
@@ -53,7 +53,7 @@ namespace api.Controllers
         {
             var user = await GetUserAsync();
             if (user == null)
-                return NotFound();
+                return NotFound("User not found");
 
             var actors = await _userRepo.GetActorsByUserAsync(user);
             var actorDtos = actors.Select(actor => actor.ToPersonDto()).ToList();
@@ -67,7 +67,7 @@ namespace api.Controllers
         {
             var user = await GetUserAsync();
             if (user == null)
-                return NotFound();
+                return NotFound("User not found");
 
             var directors = await _userRepo.GetDirectorsByUserAsync(user);
             var directorDtos = directors.Select(director => director.ToPersonDto()).ToList();
@@ -81,7 +81,7 @@ namespace api.Controllers
         {
             var user = await GetUserAsync();
             if (user == null)
-                return NotFound();
+                return NotFound("User not found");
 
             var genres = await _userRepo.GetGenresByUserAsync(user);
             var genreDtos = genres.Select(genre => genre.ToGenreDto()).ToList();
@@ -95,7 +95,7 @@ namespace api.Controllers
         {
             var user = await GetUserAsync();
             if (user == null)
-                return NotFound();
+                return NotFound("User not found");
 
             var themes = await _userRepo.GetThemesByUserAsync(user);
             var themeDtos = themes.Select(theme => theme.ToThemeDto()).ToList();
@@ -112,14 +112,14 @@ namespace api.Controllers
             var film = await _filmRepo.GetFilmByIdAsync(filmId);
             
             if (user == null)
-                return BadRequest("User not found");
+                return NotFound("User not found");
             if (film == null)
-                return BadRequest("Film not found");
+                return NotFound("Film not found");
 
             // Check if user has already watched this film
             var userFilms = await _userRepo.GetFilmsByUserAsync(user);
             if (userFilms.Any(film => film.Id == filmId))
-                return BadRequest("Cannot add same film to user's films");
+                return Conflict("Cannot add same film to user's films");
 
             var userFilmModel = new UserFilm
             {
@@ -149,9 +149,9 @@ namespace api.Controllers
             var film = await _filmRepo.GetFilmByIdAsync(filmId);
             
             if (user == null)
-                return BadRequest("User not found");
+                return NotFound("User not found");
             if (film == null)
-                return BadRequest("Film not found");
+                return NotFound("Film not found");
 
             // Check if user has already watched this film
             var userFilms = await _userRepo.GetFilmsByUserAsync(user);
@@ -160,13 +160,12 @@ namespace api.Controllers
             if (filteredFilms.Count() == 1)
             {
                 await _userRepo.RemoveFilmFromUserWatchListAsync(user, filmId);
+                return NoContent();
             }
             else
             {
-                return BadRequest("You have not watched this film");
+                return NotFound("You have not watched this film");
             }
-
-            return Ok();
         }
     }
 }
