@@ -44,5 +44,47 @@ namespace api.Helpers
 
             return await films.ToListAsync();
         }
+
+        public async static Task<List<Person>> ApplyPersonQueryAsync(this IQueryable<Person> people, PersonQueryObject query)
+        {
+            // Filtering
+            if (!string.IsNullOrWhiteSpace(query.FirstName))
+            {
+                people = people.Where(p => p.FirstName.Contains(query.FirstName));
+            }
+
+            if (!string.IsNullOrWhiteSpace(query.LastName))
+            {
+                people = people.Where(p => p.LastName.Contains(query.LastName));
+            }
+
+            if (!string.IsNullOrWhiteSpace(query.Gender))
+            {
+                people = people.Where(p => p.Gender.Contains(query.Gender));
+            }
+
+            // Sorting
+            if (!string.IsNullOrWhiteSpace(query.SortBy))
+            {
+                if (query.SortBy.Equals("FirstName", StringComparison.OrdinalIgnoreCase))
+                {
+                    people = query.IsDescending ? people.OrderByDescending(p => p.FirstName) : people.OrderBy(p => p.FirstName);
+                }
+                else if (query.SortBy.Equals("LastName", StringComparison.OrdinalIgnoreCase))
+                {
+                    people = query.IsDescending ? people.OrderByDescending(p => p.LastName) : people.OrderBy(p => p.LastName);
+                }
+                else if (query.SortBy.Equals("BirthDate", StringComparison.OrdinalIgnoreCase))
+                {
+                    people = query.IsDescending ? people.OrderByDescending(p => p.BirthDate) : people.OrderBy(p => p.BirthDate);
+                }
+            }
+
+            // Pagination
+            // var skipNumber = (query.PageNumber - 1) * query.PageSize;
+            // return await people.Skip(skipNumber).Take(query.PageSize).ToListAsync();
+
+            return await people.ToListAsync();
+        }
     }
 }

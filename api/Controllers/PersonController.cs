@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using api.Dtos.Person;
 using api.Extensions;
+using api.Helpers;
 using api.Interfaces;
 using api.Mappers;
 using api.Models;
@@ -25,9 +26,9 @@ namespace api.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetAllPeople()
+        public async Task<IActionResult> GetAllPeople([FromQuery] PersonQueryObject query)
         {
-            var people = await _personRepo.GetAllPeopleAsync();
+            var people = await _personRepo.GetAllPeopleAsync(query);
             var personDtos = people.Select(p => p.ToPersonDto()).ToList();
 
             return Ok(personDtos);

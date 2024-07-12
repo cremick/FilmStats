@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using api.Data;
 using api.Dtos.Person;
+using api.Helpers;
 using api.Interfaces;
 using api.Models;
 using Microsoft.EntityFrameworkCore;
@@ -39,8 +40,14 @@ namespace api.Repository
             return personModel;
         }
 
-        public async Task<List<Person>> GetAllPeopleAsync()
+        public async Task<List<Person>> GetAllPeopleAsync(PersonQueryObject? query = null)
         {
+            if (query != null)
+            {
+                var people = _context.People.AsQueryable();
+                return await people.ApplyPersonQueryAsync(query);
+            }
+
             return await _context.People.ToListAsync();
         }
 
