@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Extensions;
+using api.Helpers;
 using api.Interfaces;
 using api.Mappers;
 using api.Models;
@@ -30,9 +31,9 @@ namespace api.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetAllActors()
+        public async Task<IActionResult> GetAllActors([FromQuery] PersonQueryObject query)
         {
-            var actors = await _actorRepo.GetAllActorsAsync();
+            var actors = await _actorRepo.GetAllActorsAsync(query);
             var personDtos = actors.Select(a => a.ToPersonDto()).ToList();
 
             return Ok(personDtos);

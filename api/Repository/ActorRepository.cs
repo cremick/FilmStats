@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Data;
+using api.Helpers;
 using api.Interfaces;
 using api.Models;
 using Microsoft.EntityFrameworkCore;
@@ -17,11 +18,18 @@ namespace api.Repository
             _context = context;
         }
 
-        public async Task<List<Person>> GetAllActorsAsync()
+        public async Task<List<Person>> GetAllActorsAsync(PersonQueryObject? query = null)
         {
-            return await _context.FilmActors
-                .Select(fa => fa.Actor)
-                .ToListAsync();
+            var films =  _context.FilmActors
+                .Select(fa => fa.Actor);
+
+            if (query != null)
+            {
+                films = films.AsQueryable();
+                return await films.ApplyPersonQueryAsync(query);
+            }
+
+            return await films.ToListAsync();
         }
 
         public async Task<List<Film>> GetFilmsByActorAsync(int actorId)

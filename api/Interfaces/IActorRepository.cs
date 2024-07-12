@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using api.Helpers;
 using api.Models;
 
 namespace api.Interfaces
@@ -9,7 +10,7 @@ namespace api.Interfaces
     public interface IActorRepository
     {
         // GET Endpoints
-        Task<List<Person>> GetAllActorsAsync();
+        Task<List<Person>> GetAllActorsAsync(PersonQueryObject? query = null);
         Task<List<Film>> GetFilmsByActorAsync(int actorId);
         Task<List<Film>> GetFilmsByUserAndActorAsync(User user, int actorId);
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Extensions;
+using api.Helpers;
 using api.Interfaces;
 using api.Mappers;
 using api.Models;
@@ -30,9 +31,9 @@ namespace api.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetAllDirectors()
+        public async Task<IActionResult> GetAllDirectors([FromQuery] PersonQueryObject query)
         {
-            var directors = await _directorRepo.GetAllDirectorsAsync();
+            var directors = await _directorRepo.GetAllDirectorsAsync(query);
             var personDtos = directors.Select(d => d.ToPersonDto()).ToList();
 
             return Ok(personDtos);
