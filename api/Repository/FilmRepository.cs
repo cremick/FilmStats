@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using api.Data;
 using api.Dtos.Film;
+using api.Helpers;
 using api.Interfaces;
 using api.Models;
 using Microsoft.EntityFrameworkCore;
@@ -46,8 +47,15 @@ namespace api.Repository
                 .ToListAsync();
         }
 
-        public async Task<List<Film>> GetAllFilmsAsync()
+        public async Task<List<Film>> GetAllFilmsAsync(FilmQueryObject? query = null)
         {
+            // Apply query if query object is given
+            if (query != null)
+            {
+                var films = _context.Films.AsQueryable();
+                return await films.ApplyFilmQueryAsync(query);
+            }
+        
             return await _context.Films.ToListAsync();
         }
 

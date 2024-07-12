@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Dtos.Film;
+using api.Helpers;
 using api.Models;
 
 namespace api.Interfaces
@@ -10,7 +11,7 @@ namespace api.Interfaces
     public interface IFilmRepository
     {
         // GET Endpoints
-        Task<List<Film>> GetAllFilmsAsync();
+        Task<List<Film>> GetAllFilmsAsync(FilmQueryObject? query = null);
         Task<Film?> GetFilmByIdAsync(int filmId);
         Task<Film?> GetFilmBySlugAsync(string filmSlug);
         Task<List<Person>> GetDirectorsByFilmIdAsync(int filmId);

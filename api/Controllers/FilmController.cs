@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Dtos.Film;
+using api.Helpers;
 using api.Interfaces;
 using api.Mappers;
 using Microsoft.AspNetCore.Authorization;
@@ -22,9 +23,9 @@ namespace api.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetAllFilms()
+        public async Task<IActionResult> GetAllFilms([FromQuery] FilmQueryObject query)
         {
-            var films = await _filmRepo.GetAllFilmsAsync();
+            var films = await _filmRepo.GetAllFilmsAsync(query);
             var filmDtos = films.Select(f => f.ToFilmDto()).ToList();
 
             return Ok(filmDtos);
