@@ -18,6 +18,8 @@ namespace api.Mappers
                 LastName = personModel.LastName,
                 Slug = personModel.Slug,
                 Gender = personModel.Gender,
+                ActingCredits = personModel.ActingCredits,
+                DirectingCredits = personModel.DirectingCredits,
                 BirthDate = personModel.BirthDate
             };
         }
@@ -30,6 +32,8 @@ namespace api.Mappers
                 LastName = personDto.LastName,
                 Slug = personDto.Slug,
                 Gender = personDto.Gender,
+                ActingCredits = personDto.ActingCredits,
+                DirectingCredits = personDto.DirectingCredits,
                 BirthDate = personDto.BirthDate
             };
         }

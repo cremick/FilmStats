@@ -12,6 +12,8 @@ namespace api.Dtos.Person
         public string LastName { get; set; } = string.Empty;
         public string Slug { get; set; } = string.Empty;
         public string Gender { get; set; } = string.Empty;
+        public int ActingCredits { get; set; }
+        public int DirectingCredits { get; set; }
         public DateTime BirthDate { get; set; }
     }
 }
