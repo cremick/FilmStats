@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Data;
+using api.Helpers;
 using api.Interfaces;
 using api.Mappers;
 using api.Models;
@@ -43,12 +44,19 @@ namespace api.Repository
                 .ToListAsync();
         }
 
-        public async Task<List<Film>> GetFilmsByUserAsync(User user)
+        public async Task<List<Film>> GetFilmsByUserAsync(User user, FilmQueryObject? query = null)
         {
-            return await _context.UserFilms
+            var films = _context.UserFilms
                 .Where(uf => uf.UserId == user.Id)
-                .Select(uf => uf.Film)
-                .ToListAsync();
+                .Select(uf => uf.Film);
+
+            if (query != null)
+            {
+                films = films.AsQueryable();
+                return await films.ApplyFilmQueryAsync(query);
+            }
+
+            return await films.ToListAsync();
         }
 
         public async Task<List<Genre>> GetGenresByUserAsync(User user)

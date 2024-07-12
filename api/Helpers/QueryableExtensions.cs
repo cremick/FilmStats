@@ -39,8 +39,10 @@ namespace api.Helpers
             }
 
             // Pagination
-            var skipNumber = (query.PageNumber - 1) * query.PageSize;
-            return await films.Skip(skipNumber).Take(query.PageSize).ToListAsync();
+            // var skipNumber = (query.PageNumber - 1) * query.PageSize;
+            // return await films.Skip(skipNumber).Take(query.PageSize).ToListAsync();
+
+            return await films.ToListAsync();
         }
     }
 }

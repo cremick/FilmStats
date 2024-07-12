@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Extensions;
+using api.Helpers;
 using api.Interfaces;
 using api.Mappers;
 using api.Models;
@@ -35,13 +36,13 @@ namespace api.Controllers
 
         [HttpGet("films")]
         [Authorize]
-        public async Task<IActionResult> GetFilmsByUser()
+        public async Task<IActionResult> GetFilmsByUser([FromQuery] FilmQueryObject query)
         {
             var user = await GetUserAsync();
             if (user == null)
                 return NotFound("User not found");
 
-            var films = await _userRepo.GetFilmsByUserAsync(user);
+            var films = await _userRepo.GetFilmsByUserAsync(user, query);
             var filmDtos = films.Select(film => film.ToFilmDto()).ToList();
 
             return Ok(filmDtos);
