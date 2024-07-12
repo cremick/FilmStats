@@ -26,22 +26,36 @@ namespace api.Repository
             return userFilm;
         }
 
-        public async Task<List<Person>> GetActorsByUserAsync(User user)
+        public async Task<List<Person>> GetActorsByUserAsync(User user, PersonQueryObject? query = null)
         {
-            return await _context.UserFilms
+            var actors = _context.UserFilms
                 .Where(uf => uf.UserId == user.Id)
                 .SelectMany(uf => uf.Film.FilmActors.Select(fa => fa.Actor))
-                .Distinct()
-                .ToListAsync();
+                .Distinct();
+            
+            if (query != null)
+            {
+                actors = actors.AsQueryable();
+                return await actors.ApplyPersonQueryAsync(query);
+            }
+
+            return await actors.ToListAsync();
         }
 
-        public async Task<List<Person>> GetDirectorsByUserAsync(User user)
+        public async Task<List<Person>> GetDirectorsByUserAsync(User user, PersonQueryObject? query = null)
         {
-            return await _context.UserFilms
+            var directors = _context.UserFilms
                 .Where(uf => uf.UserId == user.Id)
                 .SelectMany(uf => uf.Film.FilmDirectors.Select(fd => fd.Director))
-                .Distinct()
-                .ToListAsync();
+                .Distinct();
+
+            if (query != null)
+            {
+                directors = directors.AsQueryable();
+                return await directors.ApplyPersonQueryAsync(query);
+            }
+
+            return await directors.ToListAsync();
         }
 
         public async Task<List<Film>> GetFilmsByUserAsync(User user, FilmQueryObject? query = null)

@@ -12,8 +12,8 @@ namespace api.Interfaces
     {
         // GET Endpoints
         Task<List<Film>> GetFilmsByUserAsync(User user, FilmQueryObject? query = null);
-        Task<List<Person>> GetActorsByUserAsync(User user);
-        Task<List<Person>> GetDirectorsByUserAsync(User user);
+        Task<List<Person>> GetActorsByUserAsync(User user, PersonQueryObject? query = null);
+        Task<List<Person>> GetDirectorsByUserAsync(User user, PersonQueryObject? query = null);
         Task<List<Genre>> GetGenresByUserAsync(User user);
         Task<List<Theme>> GetThemesByUserAsync(User user);
 

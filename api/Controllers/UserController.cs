@@ -50,13 +50,13 @@ namespace api.Controllers
 
         [HttpGet("actors")]
         [Authorize]
-        public async Task<IActionResult> GetActorsByUser()
+        public async Task<IActionResult> GetActorsByUser([FromQuery] PersonQueryObject query)
         {
             var user = await GetUserAsync();
             if (user == null)
                 return NotFound("User not found");
 
-            var actors = await _userRepo.GetActorsByUserAsync(user);
+            var actors = await _userRepo.GetActorsByUserAsync(user, query);
             var actorDtos = actors.Select(actor => actor.ToPersonDto()).ToList();
 
             return Ok(actorDtos);
@@ -64,13 +64,13 @@ namespace api.Controllers
 
         [HttpGet("directors")]
         [Authorize]
-        public async Task<IActionResult> GetDirectorsByUser()
+        public async Task<IActionResult> GetDirectorsByUser([FromQuery] PersonQueryObject query)
         {
             var user = await GetUserAsync();
             if (user == null)
                 return NotFound("User not found");
 
-            var directors = await _userRepo.GetDirectorsByUserAsync(user);
+            var directors = await _userRepo.GetDirectorsByUserAsync(user, query);
             var directorDtos = directors.Select(director => director.ToPersonDto()).ToList();
 
             return Ok(directorDtos);

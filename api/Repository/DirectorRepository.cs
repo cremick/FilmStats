@@ -20,16 +20,16 @@ namespace api.Repository
 
         public async Task<List<Person>> GetAllDirectorsAsync(PersonQueryObject? query = null)
         {
-            var films = _context.FilmDirectors
+            var directors = _context.FilmDirectors
                 .Select(fd => fd.Director);
 
             if (query != null)
             {
-                films = films.AsQueryable();
-                return await films.ApplyPersonQueryAsync(query);
+                directors = directors.AsQueryable();
+                return await directors.ApplyPersonQueryAsync(query);
             }
 
-            return await films.ToListAsync();
+            return await directors.ToListAsync();
         }
 
         public async Task<List<Film>> GetFilmsByDirectorAsync(int directorId)
