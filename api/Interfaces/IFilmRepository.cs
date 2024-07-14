@@ -24,7 +24,7 @@ namespace api.Interfaces
         // POST Endpoints
         Task<Film> CreateFilmAsync(Film filmModel);
 
-        // PATCH Endpoints
+        // PUT Endpoints
         Task<Film?> UpdateFilmAsync(int filmId, UpdateFilmDto updateFilmDto);
 
         // DELETE Endpoints

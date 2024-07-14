@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Data;
+using api.Dtos.Rating;
 using api.Helpers;
 using api.Interfaces;
 using api.Models;
@@ -23,6 +24,21 @@ namespace api.Repository
             await _context.Ratings.AddAsync(ratingModel);
             await _context.SaveChangesAsync();
             return ratingModel;
+        }
+
+        public async Task<Rating?> UpdateRatingAsync(int ratingId, UpdateRatingDto updateRatingDto)
+        {
+            var existingRating = await _context.Ratings.FirstOrDefaultAsync(r => r.Id == ratingId);
+
+            if (existingRating == null)
+            {
+                return null;
+            }
+
+            existingRating.Score = updateRatingDto.Score;
+
+            await _context.SaveChangesAsync();
+            return existingRating;
         }
 
         public async Task<Rating?> DeleteRatingAsync(int ratingId)

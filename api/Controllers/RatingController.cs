@@ -129,6 +129,23 @@ namespace api.Controllers
             }
         }
 
+        [HttpPut("{ratingId}")]
+        [Authorize]
+        public async Task<IActionResult> UpdateRating(int ratingId, [FromBody] UpdateRatingDto updateRatingDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var ratingModel = await _ratingRepo.UpdateRatingAsync(ratingId, updateRatingDto);
+
+            if (ratingModel == null)
+            {
+                return NotFound("Rating not found");
+            }
+
+            return Ok(ratingModel.ToRatingDto());
+        }
+
         [HttpDelete("{ratingId}")]
         [Authorize]
         public async Task<IActionResult> DeleteRating(int ratingId)

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using api.Models;
 using api.Helpers;
+using api.Dtos.Rating;
 
 namespace api.Interfaces
 {
@@ -16,6 +17,9 @@ namespace api.Interfaces
 
         // POST Endpoints
         Task<Rating> CreateRatingAsync(Rating ratingModel);
+
+        // PUT Endpoints
+        Task<Rating?> UpdateRatingAsync(int ratingId, UpdateRatingDto updateRatingDto);
         
         // DELETE Endpoints
         Task<Rating?> DeleteRatingAsync(int ratingId);
