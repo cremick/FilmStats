@@ -128,6 +128,23 @@ namespace api.Controllers
             return CreatedAtAction(nameof(GetFilmById), new { filmId = filmModel.Id }, filmModel.ToFilmDto());
         }
 
+        [HttpPut("{filmId:int}")]
+        [Authorize]
+        public async Task<IActionResult> UpdateFilm(int filmId, [FromBody] UpdateFilmDto updateFilmDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var filmModel = await _filmRepo.UpdateFilmAsync(filmId, updateFilmDto);
+
+            if (filmModel == null)
+            {
+                return NotFound("Film not found");
+            }
+
+            return Ok(filmModel.ToFilmDto());
+        }
+
         [HttpDelete("{filmId:int}")]
         [Authorize]
         public async Task<IActionResult> DeleteFilm(int filmId)

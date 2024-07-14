@@ -6,6 +6,7 @@ using api.Data;
 using api.Dtos.Film;
 using api.Helpers;
 using api.Interfaces;
+using api.Mappers;
 using api.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,6 +24,21 @@ namespace api.Repository
             await _context.Films.AddAsync(filmModel);
             await _context.SaveChangesAsync();
             return filmModel;
+        }
+
+        public async Task<Film?> UpdateFilmAsync(int filmId, UpdateFilmDto updateFilmDto)
+        {
+            var existingFilm = await _context.Films.FirstOrDefaultAsync(f => f.Id == filmId);
+
+            if (existingFilm == null)
+            {
+                return null;
+            }
+
+            existingFilm.UpdateFilmWithDto(updateFilmDto);
+
+            await _context.SaveChangesAsync();
+            return existingFilm;
         }
 
         public async Task<Film?> DeleteFilmAsync(int filmId)

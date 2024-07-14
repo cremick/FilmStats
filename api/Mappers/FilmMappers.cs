@@ -37,5 +37,18 @@ namespace api.Mappers
                 Description = filmDto.Description
             };
         }
+
+        public static Film UpdateFilmWithDto(this Film film, UpdateFilmDto filmDto)
+        {
+                film.Title = filmDto.Title;
+                film.Slug = filmDto.Slug;
+                film.ReleaseYear = filmDto.ReleaseYear;
+                film.AvgRating = filmDto.AvgRating;
+                film.RunTime = filmDto.RunTime;
+                film.Tagline = filmDto.Tagline;
+                film.Description = filmDto.Description;
+
+                return film;
+        }
     }
 }
