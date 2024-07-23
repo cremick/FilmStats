@@ -9,65 +9,50 @@ class APIClient:
             "Authorization": f"Bearer {token}"
         }
 
-    def _request(self, method, endpoint, user_specific, **kwargs):
-        url = f"{self.base_url}/{endpoint}"
-        if user_specific:
-            url = f"{self.base_url}/me/{endpoint}"
+    def _request(self, method, endpoint, **kwargs):
+        if "ratings" in endpoint:
+            endpoint = endpoint.replace("ratings", "me/ratings")
         
+        url = f"{self.base_url}/{endpoint}"
+
         return requests.request(method, url, headers=self.headers, **kwargs)
     
-    def get_all(self, resource, user_specific):
-        return self._request("GET", resource, user_specific)
+    def get_all(self, resource, user_specific = False):
+        if user_specific:
+            return self._request("GET", f"me/{resource}")
+        return self._request("GET", resource)
 
-    def get_by_identifier(self, resource, resource_id, user_specific):
-        return self._request("GET", f"{resource}/{resource_id}", user_specific)
+    def get_by_identifier(self, resource, resource_id):
+        return self._request("GET", f"{resource}/{resource_id}")
 
-    def create(self, resource, data, user_specific):
-        return self._request("POST", resource, user_specific, json=data)
+    def create(self, resource, data):
+        return self._request("POST", resource, json=data)
 
-    def update(self, resource, resource_id, data, user_specific):
-        return self._request("PUT", f"{resource}/{resource_id}", user_specific, json=data)
+    def update(self, resource, resource_id, data):
+        return self._request("PUT", f"{resource}/{resource_id}", json=data)
 
-    def delete(self, resource, resource_id, user_specific):
-        return self._request("DELETE", f"{resource}/{resource_id}", user_specific)
+    def delete(self, resource, resource_id):
+        return self._request("DELETE", f"{resource}/{resource_id}")
 
-    def get_related(self, resource, resource_id, related_resource, user_specific):
-        return self._request("GET", f"{resource}/{resource_id}/{related_resource}", user_specific)
+    def get_related(self, resource, resource_id, related_resource, user_specific = False):
+        if user_specific:
+            return self._request("GET", f"{resource}/{resource_id}/me/{related_resource}")
+        return self._request("GET", f"{resource}/{resource_id}/{related_resource}")
 
-    def post_related(self, resource, resource_id, related_resource, related_id, user_specific):
-        return self._request("POST", f"{resource}/{resource_id}/{related_resource}/{related_id}", user_specific)
+    def post_related(self, resource, resource_id, related_resource, related_id):
+        return self._request("POST", f"{resource}/{resource_id}/{related_resource}/{related_id}")
 
-    def delete_related(self, resource, resource_id, related_resource, related_id, user_specific):
-        return self._request("DELETE", f"{resource}/{resource_id}/{related_resource}/{related_id}", user_specific)
-
-
-def main():
-    api_client = APIClient(BASE_URL, TOKEN)
-    resources = ["films", "actors", "directors", "people", "genres", "themes", "ratings"]
-
-    user_specific = False
+    def delete_related(self, resource, resource_id, related_resource, related_id):
+        return self._request("DELETE", f"{resource}/{resource_id}/{related_resource}/{related_id}")
     
-    for resource in resources:
-        api_client.get_all(resource, user_specific)
-        api_client.get_by_identifier(resource, "id", user_specific)
-        api_client.create(resource, {}, user_specific)
-        api_client.update(resource, "id", {}, user_specific)
-        api_client.delete(resource, "id", user_specific)
-        api_client.get_related(resource, "id", "related", user_specific)
-        api_client.post_related(resource, "id", "related", "related_id", user_specific)
-        api_client.delete_related(resource, "id", "related", "related_id", user_specific)
-
-    user_specific = True
-
-    for resource in resources:
-        api_client.get_all(resource, user_specific)
-        api_client.get_by_identifier(resource, "id", user_specific)
-        api_client.create(resource, {}, user_specific)
-        api_client.update(resource, "id", {}, user_specific)
-        api_client.delete(resource, "id", user_specific)
-        api_client.get_related(resource, "id", "related", user_specific)
-        api_client.post_related(resource, "id", "related", "related_id", user_specific)
-        api_client.delete_related(resource, "id", "related", "related_id", user_specific)
-        
-if __name__ == "__main__":
-    main()
+    def watch_film(self, film_id):
+        return self._request("POST", f"me/films/{film_id}/watch")
+    
+    def unwatch_film(self, film_id):
+        return self._request("DELETE", f"me/films/{film_id}/watch")
+    
+    def get_rating_by_film(self, film_id):
+        return self._request("GET", f"ratings/films/{film_id}")
+    
+    def rate_films(self, film_id, data):
+        return self._request("POST", f"ratings/films/{film_id}", json=data)
