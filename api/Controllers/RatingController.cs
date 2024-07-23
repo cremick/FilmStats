@@ -48,7 +48,7 @@ namespace api.Controllers
             return Ok(ratingDtos);
         }
 
-        [HttpGet("film/{filmId:int}")]
+        [HttpGet("films/{filmId:int}")]
         [Authorize]
         public async Task<IActionResult> GetRatingByUserAndFilm(int filmId)
         {
@@ -88,7 +88,7 @@ namespace api.Controllers
             return Ok(rating.ToRatingDto());
         }
 
-        [HttpPost("film/{filmId:int}")]
+        [HttpPost("films/{filmId:int}")]
         [Authorize]
         public async Task<IActionResult> CreateRating(int filmId, [FromBody] CreateRatingDto createRatingDto)
         {

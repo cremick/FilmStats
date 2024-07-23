@@ -114,7 +114,7 @@ namespace api.Controllers
             return NoContent();
         }
 
-        [HttpPost("{themeId:int}/film/{filmId:int}")]
+        [HttpPost("{themeId:int}/films/{filmId:int}")]
         [Authorize]
         public async Task<IActionResult> AddThemeToFilm(int themeId, int filmId)
         {
@@ -151,7 +151,7 @@ namespace api.Controllers
             }
         }
 
-        [HttpDelete("{themeId:int}/film/{filmId:int}")]
+        [HttpDelete("{themeId:int}/films/{filmId:int}")]
         [Authorize]
         public async Task<IActionResult> RemoveThemeFromFilm(int themeId, int filmId)
         {

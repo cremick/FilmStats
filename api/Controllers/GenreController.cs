@@ -114,7 +114,7 @@ namespace api.Controllers
             return NoContent();
         }
 
-        [HttpPost("{genreId:int}/film/{filmId:int}")]
+        [HttpPost("{genreId:int}/films/{filmId:int}")]
         [Authorize]
         public async Task<IActionResult> AddGenreToFilm(int genreId, int filmId)
         {
@@ -151,7 +151,7 @@ namespace api.Controllers
             }
         }
 
-        [HttpDelete("{genreId:int}/film/{filmId:int}")]
+        [HttpDelete("{genreId:int}/films/{filmId:int}")]
         [Authorize]
         public async Task<IActionResult> RemoveGenreFromFilm(int genreId, int filmId)
         {
