@@ -3,7 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import json
-import ast
+from datetime import datetime
 
 class LetterboxdScraper:
     def __init__(self, api_client):
@@ -95,8 +95,118 @@ class LetterboxdScraper:
         print("Themes:", themes)
 
     def fetch_person_data(self, person_slug):
-        url = f"https://letterboxd.com/actor/{person_slug}/"
+        url = f"https://letterboxd.com/producer/{person_slug}/"
         response = requests.get(url)
         soup = BeautifulSoup(response.text, 'html.parser')
 
-        print(soup)
+        # Name
+        h1_tag = soup.find('h1', class_='title-1 prettify')
+        if h1_tag:
+            goes_by = h1_tag.get_text().replace(h1_tag.span.get_text(), '').strip()
+        else:
+            print("Person not found")
+            return
+
+        all_names = goes_by.split()
+        first_name = all_names[0]
+
+        if len(all_names) == 1:
+            last_name = None
+        else:
+            last_name = all_names[-1]
+
+        # Get bio
+        bio_section = soup.find('section', class_='js-tmdb-bio')
+        paragraphs = bio_section.find_all('p')
+        bio = ' '.join(paragraph.text for paragraph in paragraphs).lower()
+
+        birth_date = None
+        gender = None
+        death_date = None
+
+        if bio:
+            # Gender
+            female_count = bio.count(" she ") + bio.count(" her ") + bio.count(" hers ") + bio.count("actress")
+            male_count = bio.count(" he ") + bio.count(" him ") + bio.count(" his ") + bio.count("actor")
+            nb_count = bio.count(" they ") + bio.count(" their ") + bio.count(" them ") + bio.count("actor")
+
+            counts = {
+                'female': female_count,
+                'male': male_count,
+                'nb': nb_count
+            }
+
+            if female_count != 0 or male_count != 0 or nb_count != 0:
+                gender = max(counts, key=counts.get)
+
+            # Birthday
+            patterns = [
+                r'\(born (\w+ \d{1,2}, \d{4})\)',  # Format: born Month Day, Year
+                r'(\w+ \d{1,2}, \d{4}) – ',       # Format: Month Day, Year – (e.g., July 21, 1951 – August 11, 2014)
+                r'(\w+ \d{1,2}, \d{4}) - ',     # Format: Different hyphen
+                r'\(born (\d{1,2} \w+ \d{4})\)',    # Format: born Day Month Year (e.g., 15 April 1990)
+                r'\(born (\d{1,2} \w+, \d{4})\)',    # Format: born Day Month, Year (e.g., 15 April, 1990)
+                r'\(born: (\w+ \d{1,2}, \d{4})\)',  # Format: born: Month Day, Year
+            ]
+
+            for pattern in patterns:
+                match = re.search(pattern, bio)
+                if match:
+                    # Extract the date string
+                    date_str = match.group(1)
+                    try:
+                        if pattern == r'\(born (\d{1,2} \w+ \d{4})\)':
+                            date_obj = datetime.strptime(date_str, '%d %B %Y')
+                    
+                        elif pattern == r'\(born (\d{1,2} \w+, \d{4})\)':
+                            date_obj = datetime.strptime(date_str, '%d %B, %Y')
+
+                        else:
+                            date_obj = datetime.strptime(date_str, '%B %d, %Y')
+    
+                        birth_date = date_obj.date()
+                    except ValueError:
+                        continue
+
+            # Death
+            patterns = [
+                r'– (\w+ \d{1,2}, \d{4})',
+                r'- (\w+ \d{1,2}, \d{4})',
+            ]
+            for pattern in patterns:
+                match = re.search(pattern, bio)
+                if match:
+                    # Extract the date string
+                    death_date_str = match.group(1)
+                    date_obj = datetime.strptime(death_date_str, '%B %d, %Y')
+                    death_date = date_obj.date()
+
+        # Acting credits
+        acting_credits_section = soup.find('a', href=f'/actor/{person_slug}/')
+        if acting_credits_section:
+            if acting_credits_section.find('small'):
+                acting_credits = acting_credits_section.find('small').text
+            else:
+                acting_credits = 1
+        else:
+            acting_credits = 0
+
+        # Directing credits
+        directing_credits_section = soup.find('a', href=f'/director/{person_slug}/')
+        if directing_credits_section:
+            if directing_credits_section.find('small'):
+                directing_credits = directing_credits_section.find('small').text
+            else:
+                directing_credits = 1
+        else:
+            directing_credits = 0
+
+        print("First Name:", first_name)
+        print("Last Name:", last_name)
+        print("Goes By:", goes_by)
+        print("Slug:", person_slug)
+        print("Gender:", gender)
+        print("Birthday:", birth_date)
+        print("Death Date:", death_date)
+        print("Acting Credits:", acting_credits)
+        print("Directing Credits:", directing_credits)

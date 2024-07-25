@@ -6,7 +6,8 @@ def main():
     api_client = APIClient(BASE_URL, TOKEN)
     scraper = LetterboxdScraper(api_client)
 
-    scraper.fetch_person_data("sebastian-stan")
+    scraper.fetch_person_data("julia-roberts")
+    # scraper.fetch_film_data("juno")
 
 
     
