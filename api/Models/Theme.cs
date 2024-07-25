@@ -11,6 +11,7 @@ namespace api.Models
     {
         public int Id { get; set; }
         public string Title { get; set; } = string.Empty;
+        public string Slug { get; set; } = string.Empty;
         public List<FilmTheme> FilmThemes { get; set; } = new List<FilmTheme>();
     }
 }

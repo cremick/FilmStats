@@ -14,7 +14,8 @@ namespace api.Mappers
             return new ThemeDto
             {
                 Id = themeModel.Id,
-                Title = themeModel.Title
+                Title = themeModel.Title,
+                Slug = themeModel.Slug
             };
         }
 
@@ -22,7 +23,8 @@ namespace api.Mappers
         {
             return new Theme
             {
-                Title = themeDto.Title
+                Title = themeDto.Title,
+                Slug = themeDto.Slug
             };
         }
     }
