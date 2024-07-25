@@ -16,11 +16,13 @@ namespace api.Mappers
                 Id = personModel.Id,
                 FirstName = personModel.FirstName,
                 LastName = personModel.LastName,
+                KnownAs = personModel.KnownAs,
                 Slug = personModel.Slug,
                 Gender = personModel.Gender,
                 ActingCredits = personModel.ActingCredits,
                 DirectingCredits = personModel.DirectingCredits,
-                BirthDate = personModel.BirthDate
+                BirthDate = personModel.BirthDate,
+                DeathDate = personModel.DeathDate
             };
         }
 
@@ -30,11 +32,13 @@ namespace api.Mappers
             {
                 FirstName = personDto.FirstName,
                 LastName = personDto.LastName,
+                KnownAs = personDto.KnownAs,
                 Slug = personDto.Slug,
                 Gender = personDto.Gender,
                 ActingCredits = personDto.ActingCredits,
                 DirectingCredits = personDto.DirectingCredits,
-                BirthDate = personDto.BirthDate
+                BirthDate = personDto.BirthDate,
+                DeathDate = personDto.DeathDate
             };
         }
     }
