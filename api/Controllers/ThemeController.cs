@@ -51,6 +51,20 @@ namespace api.Controllers
             return Ok(theme.ToThemeDto());
         }
 
+        [HttpGet("{themeSlug}")]
+        [Authorize]
+        public async Task<IActionResult> GetThemeBySlug(string themeSlug)
+        {
+            var theme = await _themeRepo.GetThemeBySlugAsync(themeSlug);
+
+            if (theme == null)
+            {
+                return NotFound("Theme not found");
+            }
+
+            return Ok(theme.ToThemeDto());
+        }
+
         [HttpGet("{themeId:int}/films")]
         [Authorize]
         public async Task<IActionResult> GetFilmsByTheme(int themeId)

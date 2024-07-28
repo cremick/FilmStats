@@ -12,6 +12,7 @@ namespace api.Interfaces
         // GET Endpoints
         Task<List<Theme>> GetAllThemesAsync();
         Task<Theme?> GetThemeByIdAsync(int themeId);
+        Task<Theme?> GetThemeBySlugAsync(string themeSlug);
         Task<List<Film>> GetFilmsByThemeAsync(int themeId);
         Task<List<Film>> GetFilmsByUserAndThemeAsync(User user, int themeId);
 

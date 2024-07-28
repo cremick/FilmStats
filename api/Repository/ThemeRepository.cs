@@ -72,6 +72,11 @@ namespace api.Repository
             return await _context.Themes.FirstOrDefaultAsync(t => t.Id == themeId);
         }
 
+        public async Task<Theme?> GetThemeBySlugAsync(string themeSlug)
+        {
+            return await _context.Themes.FirstOrDefaultAsync(t => t.Slug == themeSlug);
+        }
+
         public async Task<FilmTheme?> RemoveThemeFromFilmAsync(int themeId, int filmId)
         {
             var filmThemeModel = await _context.FilmThemes.FirstOrDefaultAsync(ft => ft.ThemeId == themeId && ft.Film.Id == filmId);
