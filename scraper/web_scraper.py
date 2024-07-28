@@ -114,7 +114,7 @@ class LetterboxdScraper:
         first_name = all_names[0]
 
         if len(all_names) == 1:
-            last_name = None
+            last_name = ""
         else:
             last_name = all_names[-1]
 
@@ -123,9 +123,9 @@ class LetterboxdScraper:
         paragraphs = bio_section.find_all('p')
         bio = ' '.join(paragraph.text for paragraph in paragraphs).lower()
 
-        birth_date = None
-        gender = None
-        death_date = None
+        birth_date = datetime.min.date().strftime('%Y-%m-%d')
+        gender = ""
+        death_date = datetime.min.date().strftime('%Y-%m-%d')
 
         if bio:
             # Gender
@@ -167,7 +167,7 @@ class LetterboxdScraper:
                         else:
                             date_obj = datetime.strptime(date_str, '%B %d, %Y')
     
-                        birth_date = date_obj.date()
+                        birth_date = date_obj.date().strftime('%Y-%m-%d')
                     except ValueError:
                         continue
 
@@ -182,7 +182,7 @@ class LetterboxdScraper:
                     # Extract the date string
                     death_date_str = match.group(1)
                     date_obj = datetime.strptime(death_date_str, '%B %d, %Y')
-                    death_date = date_obj.date()
+                    death_date = date_obj.date().strftime('%Y-%m-%d')
 
         # Acting credits
         acting_credits_section = soup.find('a', href=f'/actor/{person_slug}/')

@@ -13,6 +13,7 @@ class APIClient:
             endpoint = endpoint.replace("ratings", "me/ratings")
         
         url = f"{self.base_url}/{endpoint}"
+        print(f"url: {url}")
 
         return requests.request(method, url, headers=self.headers, **kwargs)
     
