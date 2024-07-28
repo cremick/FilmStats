@@ -85,5 +85,10 @@ namespace api.Repository
             await _context.SaveChangesAsync();
             return filmGenreModel;
         }
+
+        public async Task<Genre?> GetGenreByTitleAsync(string genreTitle)
+        {
+            return await _context.Genres.FirstOrDefaultAsync(g => g.Title == genreTitle);
+        }
     }
 }

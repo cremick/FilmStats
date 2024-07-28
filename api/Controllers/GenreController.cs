@@ -51,6 +51,20 @@ namespace api.Controllers
             return Ok(genre.ToGenreDto());
         }
 
+        [HttpGet("{genreTitle}")]
+        [Authorize]
+        public async Task<IActionResult> GetGenreByTitle(string genreTitle)
+        {
+            var genre = await _genreRepo.GetGenreByTitleAsync(genreTitle);
+
+            if (genre == null)
+            {
+                return NotFound("Genre not found");
+            }
+
+            return Ok(genre.ToGenreDto());
+        }
+
         [HttpGet("{genreId:int}/films")]
         [Authorize]
         public async Task<IActionResult> GetFilmsByGenre(int genreId)
