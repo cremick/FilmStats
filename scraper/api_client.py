@@ -1,5 +1,4 @@
 import requests
-from config import BASE_URL, TOKEN
 
 class APIClient:
     def __init__(self, base_url, token):

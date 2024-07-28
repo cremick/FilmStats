@@ -1,8 +1,4 @@
-from api_client import APIClient
-from web_scraper import LetterboxdScraper
-from config import BASE_URL, TOKEN
-
-def assign_resource_to_film(resources, film_id, resource_type, scraper, client):
+def assign_resources_to_film(resources, film_id, resource_type, scraper, client):
     for slug in resources:
         if resource_type == "themes":
             theme_title = slug[1]
@@ -10,70 +6,31 @@ def assign_resource_to_film(resources, film_id, resource_type, scraper, client):
 
         response = client.get_by_identifier(resource_type, slug)
 
-        # Check if person exists in DB
+        # Check if resource exists in DB
         if response.status_code == 404:
-            # Add person to DB
-            json = scraper.fetch_person_data(slug)
-            create_response = client.create("people", json)
-            person_id = create_response.text['id'] 
-
-        else:
-            person_id = response.text['id']
-
-        # Assign person to film
-        client.post_related(person_type, person_id, "films", film_id)
-
-def assign_people_to_film(people, film_id, person_type, scraper, client):
-    for slug in people:
-        response = client.get_by_identifier("people", slug)
-
-        # Check if person exists in DB
-        if response.status_code == 404:
-            # Add person to DB
-            json = scraper.fetch_person_data(slug)
-            create_response = client.create("people", json)
-            person_id = create_response.text['id'] 
-
-        else:
-            person_id = response.text['id']
-
-        # Assign person to film
-        client.post_related(person_type, person_id, "films", film_id)
-
-def assign_categories_to_film(categories, film_id, category_type, scraper, client):
-    for slug in categories:
-        if category_type == "genres":
-            response = client.get_by_identifier(category_type, slug)
-        else:
-            response = client.get_by_identifier(category_type, slug[0])
-
-        # Check if category exists in DB
-        if response.status_code == 404:
-            # Add cateogry to DB
-            if category_type == "genres":
+            # Add resource to DB
+            if resource_type == "themes":
+                json = {
+                    "title": theme_title,
+                    "slug": slug
+                }
+            elif resource_type == "genres":
                 json = {
                     "title": slug
                 }
-
             else:
-                json = {
-                    "title": slug[1],
-                    "slug": slug[0]
-                }
-            create_response = client.create(category_type, json)
-            category_id = response.text['id']
-        
+                json = scraper.fetch_person_data(slug)
+
+            create_response = client.create(resource_type, json)
+            id = create_response.text['id'] 
+
         else:
-            category_id = response.text['id']
+            id = response.text['id']
 
-        # Assign cateogry to film
-        client.post_related(category_type, category_id, "films", film_id)
+        # Assign resource to film
+        client.post_related(resource_type, id, "films", film_id)
 
-def main():
-    client = APIClient(BASE_URL, TOKEN)
-    scraper = LetterboxdScraper()
-    username = 'camrynremick'
-
+def add_user_films_to_db(client, scraper, username):
     user_films = scraper.fetch_user_films(username)
     
     for film_slug in user_films:
@@ -94,24 +51,19 @@ def main():
             film_id = create_film_response.text['id']
 
             # Add cast to film
-            assign_people_to_film(cast, film_id, "actors", scraper, client)
+            assign_resources_to_film(cast, film_id, "actors", scraper, client)
 
             # Add directors to film
-            assign_people_to_film(directors, film_id, "directors", scraper, client)
+            assign_resources_to_film(directors, film_id, "directors", scraper, client)
 
             # Add genres to film
+            assign_resources_to_film(genres, film_id, "genres", scraper, client)
 
             # Add themes to film
+            assign_resources_to_film(themes, film_id, "themes", scraper, client)
 
         else:
             film_id = film_response.text['id']
 
         # Assign film to user
         client.watch_film(film_id)
-
-        
-        
-
-
-if __name__ == "__main__":
-    main()
