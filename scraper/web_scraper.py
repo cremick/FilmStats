@@ -1,4 +1,3 @@
-import api_client
 import requests
 from bs4 import BeautifulSoup
 import re
@@ -6,9 +5,6 @@ import json
 from datetime import datetime
 
 class LetterboxdScraper:
-    def __init__(self, api_client):
-        self.api_client = api_client
-
     def fetch_film_data(self, film_slug):
         url = f"https://letterboxd.com/film/{film_slug}/"
         response = requests.get(url)
@@ -18,11 +14,11 @@ class LetterboxdScraper:
         script_tag = soup.find('script', text=re.compile(r'var filmData = \{.*?\};'))
         if script_tag:
             film_data_str = re.search(r'var filmData = (\{.*?\});', script_tag.string).group(1)
-            film_data_str = film_data_str.replace('id:', '"id":').replace('name:', '"name":').replace('releaseYear:', '"releaseYear":').replace('posterURL:', '"posterURL":').replace('path:', '"path":').replace('runTime:', '"runTime":').replace("\\'", "'")
+            film_data_str = re.sub(r'id: \d+, ', '', film_data_str)
+            film_data_str = film_data_str.replace('name:', '"name":').replace('releaseYear:', '"releaseYear":').replace('posterURL:', '"posterURL":').replace('path:', '"path":').replace('runTime:', '"runTime":').replace("\\'", "'")
             film_data = json.loads(film_data_str)
         else:
-            print("Movie does not exist")
-            return 
+            return None
 
         # Find the script tag containing more detailed film data
         script_tag = soup.find('script', type='application/ld+json')
@@ -75,24 +71,28 @@ class LetterboxdScraper:
         if themes_section:
             themes_section = themes_section.find_next_sibling('div', class_='text-sluglist')
             themes = [
-                a['href'].replace("/films/","").replace("/by/best-match/", "")
+                (a.text, a['href'].replace("/films/", "").replace("/by/best-match/", ""))
                 for a in themes_section.find_all('a', class_='text-slug') 
                 if '/films/theme/' in a['href'] or '/films/mini-theme/' in a['href']
             ]
         else:
             themes = None
 
-        print("Title:", title)
-        print("Slug:", film_slug)
-        print("Release Year:", release_year)
-        print("Average Rating:", average_rating)
-        print("Tagline:", tagline)
-        print("Description:", description)
-        print("Runtime:", run_time)
-        print("Cast:", actors)
-        print("Director(s):", directors)
-        print("Genres:", genres)
-        print("Themes:", themes)
+        return {
+            "film_data": {
+                "title": title,
+                "slug": film_slug,
+                "releaseYear": release_year,
+                "avgRating": average_rating,
+                "tagline": tagline,
+                "description": description,
+                "runTime": run_time
+            },
+            "cast": actors,
+            "directors": directors,
+            "genres": genres,
+            "themes": themes
+        }
 
     def fetch_person_data(self, person_slug):
         url = f"https://letterboxd.com/producer/{person_slug}/"
@@ -104,8 +104,7 @@ class LetterboxdScraper:
         if h1_tag:
             goes_by = h1_tag.get_text().replace(h1_tag.span.get_text(), '').strip()
         else:
-            print("Person not found")
-            return
+            return None
 
         all_names = goes_by.split()
         first_name = all_names[0]
@@ -200,13 +199,48 @@ class LetterboxdScraper:
                 directing_credits = 1
         else:
             directing_credits = 0
+        
+        return {
+            "firstName": first_name,
+            "lastName": last_name,
+            "knownAs": goes_by,
+            "slug": person_slug,
+            "gender": gender,
+            "actingCredits": acting_credits,
+            "directingCredits": directing_credits,
+            "birthDate": birth_date,
+            "deathDate": death_date
+        }
 
-        print("First Name:", first_name)
-        print("Last Name:", last_name)
-        print("Goes By:", goes_by)
-        print("Slug:", person_slug)
-        print("Gender:", gender)
-        print("Birthday:", birth_date)
-        print("Death Date:", death_date)
-        print("Acting Credits:", acting_credits)
-        print("Directing Credits:", directing_credits)
+    def fetch_user_films(self, username):
+        url = f"https://letterboxd.com/{username}/films/"
+
+        response = requests.get(url)
+        soup = BeautifulSoup(response.text, 'html.parser')
+
+        # Check if user exists
+        description_meta = soup.find('meta', attrs={'name': 'description'})
+        if not description_meta:
+            return None
+
+        # Extract the last page number from the pagination links
+        paginate_pages = soup.find('div', class_='paginate-pages')
+        if not paginate_pages:
+            last_page_number = 1
+        else:
+            paginate_pages = paginate_pages.find('ul')
+            last_page_number = max(int(li.text) for li in paginate_pages.find_all('li') if li.text.isdigit())
+
+        # Loop until the last page
+        film_slugs = []
+        for page_num in range(1, last_page_number + 1):
+            if page_num > 1:
+                url = f"https://letterboxd.com/{username}/films/page/{page_num}/"
+                response = requests.get(url)
+                soup = BeautifulSoup(response.text, 'html.parser')
+
+            # Find all the div elements with class 'film-poster' and extract slugs
+            film_posters = soup.find_all('div', class_='film-poster')
+            film_slugs = film_slugs + [poster['data-film-slug'] for poster in film_posters if 'data-film-slug' in poster.attrs]
+
+        return film_slugs
