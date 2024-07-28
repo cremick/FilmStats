@@ -32,14 +32,18 @@ class LetterboxdScraper:
         description = soup.find('meta', property='og:description')
         if description:
             description = description['content']
+        else:
+            description = ""
 
         # Tagline
         tagline = soup.find('h4', class_='tagline')
         if tagline:
             tagline = tagline.text.strip()
+        else:
+            tagline = ""
 
         # Release Year
-        release_year = soup.find('div', class_='releaseyear').text.strip()
+        release_year = int(soup.find('div', class_='releaseyear').text.strip())
 
         # Run time
         run_time = film_data['runTime']

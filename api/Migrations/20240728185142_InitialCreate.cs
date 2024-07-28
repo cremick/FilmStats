@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace api.Migrations
 {
     /// <inheritdoc />
-    public partial class AddNewColumnsToFilms : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -59,6 +59,7 @@ namespace api.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Slug = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ReleaseYear = table.Column<int>(type: "int", nullable: false),
                     AvgRating = table.Column<double>(type: "float", nullable: false),
                     Tagline = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -90,7 +91,14 @@ namespace api.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    KnownAs = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Slug = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Gender = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ActingCredits = table.Column<int>(type: "int", nullable: false),
+                    DirectingCredits = table.Column<int>(type: "int", nullable: false),
+                    BirthDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DeathDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -103,7 +111,8 @@ namespace api.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Slug = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -368,8 +377,8 @@ namespace api.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "1cbe942f-12af-4742-a486-39860e2bd037", null, "Admin", "ADMIN" },
-                    { "d93807a2-0b9a-4925-b940-ab19ee3b7178", null, "User", "USER" }
+                    { "0ddec38a-c7ab-417b-9cb5-a88d8bb88b6e", null, "User", "USER" },
+                    { "3fdea74a-8fd8-42bb-a658-f9d76542816f", null, "Admin", "ADMIN" }
                 });
 
             migrationBuilder.CreateIndex(

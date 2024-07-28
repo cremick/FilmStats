@@ -12,8 +12,8 @@ using api.Data;
 namespace api.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20240703204944_ChangePersonColumnType")]
-    partial class ChangePersonColumnType
+    [Migration("20240728185142_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -54,13 +54,13 @@ namespace api.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "821f5a40-620b-4189-8951-b5aee97659c6",
+                            Id = "3fdea74a-8fd8-42bb-a658-f9d76542816f",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "2d0d8252-a0f6-404f-a1d8-811289090228",
+                            Id = "0ddec38a-c7ab-417b-9cb5-a88d8bb88b6e",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -193,6 +193,10 @@ namespace api.Migrations
                     b.Property<int>("RunTime")
                         .HasColumnType("int");
 
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Tagline")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -291,8 +295,17 @@ namespace api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateOnly>("BirthDate")
-                        .HasColumnType("date");
+                    b.Property<int>("ActingCredits")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("BirthDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DeathDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DirectingCredits")
+                        .HasColumnType("int");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -302,7 +315,15 @@ namespace api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("KnownAs")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Slug")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -345,6 +366,10 @@ namespace api.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
                         .IsRequired()

@@ -1,3 +1,5 @@
+import json
+
 def assign_resources_to_film(resources, film_id, resource_type, scraper, client):
     for slug in resources:
         if resource_type == "themes":
@@ -10,22 +12,22 @@ def assign_resources_to_film(resources, film_id, resource_type, scraper, client)
         if response.status_code == 404:
             # Add resource to DB
             if resource_type == "themes":
-                json = {
+                resource_json = {
                     "title": theme_title,
                     "slug": slug
                 }
             elif resource_type == "genres":
-                json = {
+                resource_json = {
                     "title": slug
                 }
             else:
-                json = scraper.fetch_person_data(slug)
+                resource_json = scraper.fetch_person_data(slug)
 
-            create_response = client.create(resource_type, json)
-            id = create_response.text['id'] 
+            create_response = client.create(resource_type, resource_json)
+            id = json.loads(create_response.text)['id'] 
 
         else:
-            id = response.text['id']
+            id = json.loads(response.text)['id']
 
         # Assign resource to film
         client.post_related(resource_type, id, "films", film_id)
@@ -48,7 +50,7 @@ def add_user_films_to_db(client, scraper, username):
             themes = film_data['themes']
 
             create_film_response = client.create("films", film_json)
-            film_id = create_film_response.text['id']
+            film_id = json.loads(create_film_response.text)['id']
 
             # Add cast to film
             assign_resources_to_film(cast, film_id, "actors", scraper, client)
@@ -63,7 +65,7 @@ def add_user_films_to_db(client, scraper, username):
             assign_resources_to_film(themes, film_id, "themes", scraper, client)
 
         else:
-            film_id = film_response.text['id']
+            film_id = json.loads(film_response.text)['id']
 
         # Assign film to user
         client.watch_film(film_id)
