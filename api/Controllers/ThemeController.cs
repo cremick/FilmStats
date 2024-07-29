@@ -52,7 +52,7 @@ namespace api.Controllers
             return Ok(theme.ToThemeDto());
         }
 
-        [HttpGet("{themeSlug}")]
+        [HttpGet("slug/{themeSlug}")]
         [Authorize]
         public async Task<IActionResult> GetThemeBySlug(string themeSlug)
         {

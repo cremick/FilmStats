@@ -48,7 +48,7 @@ namespace api.Controllers
             return Ok(person.ToPersonDto());
         }
 
-        [HttpGet("{personSlug}")]
+        [HttpGet("slug/{personSlug}")]
         [Authorize]
         public async Task<IActionResult> GetPersonBySlug(string personSlug)
         {

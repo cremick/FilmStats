@@ -45,7 +45,7 @@ namespace api.Controllers
             return Ok(film.ToFilmDto());
         }
 
-        [HttpGet("{filmSlug}")]
+        [HttpGet("slug/{filmSlug}")]
         [Authorize]
         public async Task<IActionResult> GetFilmBySlug(string filmSlug)
         {

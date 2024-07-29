@@ -51,7 +51,7 @@ namespace api.Controllers
             return Ok(genre.ToGenreDto());
         }
 
-        [HttpGet("{genreTitle}")]
+        [HttpGet("slug/{genreTitle}")]
         [Authorize]
         public async Task<IActionResult> GetGenreByTitle(string genreTitle)
         {
