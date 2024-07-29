@@ -21,8 +21,11 @@ class APIClient:
             return self._request("GET", f"me/{resource}")
         return self._request("GET", resource)
 
-    def get_by_identifier(self, resource, resource_id):
+    def get_by_id(self, resource, resource_id):
         return self._request("GET", f"{resource}/{resource_id}")
+    
+    def get_by_slug(self, resource, resource_slug):
+        return self._request("GET", f"{resource}/slug/{resource_slug}")
 
     def create(self, resource, data):
         return self._request("POST", resource, json=data)

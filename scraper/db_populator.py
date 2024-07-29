@@ -13,9 +13,9 @@ class DataIntegrator:
                 slug = slug[1]
 
             if resource_type == "directors" or resource_type == "actors":
-                response = self.client.get_by_identifier("people", slug)
+                response = self.client.get_by_slug("people", slug)
             else:
-                response = self.client.get_by_identifier(resource_type, slug.replace("/", "%2F"))
+                response = self.client.get_by_slug(resource_type, slug.replace("/", "%2F"))
 
             # Check if resource exists in DB
             if response.status_code == 404:
@@ -48,7 +48,7 @@ class DataIntegrator:
             self.client.post_related(resource_type, id, "films", film_id)
 
     def add_film_to_db(self, film_slug):
-        film_response = self.client.get_by_identifier("films", film_slug)
+        film_response = self.client.get_by_slug("films", film_slug)
         print(f"-------CURRENT FILM: {film_slug}-------")
         
         # Check if film exists in DB
@@ -102,7 +102,7 @@ class DataIntegrator:
         print(film_slug)
         film_data = self.scraper.fetch_film_data(film_slug)
         all_resources = film_data[resource_type]
-        film_response = self.client.get_by_identifier("films", film_slug)
+        film_response = self.client.get_by_slug("films", film_slug)
 
         if film_response.text == "Film not found":
             return
