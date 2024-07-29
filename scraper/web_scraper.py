@@ -49,28 +49,26 @@ class LetterboxdScraper:
         run_time = film_data['runTime']
 
         # Directors
+        directors = []
         if 'director' in detailed_film_data:
             directors = [director['sameAs'].split('/')[-2] for director in detailed_film_data['director']]
-        else:
-            directors = None
 
         # Avg Rating
         average_rating = detailed_film_data.get('aggregateRating', {}).get('ratingValue')
 
         # Actors
+        actors = []
         if 'actors' in detailed_film_data:
             actors = [actor['sameAs'].split('/')[-2] for actor in detailed_film_data['actors']]
-        else:
-            actors = None
 
         # Genres
+        genres = []
         if 'genre' in detailed_film_data:
             genres = detailed_film_data['genre']
             genres = [genre.lower().replace(" ", "-") for genre in genres]
-        else:
-            genres = None
 
         # Themes
+        themes = []
         themes_section = soup.find('h3', string='Themes')
         if themes_section:
             themes_section = themes_section.find_next_sibling('div', class_='text-sluglist')
@@ -79,8 +77,6 @@ class LetterboxdScraper:
                 for a in themes_section.find_all('a', class_='text-slug') 
                 if '/films/theme/' in a['href'] or '/films/mini-theme/' in a['href']
             ]
-        else:
-            themes = None
 
         return {
             "film_data": {
@@ -92,7 +88,7 @@ class LetterboxdScraper:
                 "description": description,
                 "runTime": run_time
             },
-            "cast": actors,
+            "actors": actors,
             "directors": directors,
             "genres": genres,
             "themes": themes
@@ -144,7 +140,7 @@ class LetterboxdScraper:
 
             # Birthday
             patterns = [
-                r'\(born (\w+ \d{1,2}, \d{4})\)',  # Format: born Month Day, Year
+                r'born (\w+ \d{1,2}, \d{4})',  # Format: born Month Day, Year
                 r'(\w+ \d{1,2}, \d{4}) – ',       # Format: Month Day, Year – (e.g., July 21, 1951 – August 11, 2014)
                 r'(\w+ \d{1,2}, \d{4}) - ',     # Format: Different hyphen
                 r'\(born (\d{1,2} \w+ \d{4})\)',    # Format: born Day Month Year (e.g., 15 April 1990)
