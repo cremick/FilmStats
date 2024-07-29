@@ -5,6 +5,74 @@ import json
 from datetime import datetime
 
 class LetterboxdScraper:
+    def get_gender_from_bio(self, bio):
+        gender = ""
+        female_count = bio.count(" she ") + bio.count(" her ") + bio.count(" hers ") + bio.count("actress")
+        male_count = bio.count(" he ") + bio.count(" him ") + bio.count(" his ") + bio.count("actor")
+        nb_count = bio.count(" they ") + bio.count(" their ") + bio.count(" them ") + bio.count("actor")
+
+        counts = {
+            'female': female_count,
+            'male': male_count,
+            'nb': nb_count
+        }
+
+        if female_count != 0 or male_count != 0 or nb_count != 0:
+            gender = max(counts, key=counts.get)
+
+        return gender
+    
+    def get_birthday_from_bio(self, bio):
+        birth_date = datetime.min.date().strftime('%Y-%m-%d')
+        patterns = [
+            r'born (\w+ \d{1,2}, \d{4})',  # Format: born Month Day, Year
+            r'(\w+ \d{1,2}, \d{4}) – ',       # Format: Month Day, Year – (e.g., July 21, 1951 – )
+            r'(\w+ \d{1,2}, \d{4}) - ',     # Format: Different hyphen
+            r'born (\d{1,2} \w+ \d{4})',    # Format: born Day Month Year (e.g., 15 April 1990)
+            r'born (\d{1,2} \w+, \d{4})',    # Format: born Day Month, Year (e.g., 15 April, 1990)
+            r'born: (\w+ \d{1,2}, \d{4})',  # Format: born: Month Day, Year
+            r'born on (\w+ \d{1,2}, \d{4})' # Format: born on Month Day, Year
+            r'born (\d{1,2} \w+ \d{4})'     # Format: born Day Month Year
+            r'born [\w\s]+; (\w+ \d{1,2}, \d{4})'    # Format: born [Name]; Month Day, Year
+        ]
+
+        for pattern in patterns:
+            match = re.search(pattern, bio)
+            if match:
+                # Extract the date string
+                date_str = match.group(1)
+                try:
+                    if pattern == r'\(born (\d{1,2} \w+ \d{4})\)':
+                        date_obj = datetime.strptime(date_str, '%d %B %Y')
+                
+                    elif pattern == r'\(born (\d{1,2} \w+, \d{4})\)':
+                        date_obj = datetime.strptime(date_str, '%d %B, %Y')
+
+                    else:
+                        date_obj = datetime.strptime(date_str, '%B %d, %Y')
+
+                    birth_date = date_obj.date().strftime('%Y-%m-%d')
+                except ValueError:
+                    continue
+
+        return birth_date
+    
+    def get_death_date_from_bio(self, bio):
+        death_date = datetime.min.date().strftime('%Y-%m-%d')
+        patterns = [
+            r'– (\w+ \d{1,2}, \d{4})',
+            r'- (\w+ \d{1,2}, \d{4})',
+        ]
+        for pattern in patterns:
+            match = re.search(pattern, bio)
+            if match:
+                # Extract the date string
+                death_date_str = match.group(1)
+                date_obj = datetime.strptime(death_date_str, '%B %d, %Y')
+                death_date = date_obj.date().strftime('%Y-%m-%d')
+
+        return death_date
+
     def fetch_film_data(self, film_slug):
         url = f"https://letterboxd.com/film/{film_slug}/"
         response = requests.get(url)
@@ -121,66 +189,21 @@ class LetterboxdScraper:
         paragraphs = bio_section.find_all('p')
         bio = ' '.join(paragraph.text for paragraph in paragraphs).lower()
 
-        birth_date = datetime.min.date().strftime('%Y-%m-%d')
-        gender = ""
-        death_date = datetime.min.date().strftime('%Y-%m-%d')
-
         if bio:
             # Gender
-            female_count = bio.count(" she ") + bio.count(" her ") + bio.count(" hers ") + bio.count("actress")
-            male_count = bio.count(" he ") + bio.count(" him ") + bio.count(" his ") + bio.count("actor")
-            nb_count = bio.count(" they ") + bio.count(" their ") + bio.count(" them ") + bio.count("actor")
+            gender = self.get_gender_from_bio(bio)
 
-            counts = {
-                'female': female_count,
-                'male': male_count,
-                'nb': nb_count
-            }
+            # Birth date
+            birth_date = self.get_birthday_from_bio(bio)
 
-            if female_count != 0 or male_count != 0 or nb_count != 0:
-                gender = max(counts, key=counts.get)
+            # Death date
+            death_date = self.get_death_date_from_bio(bio)
 
-            # Birthday
-            patterns = [
-                r'born (\w+ \d{1,2}, \d{4})',  # Format: born Month Day, Year
-                r'(\w+ \d{1,2}, \d{4}) – ',       # Format: Month Day, Year – (e.g., July 21, 1951 – August 11, 2014)
-                r'(\w+ \d{1,2}, \d{4}) - ',     # Format: Different hyphen
-                r'\(born (\d{1,2} \w+ \d{4})\)',    # Format: born Day Month Year (e.g., 15 April 1990)
-                r'\(born (\d{1,2} \w+, \d{4})\)',    # Format: born Day Month, Year (e.g., 15 April, 1990)
-                r'\(born: (\w+ \d{1,2}, \d{4})\)',  # Format: born: Month Day, Year
-            ]
+        else:
+            birth_date = datetime.min.date().strftime('%Y-%m-%d')
+            gender = ""
+            death_date = datetime.min.date().strftime('%Y-%m-%d')
 
-            for pattern in patterns:
-                match = re.search(pattern, bio)
-                if match:
-                    # Extract the date string
-                    date_str = match.group(1)
-                    try:
-                        if pattern == r'\(born (\d{1,2} \w+ \d{4})\)':
-                            date_obj = datetime.strptime(date_str, '%d %B %Y')
-                    
-                        elif pattern == r'\(born (\d{1,2} \w+, \d{4})\)':
-                            date_obj = datetime.strptime(date_str, '%d %B, %Y')
-
-                        else:
-                            date_obj = datetime.strptime(date_str, '%B %d, %Y')
-    
-                        birth_date = date_obj.date().strftime('%Y-%m-%d')
-                    except ValueError:
-                        continue
-
-            # Death
-            patterns = [
-                r'– (\w+ \d{1,2}, \d{4})',
-                r'- (\w+ \d{1,2}, \d{4})',
-            ]
-            for pattern in patterns:
-                match = re.search(pattern, bio)
-                if match:
-                    # Extract the date string
-                    death_date_str = match.group(1)
-                    date_obj = datetime.strptime(death_date_str, '%B %d, %Y')
-                    death_date = date_obj.date().strftime('%Y-%m-%d')
 
         # Acting credits
         acting_credits_section = soup.find('a', href=f'/actor/{person_slug}/')
