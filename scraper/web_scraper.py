@@ -55,6 +55,8 @@ class LetterboxdScraper:
 
         # Avg Rating
         average_rating = detailed_film_data.get('aggregateRating', {}).get('ratingValue')
+        if not average_rating:
+            average_rating = 0
 
         # Actors
         actors = []

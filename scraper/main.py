@@ -9,11 +9,11 @@ def main():
     integrator = DataIntegrator(api_client, scraper)
     username = "camrynremick"
 
-    integrator.add_user_films_to_db(username)
+    # integrator.add_user_films_to_db(username)
 
-    # user_films = scraper.fetch_user_films(username)
-    # for film in user_films:
-        # integrator.check_resources(film, "genres")
+    user_films = scraper.fetch_user_films(username)
+    for film in user_films:
+        integrator.check_resources(film, "actors")
 
 
 if __name__ == "__main__":

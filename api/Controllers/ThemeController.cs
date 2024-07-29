@@ -10,6 +10,7 @@ using api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Web;
 
 namespace api.Controllers
 {
@@ -55,7 +56,8 @@ namespace api.Controllers
         [Authorize]
         public async Task<IActionResult> GetThemeBySlug(string themeSlug)
         {
-            var theme = await _themeRepo.GetThemeBySlugAsync(themeSlug);
+            var decodedThemeSlug = HttpUtility.UrlDecode(themeSlug);
+            var theme = await _themeRepo.GetThemeBySlugAsync(decodedThemeSlug);
 
             if (theme == null)
             {
