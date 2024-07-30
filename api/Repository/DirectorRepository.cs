@@ -17,11 +17,11 @@ namespace api.Repository
         {
             _context = context;
         }
-
         public async Task<List<Person>> GetAllDirectorsAsync(PersonQueryObject? query = null)
         {
             var directors = _context.FilmDirectors
-                .Select(fd => fd.Director);
+                .Select(fd => fd.Director)
+                .Distinct();
 
             if (query != null)
             {

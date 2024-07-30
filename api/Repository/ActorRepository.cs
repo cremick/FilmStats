@@ -21,7 +21,8 @@ namespace api.Repository
         public async Task<List<Person>> GetAllActorsAsync(PersonQueryObject? query = null)
         {
             var actors =  _context.FilmActors
-                .Select(fa => fa.Actor);
+                .Select(fa => fa.Actor)
+                .Distinct();
 
             if (query != null)
             {
