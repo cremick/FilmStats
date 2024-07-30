@@ -42,10 +42,10 @@ class LetterboxdScraper:
                 # Extract the date string
                 date_str = match.group(1)
                 try:
-                    if pattern == r'\(born (\d{1,2} \w+ \d{4})\)':
+                    if pattern == r'born (\d{1,2} \w+ \d{4})' or pattern == r'born (\d{1,2} \w+ \d{4})':
                         date_obj = datetime.strptime(date_str, '%d %B %Y')
                 
-                    elif pattern == r'\(born (\d{1,2} \w+, \d{4})\)':
+                    elif pattern == r'born (\d{1,2} \w+, \d{4})':
                         date_obj = datetime.strptime(date_str, '%d %B, %Y')
 
                     else:

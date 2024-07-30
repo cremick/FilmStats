@@ -105,6 +105,7 @@ class DataIntegrator:
         film_response = self.client.get_by_slug("films", film_slug)
 
         if film_response.text == "Film not found":
+            print("film not in db")
             return
 
         film_id = json.loads(film_response.text)['id']
