@@ -75,6 +75,23 @@ namespace api.Controllers
             return CreatedAtAction(nameof(GetPersonById), new { personId = personModel.Id }, personModel.ToPersonDto());
         }
 
+        [HttpPut("{personId:int}")]
+        [Authorize]
+        public async Task<IActionResult> UpdatePerson(int personId, [FromBody] UpdatePersonDto updatePersonDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var personModel = await _personRepo.UpdatePersonAsync(personId, updatePersonDto);
+
+            if (personModel == null)
+            {
+                return NotFound("Person not found");
+            }
+
+            return Ok(personModel.ToPersonDto());
+        }
+
         [HttpDelete("{personId:int}")]
         [Authorize]
         public async Task<IActionResult> DeletePerson(int personId)

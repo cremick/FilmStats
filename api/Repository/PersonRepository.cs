@@ -6,6 +6,7 @@ using api.Data;
 using api.Dtos.Person;
 using api.Helpers;
 using api.Interfaces;
+using api.Mappers;
 using api.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -59,6 +60,21 @@ namespace api.Repository
         public async Task<Person?> GetPersonBySlugAsync(string personSlug)
         {
             return await _context.People.FirstOrDefaultAsync(p => p.Slug == personSlug);
+        }
+
+        public async Task<Person?> UpdatePersonAsync(int personId, UpdatePersonDto updatePersonDto)
+        {
+            var existingPerson = await _context.People.FirstOrDefaultAsync(p => p.Id == personId);
+
+            if (existingPerson == null)
+            {
+                return null;
+            }
+
+            existingPerson.UpdatePersonWithDto(updatePersonDto);
+
+            await _context.SaveChangesAsync();
+            return existingPerson;
         }
     }
 }

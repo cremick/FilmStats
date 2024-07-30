@@ -41,5 +41,20 @@ namespace api.Mappers
                 DeathDate = personDto.DeathDate
             };
         }
+
+        public static Person UpdatePersonWithDto(this Person person, UpdatePersonDto personDto)
+        {
+            person.FirstName = personDto.FirstName;
+            person.LastName = personDto.LastName;
+            person.KnownAs = personDto.KnownAs;
+            person.Slug = personDto.Slug;
+            person.Gender = personDto.Gender;
+            person.ActingCredits = personDto.ActingCredits;
+            person.DirectingCredits = personDto.DirectingCredits;
+            person.BirthDate = personDto.BirthDate;
+            person.DeathDate = personDto.DeathDate;
+
+            return person;
+        }
     }
 }
