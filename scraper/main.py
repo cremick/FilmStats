@@ -1,5 +1,5 @@
 from api_client import APIClient
-from web_scraper import LetterboxdScraper
+from web_scraper import LetterboxdScraper, TMDBScraper
 from db_populator import DataIntegrator
 import json
 import ast
@@ -21,7 +21,6 @@ def main():
         integrator.check_resources(film, "themes")
     '''
 
-    '''
     actors = ast.literal_eval(api_client.get_all("people").text)
     birthdayless = []
     for actor in actors:
@@ -30,14 +29,18 @@ def main():
 
     print(len(birthdayless))
     
-    for b in birthdayless:
-        print(b['slug'])
-        # new_data = scraper.fetch_person_data(b['slug'])
+    for index, b in enumerate(birthdayless, start=1):
+        slug = b['slug']
+        print(f'{index}. {slug}')
+        # url = scraper.get_tmdb_link(slug)
+        # new_birthday = tmdb_scraper.get_birthday(url)
+        new_data = scraper.fetch_person_data(slug)
         
-        # if new_data["birthDate"] != '0001-01-01':
-            # print(new_data)
-            # api_client.update("people", b['id'], new_data)
-    '''
+        if new_data['birthDate'] != '0001-01-01':
+            print(new_data)
+            api_client.update("people", b['id'], new_data)
+    
 
+    
 if __name__ == "__main__":
     main()

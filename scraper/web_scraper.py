@@ -31,8 +31,8 @@ class LetterboxdScraper:
             r'born (\d{1,2} \w+ \d{4})',    # Format: born Day Month Year (e.g., 15 April 1990)
             r'born (\d{1,2} \w+, \d{4})',    # Format: born Day Month, Year (e.g., 15 April, 1990)
             r'born: (\w+ \d{1,2}, \d{4})',  # Format: born: Month Day, Year
-            r'born on (\w+ \d{1,2}, \d{4})' # Format: born on Month Day, Year
-            r'born (\d{1,2} \w+ \d{4})'     # Format: born Day Month Year
+            r'born on (\w+ \d{1,2}, \d{4})', # Format: born on Month Day, Year
+            r'born (\d{1,2} \w+ \d{4})',     # Format: born Day Month Year
             r'born [\w\s]+; (\w+ \d{1,2}, \d{4})'    # Format: born [Name]; Month Day, Year
         ]
 
@@ -51,7 +51,7 @@ class LetterboxdScraper:
                     else:
                         date_obj = datetime.strptime(date_str, '%B %d, %Y')
 
-                    birth_date = date_obj.date().strftime('%Y-%m-%d')
+                    return date_obj.date().strftime('%Y-%m-%d')
                 except ValueError:
                     continue
 
@@ -204,6 +204,18 @@ class LetterboxdScraper:
             gender = ""
             death_date = datetime.min.date().strftime('%Y-%m-%d')
 
+        # Get birthday and gender from TMDB if not found in bio
+        link = soup.find('a', class_='micro-button')
+        url = link['href'] if link else None
+
+        if url:
+            tmdb_scraper = TMDBScraper(url)
+
+            if birth_date == datetime.min.date().strftime('%Y-%m-%d'):  
+                birth_date = tmdb_scraper.get_birthday()
+
+            if gender == '':
+                gender = tmdb_scraper.get_gender()
 
         # Acting credits
         acting_credits_section = soup.find('a', href=f'/actor/{person_slug}/')
@@ -269,3 +281,35 @@ class LetterboxdScraper:
             film_slugs = film_slugs + [poster['data-film-slug'] for poster in film_posters if 'data-film-slug' in poster.attrs]
 
         return film_slugs
+    
+class TMDBScraper:
+    def __init__(self, url):
+        response = requests.get(url)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        
+        self.soup = soup
+
+    def get_birthday(self):
+        birthday_tag = self.soup.find('strong', text='Birthday').parent
+        birthday = birthday_tag.text.split('Birthday')[1].strip()
+
+        pattern = r'\w+ {1,2}\d{1,2}, \d{4}'
+
+        match = re.search(pattern, birthday)
+        if match:
+            date_str = match.group(0)
+            date_obj = datetime.strptime(date_str, '%B %d, %Y')
+            birth_date = date_obj.date().strftime('%Y-%m-%d')
+            return birth_date
+
+        else:
+            return datetime.min.date().strftime('%Y-%m-%d')
+        
+    def get_gender(self):
+        gender_tag = self.soup.find('strong', text='Gender').parent
+        gender = gender_tag.text.split('Gender')[1].strip()
+
+        if gender == '-':
+            return ""
+        else:
+            return gender.lower()
