@@ -185,6 +185,7 @@ class LetterboxdScraper:
             last_name = all_names[-1]
 
         # Get bio
+        '''
         bio_section = soup.find('section', class_='js-tmdb-bio')
         paragraphs = bio_section.find_all('p')
         bio = ' '.join(paragraph.text for paragraph in paragraphs).lower()
@@ -203,19 +204,22 @@ class LetterboxdScraper:
             birth_date = datetime.min.date().strftime('%Y-%m-%d')
             gender = ""
             death_date = datetime.min.date().strftime('%Y-%m-%d')
+        '''
 
-        # Get birthday and gender from TMDB if not found in bio
+        # Get birthday, gender, and death date from TMDB
+        birth_date = datetime.min.date().strftime('%Y-%m-%d')
+        gender = ""
+        death_date = datetime.min.date().strftime('%Y-%m-%d')
+
         link = soup.find('a', class_='micro-button')
         url = link['href'] if link else None
 
         if url:
             tmdb_scraper = TMDBScraper(url)
 
-            if birth_date == datetime.min.date().strftime('%Y-%m-%d'):  
-                birth_date = tmdb_scraper.get_birthday()
-
-            if gender == '':
-                gender = tmdb_scraper.get_gender()
+            birth_date = tmdb_scraper.get_birthday()
+            gender = tmdb_scraper.get_gender()
+            death_date = tmdb_scraper.get_death_date()
 
         # Acting credits
         acting_credits_section = soup.find('a', href=f'/actor/{person_slug}/')
@@ -290,8 +294,12 @@ class TMDBScraper:
         self.soup = soup
 
     def get_birthday(self):
-        birthday_tag = self.soup.find('strong', text='Birthday').parent
-        birthday = birthday_tag.text.split('Birthday')[1].strip()
+        birthday_tag = self.soup.find('strong', text='Birthday')
+        if birthday_tag:
+            birthday_tag = birthday_tag.parent
+            birthday = birthday_tag.text.split('Birthday')[1].strip()
+        else:
+            return datetime.min.date().strftime('%Y-%m-%d')
 
         pattern = r'\w+ {1,2}\d{1,2}, \d{4}'
 
@@ -306,10 +314,34 @@ class TMDBScraper:
             return datetime.min.date().strftime('%Y-%m-%d')
         
     def get_gender(self):
-        gender_tag = self.soup.find('strong', text='Gender').parent
-        gender = gender_tag.text.split('Gender')[1].strip()
+        gender_tag = self.soup.find('strong', text='Gender')
+        if gender_tag:
+            gender_tag = gender_tag.parent
+            gender = gender_tag.text.split('Gender')[1].strip()
+        else:
+            return ""
 
         if gender == '-':
             return ""
         else:
             return gender.lower()
+        
+    def get_death_date(self):
+        death_tag = self.soup.find('strong', text='Day of Death')
+        if death_tag:
+            death_tag = death_tag.parent
+            death_date = death_tag.text.split('Day of Death')[1].strip()
+        else:
+            return datetime.min.date().strftime('%Y-%m-%d')
+        
+        pattern = r'\w+ {1,2}\d{1,2}, \d{4}'
+
+        match = re.search(pattern, death_date)
+        if match:
+            date_str = match.group(0)
+            date_obj = datetime.strptime(date_str, '%B %d, %Y')
+            death_date = date_obj.date().strftime('%Y-%m-%d')
+            return death_date
+
+        else:
+            return datetime.min.date().strftime('%Y-%m-%d')
