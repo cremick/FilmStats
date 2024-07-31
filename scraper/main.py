@@ -3,11 +3,12 @@ from web_scraper import LetterboxdScraper, TMDBScraper
 from db_populator import DataIntegrator
 import json
 import ast
-from config import BASE_URL, TOKEN
+from config import BASE_URL, TOKEN, TMDB_TOKEN
+import time
 
 def main():
     api_client = APIClient(BASE_URL, TOKEN)
-    scraper = LetterboxdScraper()
+    scraper = LetterboxdScraper(TMDB_TOKEN)
     integrator = DataIntegrator(api_client, scraper)
     username = "camrynremick"
 
@@ -47,8 +48,7 @@ def main():
     all_people = ast.literal_eval(api_client.get_all("people").text)
     print(len(all_people))
     for index, person in enumerate(all_people, start=1):
-        if index < 2115:
-            continue
+        time.sleep(0.1)
         person_slug = person['slug']
         print(f"{index} -----------{person_slug}-----------")
         new_person_data = scraper.fetch_person_data(person_slug)
@@ -60,14 +60,20 @@ def main():
 
         # Compare gender, birthday, death date
         if person['gender'] != new_person_data['gender']:
+            if new_person_data['gender'] == '':
+                print("losing data")
             print(f"different gender - old: {person['gender']} new: {new_person_data['gender']}")
             different = True
 
         if og_birth_date != new_person_data['birthDate']:
+            if new_person_data['birthDate'] == '0001-01-01':
+                print("losing data")
             print(f"different birthday - old: {og_birth_date} new: {new_person_data['birthDate']}")
             different = True
 
         if og_death_date != new_person_data['deathDate']:
+            if new_person_data['deathDate'] == '0001-01-01':
+                print("losing data")
             print(f"different death day - old: {og_death_date} new: {new_person_data['deathDate']}")
             different = True
 

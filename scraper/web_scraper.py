@@ -4,74 +4,26 @@ import re
 import json
 from datetime import datetime
 
-class LetterboxdScraper:
-    def get_gender_from_bio(self, bio):
-        gender = ""
-        female_count = bio.count(" she ") + bio.count(" her ") + bio.count(" hers ") + bio.count("actress")
-        male_count = bio.count(" he ") + bio.count(" him ") + bio.count(" his ") + bio.count("actor")
-        nb_count = bio.count(" they ") + bio.count(" their ") + bio.count(" them ") + bio.count("actor")
+class LetterboxdScraper():
+    def __init__(self, TMDB_TOKEN):
+        self.tmdb_token = TMDB_TOKEN
+    
+    def get_person_info_from_tmdb(self, url):
+        # Get id from url
+        match = re.search(r'/person/(\d+)', url)
+        if match:
+            person_id = match.group(1)
+        
+        url = f"https://api.themoviedb.org/3/person/{person_id}?language=en-US"
 
-        counts = {
-            'female': female_count,
-            'male': male_count,
-            'nb': nb_count
+        headers = {
+            "accept": "application/json",
+            "Authorization": f"Bearer {self.tmdb_token}"
         }
 
-        if female_count != 0 or male_count != 0 or nb_count != 0:
-            gender = max(counts, key=counts.get)
-
-        return gender
-    
-    def get_birthday_from_bio(self, bio):
-        birth_date = datetime.min.date().strftime('%Y-%m-%d')
-        patterns = [
-            r'born (\w+ \d{1,2}, \d{4})',  # Format: born Month Day, Year
-            r'(\w+ \d{1,2}, \d{4}) – ',       # Format: Month Day, Year – (e.g., July 21, 1951 – )
-            r'(\w+ \d{1,2}, \d{4}) - ',     # Format: Different hyphen
-            r'born (\d{1,2} \w+ \d{4})',    # Format: born Day Month Year (e.g., 15 April 1990)
-            r'born (\d{1,2} \w+, \d{4})',    # Format: born Day Month, Year (e.g., 15 April, 1990)
-            r'born: (\w+ \d{1,2}, \d{4})',  # Format: born: Month Day, Year
-            r'born on (\w+ \d{1,2}, \d{4})', # Format: born on Month Day, Year
-            r'born (\d{1,2} \w+ \d{4})',     # Format: born Day Month Year
-            r'born [\w\s]+; (\w+ \d{1,2}, \d{4})'    # Format: born [Name]; Month Day, Year
-        ]
-
-        for pattern in patterns:
-            match = re.search(pattern, bio)
-            if match:
-                # Extract the date string
-                date_str = match.group(1)
-                try:
-                    if pattern == r'born (\d{1,2} \w+ \d{4})' or pattern == r'born (\d{1,2} \w+ \d{4})':
-                        date_obj = datetime.strptime(date_str, '%d %B %Y')
-                
-                    elif pattern == r'born (\d{1,2} \w+, \d{4})':
-                        date_obj = datetime.strptime(date_str, '%d %B, %Y')
-
-                    else:
-                        date_obj = datetime.strptime(date_str, '%B %d, %Y')
-
-                    return date_obj.date().strftime('%Y-%m-%d')
-                except ValueError:
-                    continue
-
-        return birth_date
-    
-    def get_death_date_from_bio(self, bio):
-        death_date = datetime.min.date().strftime('%Y-%m-%d')
-        patterns = [
-            r'– (\w+ \d{1,2}, \d{4})',
-            r'- (\w+ \d{1,2}, \d{4})',
-        ]
-        for pattern in patterns:
-            match = re.search(pattern, bio)
-            if match:
-                # Extract the date string
-                death_date_str = match.group(1)
-                date_obj = datetime.strptime(death_date_str, '%B %d, %Y')
-                death_date = date_obj.date().strftime('%Y-%m-%d')
-
-        return death_date
+        response = requests.get(url, headers=headers)
+        
+        return json.loads(response.text)
 
     def fetch_film_data(self, film_slug):
         url = f"https://letterboxd.com/film/{film_slug}/"
@@ -184,28 +136,6 @@ class LetterboxdScraper:
         else:
             last_name = all_names[-1]
 
-        # Get bio
-        '''
-        bio_section = soup.find('section', class_='js-tmdb-bio')
-        paragraphs = bio_section.find_all('p')
-        bio = ' '.join(paragraph.text for paragraph in paragraphs).lower()
-
-        if bio:
-            # Gender
-            gender = self.get_gender_from_bio(bio)
-
-            # Birth date
-            birth_date = self.get_birthday_from_bio(bio)
-
-            # Death date
-            death_date = self.get_death_date_from_bio(bio)
-
-        else:
-            birth_date = datetime.min.date().strftime('%Y-%m-%d')
-            gender = ""
-            death_date = datetime.min.date().strftime('%Y-%m-%d')
-        '''
-
         # Get birthday, gender, and death date from TMDB
         birth_date = datetime.min.date().strftime('%Y-%m-%d')
         gender = ""
@@ -215,11 +145,19 @@ class LetterboxdScraper:
         url = link['href'] if link else None
 
         if url:
-            tmdb_scraper = TMDBScraper(url)
-
-            birth_date = tmdb_scraper.get_birthday()
-            gender = tmdb_scraper.get_gender()
-            death_date = tmdb_scraper.get_death_date()
+            person_data = self.get_person_info_from_tmdb(url)
+            if 'success' not in person_data:
+                if person_data['birthday']:
+                    birth_date = person_data['birthday']
+                if person_data['deathday']:
+                    death_date = person_data['deathday']
+                if person_data['gender']:
+                    if person_data['gender'] == 1:
+                        gender = 'female'
+                    elif person_data['gender'] == 2:
+                        gender = 'male'
+                    else:
+                        gender = 'non-binary'
 
         # Acting credits
         acting_credits_section = soup.find('a', href=f'/actor/{person_slug}/')
@@ -285,63 +223,3 @@ class LetterboxdScraper:
             film_slugs = film_slugs + [poster['data-film-slug'] for poster in film_posters if 'data-film-slug' in poster.attrs]
 
         return film_slugs
-    
-class TMDBScraper:
-    def __init__(self, url):
-        response = requests.get(url)
-        soup = BeautifulSoup(response.text, 'html.parser')
-        
-        self.soup = soup
-
-    def get_birthday(self):
-        birthday_tag = self.soup.find('strong', text='Birthday')
-        if birthday_tag:
-            birthday_tag = birthday_tag.parent
-            birthday = birthday_tag.text.split('Birthday')[1].strip()
-        else:
-            return datetime.min.date().strftime('%Y-%m-%d')
-
-        pattern = r'\w+ {1,2}\d{1,2}, \d{4}'
-
-        match = re.search(pattern, birthday)
-        if match:
-            date_str = match.group(0)
-            date_obj = datetime.strptime(date_str, '%B %d, %Y')
-            birth_date = date_obj.date().strftime('%Y-%m-%d')
-            return birth_date
-
-        else:
-            return datetime.min.date().strftime('%Y-%m-%d')
-        
-    def get_gender(self):
-        gender_tag = self.soup.find('strong', text='Gender')
-        if gender_tag:
-            gender_tag = gender_tag.parent
-            gender = gender_tag.text.split('Gender')[1].strip()
-        else:
-            return ""
-
-        if gender == '-':
-            return ""
-        else:
-            return gender.lower()
-        
-    def get_death_date(self):
-        death_tag = self.soup.find('strong', text='Day of Death')
-        if death_tag:
-            death_tag = death_tag.parent
-            death_date = death_tag.text.split('Day of Death')[1].strip()
-        else:
-            return datetime.min.date().strftime('%Y-%m-%d')
-        
-        pattern = r'\w+ {1,2}\d{1,2}, \d{4}'
-
-        match = re.search(pattern, death_date)
-        if match:
-            date_str = match.group(0)
-            date_obj = datetime.strptime(date_str, '%B %d, %Y')
-            death_date = date_obj.date().strftime('%Y-%m-%d')
-            return death_date
-
-        else:
-            return datetime.min.date().strftime('%Y-%m-%d')
