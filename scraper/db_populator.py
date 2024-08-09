@@ -91,7 +91,10 @@ class DataIntegrator:
     def add_user_films_to_db(self, username):
         user_films = self.scraper.fetch_user_films(username)
         
-        for film_slug in user_films:
+        for info in user_films:
+            film_slug = info[0]
+            rating = info[1]
+
             film_id = self.add_film_to_db(film_slug)
             
             # Assign film to user

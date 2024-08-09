@@ -7,6 +7,27 @@ from datetime import datetime
 class LetterboxdScraper():
     def __init__(self, TMDB_TOKEN):
         self.tmdb_token = TMDB_TOKEN
+
+    def navigate_to_user_films(self, username):
+        url = f"https://letterboxd.com/{username}/films/"
+
+        response = requests.get(url)
+        soup = BeautifulSoup(response.text, 'html.parser')
+
+        # Check if user exists
+        description_meta = soup.find('meta', attrs={'name': 'description'})
+        if not description_meta:
+            return None
+
+        # Extract the last page number from the pagination links
+        paginate_pages = soup.find('div', class_='paginate-pages')
+        if not paginate_pages:
+            last_page_number = 1
+        else:
+            paginate_pages = paginate_pages.find('ul')
+            last_page_number = max(int(li.text) for li in paginate_pages.find_all('li') if li.text.isdigit())
+
+        return last_page_number
     
     def get_person_info_from_tmdb(self, url):
         # Get id from url
@@ -219,7 +240,22 @@ class LetterboxdScraper():
                 soup = BeautifulSoup(response.text, 'html.parser')
 
             # Find all the div elements with class 'film-poster' and extract slugs
-            film_posters = soup.find_all('div', class_='film-poster')
-            film_slugs = film_slugs + [poster['data-film-slug'] for poster in film_posters if 'data-film-slug' in poster.attrs]
+            poster_containers = soup.find_all('li', class_='poster-container')
+            for poster_container in poster_containers:
+                film_poster = poster_container.find('div', class_='film-poster')
+                film_slug = film_poster['data-film-slug']
+
+                rating_span = poster_container.find('span', class_='rating')
+                rating = None
+                if rating_span:
+                    stars_text = rating_span.text.strip()
+                    if stars_text:
+                        # Count the number of '★' to determine the rating
+                        rating = stars_text.count('★') + 0.5 * stars_text.count('½')
+
+                if rating:
+                    film_slugs.append((film_slug, rating))
+                else:
+                    film_slugs.append((film_slug, None))
 
         return film_slugs
