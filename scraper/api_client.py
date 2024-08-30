@@ -56,5 +56,5 @@ class APIClient:
     def get_rating_by_film(self, film_id):
         return self._request("GET", f"ratings/films/{film_id}")
     
-    def rate_films(self, film_id, data):
+    def rate_film(self, film_id, data):
         return self._request("POST", f"ratings/films/{film_id}", json=data)

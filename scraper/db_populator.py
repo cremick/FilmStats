@@ -100,6 +100,12 @@ class DataIntegrator:
             # Assign film to user
             self.client.watch_film(film_id)
 
+            # Rate film
+            data = {
+                "score": rating
+            }
+            self.client.rate_film(film_id, data)
+
     def check_resources(self, film_slug, resource_type):
         # Get film data
         print(film_slug)
