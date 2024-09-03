@@ -1,12 +1,14 @@
 import React from 'react';
 import "./Card.css";
+import { FilmSearch } from '../../film';
 
 interface Props {
-  filmTitle: string;
-  releaseYear: number;
+  id: number;
+  searchResult: FilmSearch;
+
 }
 
-const Card: React.FC<Props> = ({ filmTitle, releaseYear }: Props) : JSX.Element => {
+const Card: React.FC<Props> = ({ id, searchResult }: Props) : JSX.Element => {
   return (
     <div className='card'>
         <img 
@@ -14,11 +16,11 @@ const Card: React.FC<Props> = ({ filmTitle, releaseYear }: Props) : JSX.Element 
             alt='film'
         />
         <div className='details'>
-            <h2>{filmTitle}</h2>
-            <p>{releaseYear}</p>
+            <h2>{searchResult.title}</h2>
+            <p>{searchResult.release_date}</p>
         </div>
         <p className='info'>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Similique, officia.
+            {searchResult.overview}
         </p>
     </div>
   );

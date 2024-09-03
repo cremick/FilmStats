@@ -30,8 +30,8 @@ function App() {
   return (
     <div className="App">
       <Search handleClick={handleClick} search={search} handleChange={handleChange}/>
+      <CardList searchResults={searchResult} />
       {serverError && <h1>{serverError}</h1>}
-      <CardList />
     </div>
   );
 }
