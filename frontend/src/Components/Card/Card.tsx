@@ -1,9 +1,12 @@
 import React from 'react';
 import "./Card.css";
 
-type Props = {}
+interface Props {
+  filmTitle: string;
+  releaseYear: number;
+}
 
-const Card = (props: Props) => {
+const Card = ({ filmTitle, releaseYear }: Props) => {
   return (
     <div className='card'>
         <img 
@@ -11,8 +14,8 @@ const Card = (props: Props) => {
             alt='film'
         />
         <div className='details'>
-            <h2>Hairspray</h2>
-            <p>2007</p>
+            <h2>{filmTitle}</h2>
+            <p>{releaseYear}</p>
         </div>
         <p className='info'>
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Similique, officia.
