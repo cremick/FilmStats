@@ -6,7 +6,7 @@ interface Props {
   releaseYear: number;
 }
 
-const Card = ({ filmTitle, releaseYear }: Props) => {
+const Card: React.FC<Props> = ({ filmTitle, releaseYear }: Props) : JSX.Element => {
   return (
     <div className='card'>
         <img 
