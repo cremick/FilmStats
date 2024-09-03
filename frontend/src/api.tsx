@@ -2,7 +2,7 @@ import axios from 'axios';
 import { FilmSearch } from "./film"
 
 interface SearchResponse {
-    data: FilmSearch[];
+    results: FilmSearch[];
 }
 
 export const searchFilms = async (query: string) => {
@@ -16,7 +16,7 @@ export const searchFilms = async (query: string) => {
             console.log("error message: ", error.message);
         } else {
             console.log("unexpected error: ", error);
-            return "An unexpected error has occured.";
         }
+        return "An unexpected error has occured.";
     }
 }
