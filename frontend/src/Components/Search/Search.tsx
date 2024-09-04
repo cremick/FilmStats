@@ -1,21 +1,22 @@
-import React, { ChangeEvent, MouseEvent } from 'react'
+import React, { ChangeEvent, FormEvent } from 'react'
 
 interface Props {
-    handleClick: (e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => void;
+    handleSearchSubmit: (e: FormEvent<HTMLFormElement>) => void;
     search: string | undefined;
-    handleChange: (e: ChangeEvent<HTMLInputElement>) => void;
+    handleSearchChange: (e: ChangeEvent<HTMLInputElement>) => void;
 };
 
 const Search : React.FC<Props> = ({
-    handleClick,
+    handleSearchSubmit,
     search,
-    handleChange,
+    handleSearchChange,
 }: Props): JSX.Element => {
     return (
-        <div>
-            <input value={search} onChange={(e) => handleChange(e)}></input>
-            <button onClick={(e) => handleClick(e)} />
-        </div>
+        <>
+            <form onSubmit={handleSearchSubmit}>
+                <input value={search} onChange={handleSearchChange} />
+            </form>
+        </>
     )
 }
 
