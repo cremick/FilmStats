@@ -1,10 +1,10 @@
-import { ChangeEvent, useState, FormEvent } from 'react';
-import './App.css';
-import CardList from './Components/CardList/CardList';
-import Search from './Components/Search/Search';
-import { FilmSearch } from './film';
-import { searchFilms } from './api';
-import WatchedList from './Components/Watched/WatchedList/WatchedList';
+import { ChangeEvent, useState, FormEvent } from "react";
+import "./App.css";
+import CardList from "./Components/CardList/CardList";
+import Search from "./Components/Search/Search";
+import { FilmSearch } from "./film";
+import { searchFilms } from "./api";
+import WatchedList from "./Components/Watched/WatchedList/WatchedList";
 
 function App() {
   const [search, setSearch] = useState<string>("");
@@ -13,17 +13,17 @@ function App() {
   const [serverError, setServerError] = useState<string>("");
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
-      setSearch(e.target.value);
-      console.log(e);
+    setSearch(e.target.value);
+    console.log(e);
   };
 
   const onWatchedCreate = (e: any) => {
     e.preventDefault();
-    const exists = watchedFilms.find((value => value === e.target[0].value));
+    const exists = watchedFilms.find((value) => value === e.target[0].value);
     if (exists) return;
     const updatedWatched = [...watchedFilms, e.target[0].value];
     setWatchedFilms(updatedWatched);
-  }
+  };
 
   const onWatchedDelete = (e: any) => {
     e.preventDefault();
@@ -42,18 +42,18 @@ function App() {
     } else if (Array.isArray(result.data.results)) {
       setSearchResult(result.data.results);
     }
-      
+
     console.log(searchResult);
   };
 
   return (
     <div className="App">
-      <Search 
+      <Search
         handleSearchSubmit={handleSearchSubmit}
         search={search}
         handleSearchChange={handleSearchChange}
       />
-      <WatchedList 
+      <WatchedList
         watchedFilms={watchedFilms}
         onWatchedDelete={onWatchedDelete}
       />

@@ -1,19 +1,19 @@
-import React, { SyntheticEvent } from 'react'
+import React, { SyntheticEvent } from "react";
 
 interface Props {
-    onWatchedDelete: (e: SyntheticEvent) => void;
-    watchedFilm: string;
+  onWatchedDelete: (e: SyntheticEvent) => void;
+  watchedFilm: string;
 }
 
 const DeleteWatched = ({ onWatchedDelete, watchedFilm }: Props) => {
   return (
     <div>
-        <form onSubmit={onWatchedDelete}>
-            <input hidden={true} value={watchedFilm}></input>
-            <button>X</button>
-        </form>
+      <form onSubmit={onWatchedDelete}>
+        <input hidden={true} value={watchedFilm}></input>
+        <button>X</button>
+      </form>
     </div>
-  )
-}
+  );
+};
 
-export default DeleteWatched
+export default DeleteWatched;
