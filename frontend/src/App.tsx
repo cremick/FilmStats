@@ -5,6 +5,8 @@ import Search from "./Components/Search/Search";
 import { FilmSearch } from "./film";
 import { searchFilms } from "./api";
 import WatchedList from "./Components/Watched/WatchedList/WatchedList";
+import Navbar from "./Components/Navbar/Navbar";
+import Hero from "./Components/Hero/Hero";
 
 function App() {
   const [search, setSearch] = useState<string>("");
@@ -48,6 +50,8 @@ function App() {
 
   return (
     <div className="App">
+      <Navbar />
+      <Hero />
       <Search
         handleSearchSubmit={handleSearchSubmit}
         search={search}
