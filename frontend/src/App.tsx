@@ -25,6 +25,14 @@ function App() {
     setWatchedFilms(updatedWatched);
   }
 
+  const onWatchedDelete = (e: any) => {
+    e.preventDefault();
+    const removed = watchedFilms.filter((value) => {
+      return value !== e.target[0].value;
+    });
+    setWatchedFilms(removed);
+  };
+
   const handleSearchSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const result = await searchFilms(search);
@@ -45,7 +53,10 @@ function App() {
         search={search}
         handleSearchChange={handleSearchChange}
       />
-      <WatchedList watchedFilms={watchedFilms} />
+      <WatchedList 
+        watchedFilms={watchedFilms}
+        onWatchedDelete={onWatchedDelete}
+      />
       <CardList
         searchResults={searchResult}
         onWatchedCreate={onWatchedCreate}

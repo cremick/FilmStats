@@ -1,14 +1,16 @@
-import React from 'react'
+import React, { SyntheticEvent } from 'react'
+import DeleteWatched from '../DeleteWatched/DeleteWatched';
 
 interface Props {
     watchedFilm: string;
+    onWatchedDelete: (e: SyntheticEvent) => void;
 }
 
-const CardWatched = ({ watchedFilm }: Props) => {
+const CardWatched = ({ watchedFilm, onWatchedDelete }: Props) => {
   return (
     <>
         <h4>{watchedFilm}</h4>
-        <button>X</button>
+        <DeleteWatched onWatchedDelete={onWatchedDelete} watchedFilm={watchedFilm} />
     </>
   )
 }
