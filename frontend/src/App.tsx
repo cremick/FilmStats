@@ -51,7 +51,6 @@ function App() {
   return (
     <div className="App">
       <Navbar />
-      <Hero />
       <Search
         handleSearchSubmit={handleSearchSubmit}
         search={search}

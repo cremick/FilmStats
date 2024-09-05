@@ -10,11 +10,11 @@ module.exports = {
     },
     extend: {
       colors: {
-        lightBlue: "hsl(215.02, 98.39%, 51.18%)",
+        lightBlue: "hsl(217, 60%, 80%)",
         darkBlue: "hsl(213.86, 58.82%, 46.67%)",
         lightGreen: "hsl(99, 47%, 65%)",
         ashyBlack: "hsl(214, 12%, 11%)",
-        lightBlack: "hsl(212, 13%, 19%) "
+        lightBlack: "hsl(212, 13%, 19%)"
       },
       fontFamily: {
         sans: ["Poppins", "sans-serif"],

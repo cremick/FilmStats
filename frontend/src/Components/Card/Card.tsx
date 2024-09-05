@@ -15,13 +15,15 @@ const Card: React.FC<Props> = ({
   onWatchedCreate,
 }: Props): JSX.Element => {
   return (
-    <div className="card">
-      <img src="https://picsum.photos/300/300" alt="film" />
-      <div className="details">
-        <h2>{searchResult.title}</h2>
-        <p>{searchResult.release_date}</p>
-      </div>
-      <p className="info">{searchResult.overview}</p>
+    <div
+      className="flex flex-col items-center justify-between w-full p-6 bg-slate-100 rounded-lg md:flex-row"
+      key={id}
+    >
+      <h2 className="font-bold text-center text-black md:text-left">
+        {searchResult.title} ({searchResult.release_date})
+      </h2>
+      <p className="text-black">{searchResult.popularity}</p>
+      <p className="font-bold text-black"> </p>
       <AddWatched
         onWatchedCreate={onWatchedCreate}
         title={searchResult.title}
