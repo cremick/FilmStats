@@ -21,7 +21,7 @@ const Card: React.FC<Props> = ({
       key={id}
     >
       <Link
-        to={`/film/${searchResult.title}`}
+        to={`/film/${searchResult.id}`}
         className="font-bold text-center text-black md:text-left"
       >
         {searchResult.title} ({searchResult.release_date})
