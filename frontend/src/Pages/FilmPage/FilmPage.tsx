@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { FilmProfile } from "../../film";
 import { getFilmProfile } from "../../api";
+import Sidebar from "../../Components/Sidebar/Sidebar";
+import FilmDashboard from "../../Components/FilmDashboard/FilmDashboard";
+import Tile from "../../Components/Tile/Tile";
 
 interface Props {}
 
@@ -15,9 +18,22 @@ const FilmPage = (props: Props) => {
       setFilm(result?.data);
     };
     getProfileInit();
-  }, [ticker]);
+  }, []);
 
-  return <>{film ? <div>{film.title}</div> : <div>Film not found!</div>}</>;
+  return (
+    <>
+      {film ? (
+        <div className="w-full relative flex ct-docs-disable-sidebar-content overflow-x-hidden">
+          <Sidebar />
+          <FilmDashboard>
+            <Tile title="Film Name" subTitle={film.title}></Tile>
+          </FilmDashboard>
+        </div>
+      ) : (
+        <div>Film not found!</div>
+      )}
+    </>
+  );
 };
 
 export default FilmPage;
