@@ -1,5 +1,5 @@
 import axios from "axios";
-import { FilmProfile, FilmSearch } from "./film";
+import { FilmCredits, FilmProfile, FilmSearch } from "./film";
 
 interface SearchResponse {
   results: FilmSearch[];
@@ -26,6 +26,17 @@ export const getFilmProfile = async (query: string) => {
   try {
     const data = await axios.get<FilmProfile>(
       `https://api.themoviedb.org/3/movie/${id}?api_key=${process.env.REACT_APP_API_KEY}`
+    )
+    return data;
+  } catch (error: any) {
+    console.log("error message from API: ", error.message);
+  }
+}
+
+export const getCast = async (query: number) => {
+  try {
+    const data = await axios.get<FilmCredits>(
+      `https://api.themoviedb.org/3/movie/${query}/credits?api_key=${process.env.REACT_APP_API_KEY}`
     )
     return data;
   } catch (error: any) {

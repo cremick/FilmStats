@@ -26,7 +26,7 @@ const FilmPage = (props: Props) => {
       {film ? (
         <div className="min-h-screen w-full relative flex ct-docs-disable-sidebar-content bg-default text-white overflow-x-hidden">
           <Sidebar />
-          <FilmDashboard title={film.title} >
+          <FilmDashboard title={film.title} ticker={ticker!} >
             <Tile title="Release Date" subTitle={film.release_date}></Tile>
             <Tile
               title="Runtime"
