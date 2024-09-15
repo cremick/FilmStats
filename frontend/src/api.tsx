@@ -33,7 +33,7 @@ export const getFilmProfile = async (query: string) => {
   }
 }
 
-export const getCast = async (query: number) => {
+export const getCredits = async (query: number) => {
   try {
     const data = await axios.get<FilmCredits>(
       `https://api.themoviedb.org/3/movie/${query}/credits?api_key=${process.env.REACT_APP_API_KEY}`
