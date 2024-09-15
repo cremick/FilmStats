@@ -1,11 +1,9 @@
-import React from 'react'
+import React from "react";
 
-type Props = {}
+type Props = {};
 
 const FilmProfile = (props: Props) => {
-  return (
-    <div>FilmProfile</div>
-  )
-}
+  return <div>FilmProfile</div>;
+};
 
-export default FilmProfile
+export default FilmProfile;

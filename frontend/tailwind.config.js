@@ -22,6 +22,9 @@ module.exports = {
       spacing: {
         180: "32rem",
       },
+      backgroundColor: {
+        'default': "hsl(214, 12%, 11%)",
+      }
     },
   },
   plugins: [],

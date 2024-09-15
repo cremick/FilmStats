@@ -5,6 +5,8 @@ import SearchPage from "../Pages/SearchPage/SearchPage";
 import FilmPage from "../Pages/FilmPage/FilmPage";
 import FilmProfile from "../Components/FilmProfile/FilmProfile";
 import Cast from "../Components/Cast/Cast";
+import Crew from "../Components/Crew/Crew";
+import Genres from "../Components/Genres/Genres";
 
 export const router = createBrowserRouter([
   {
@@ -19,6 +21,8 @@ export const router = createBrowserRouter([
         children: [
           { path: "film-profile", element: <FilmProfile /> },
           { path: "cast", element: <Cast /> },
+          { path: "crew", element: <Crew /> },
+          { path: "genres", element: <Genres /> },
         ],
       },
     ],

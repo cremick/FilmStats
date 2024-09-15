@@ -18,19 +18,26 @@ const FilmPage = (props: Props) => {
       setFilm(result?.data);
     };
     getProfileInit();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <>
       {film ? (
-        <div className="w-full relative flex ct-docs-disable-sidebar-content overflow-x-hidden">
+        <div className="min-h-screen w-full relative flex ct-docs-disable-sidebar-content bg-default text-white overflow-x-hidden">
           <Sidebar />
-          <FilmDashboard>
-            <Tile title="Film Name" subTitle={film.title}></Tile>
+          <FilmDashboard title={film.title} >
+            <Tile title="Release Date" subTitle={film.release_date}></Tile>
+            <Tile
+              title="Runtime"
+              subTitle={String(film.runtime) + " minutes"}
+            ></Tile>
+            <Tile title="Average Rating" subTitle={String(film.vote_average) + " / 10"}></Tile>
+            <Tile title="Popularity Score" subTitle={String(film.popularity)}></Tile>
           </FilmDashboard>
         </div>
       ) : (
-        <div>Film not found!</div>
+        <div className="bg-default">Film not found!</div>
       )}
     </>
   );
