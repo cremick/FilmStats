@@ -7,7 +7,7 @@ type Props = {
 const CreditsList = ({ config }: Props) => {
   const renderedCells = config.map((row: any) => {
     return (
-      <li className="py-4 sm:py-4">
+      <li key={row.id} className="py-4 sm:py-4">
         <div className="flex items-center space-x-4">
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-white truncate">
@@ -24,6 +24,7 @@ const CreditsList = ({ config }: Props) => {
       </li>
     );
   });
+
   return (
     <div className="bg-lightBlack shadow rounded-lg ml-4 mr-4 mt-4 mb-4 p-4 sm:p-6 w-full">
       <ul className="divide-y divide-gray-200">{renderedCells}</ul>

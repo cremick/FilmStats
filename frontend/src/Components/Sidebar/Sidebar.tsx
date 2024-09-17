@@ -17,11 +17,11 @@ const Sidebar = (props: Props) => {
         <div className="flex bg-default flex-col items-stretch opacity-100 relative mt-4 overflow-y-auto overflow-x-hidden h-auto z-40 items-center flex-1 rounded w-full">
           <div className="md:flex-col md:min-w-full flex flex-col list-none">
             <Link
-              to="film-profile"
+              to="details"
               className="flex md:min-w-full text-blueGray-500 text-medium uppercase font-bold block pt-1 pb-4 no-underline"
             >
               <FaHome className="icon-spacing" />
-              <h6 className="m1-3">Film Profile</h6>
+              <h6 className="m1-3">Details</h6>
             </Link>
             <Link
               to="cast"

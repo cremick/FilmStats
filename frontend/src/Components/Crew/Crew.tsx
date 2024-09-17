@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useOutletContext } from 'react-router-dom';
-import { FilmCredits } from '../../film';
+import { FilmContextType, FilmCredits } from '../../film';
 import { getCredits } from '../../api';
 import CreditsList from '../CreditsList/CreditsList';
 import Spinner from "../Spinner/Spinner";
@@ -8,7 +8,7 @@ import Spinner from "../Spinner/Spinner";
 type Props = {}
 
 const Crew = (props: Props) => {
-  const ticker = useOutletContext<number>();
+  const {ticker} = useOutletContext<FilmContextType>();
   const [crew, setCrew] = useState<FilmCredits>();
 
   useEffect(() => {
@@ -22,6 +22,7 @@ const Crew = (props: Props) => {
   }, []);
 
   const tableConfig = crew?.crew?.map((member) => ({
+    id: member.credit_id,
     label: member.name,
     render: member.job,
     subTitle: member.popularity

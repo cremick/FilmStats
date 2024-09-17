@@ -7,7 +7,7 @@ interface Props {}
 
 const Hero = (props: Props) => {
   return (
-    <section id="hero" className="bg-ashyBlack">
+    <section id="hero" className="bg-ashyBlack min-h-screen">
       <div className="container flex flex-col-reverse mx-auto p-8 lg:flex-row">
         <div className="flex flex-col space-y-10 mb-44 m-10 lg:m-10 xl:m-20 lg:mt:16 lg:w-1/2 xl:mb-52">
           <h1 className="text-5xl font-bold text-center text-white lg:text-6xl lg:max-w-md lg:text-left">

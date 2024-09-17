@@ -97,3 +97,8 @@ export interface FilmCredits {
     cast: CastMember[];
     crew: CrewMember[];
 }
+
+export type FilmContextType = {
+    film: FilmProfile;
+    ticker: number;
+};
